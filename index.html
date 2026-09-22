@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -53,15 +52,42 @@ button{font-family:inherit;cursor:pointer}
 ::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
 .hidden{display:none!important}
 
+/* ========== LOGIN ========== */
+.login-overlay{position:fixed;inset:0;background:var(--bg-body);z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.login-overlay.hidden{display:none!important}
+.login-card{position:relative;overflow:hidden;width:100%;max-width:440px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:20px;padding:56px 48px 44px;box-shadow:var(--shadow-lg);text-align:center;animation:loginCardIn .5s cubic-bezier(.4,0,.2,1)}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary)}
+@keyframes loginCardIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-logo{display:flex;justify-content:center;margin-bottom:32px}
+.login-logo img{max-width:220px;width:100%;height:auto;object-fit:contain;display:block}
+.login-title{font-size:1.45rem;font-weight:800;letter-spacing:-.5px;line-height:1.25;margin-bottom:10px;color:var(--text-primary)}
+.login-subtitle{font-size:.92rem;color:var(--text-secondary);margin-bottom:36px;line-height:1.55;max-width:340px;margin-left:auto;margin-right:auto}
+.login-field{text-align:left;margin-bottom:18px}
+.login-field label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px}
+.login-field input{width:100%;padding:13px 16px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:10px;color:var(--text-primary);font-size:.92rem;font-family:inherit;outline:none;transition:var(--transition);-webkit-appearance:none}
+.login-field input:focus{border-color:var(--accent);box-shadow:var(--shadow-focus);background:var(--bg-card)}
+.login-field input::placeholder{color:var(--text-muted);opacity:.6}
+.login-error{display:none;padding:11px 14px;background:var(--danger-light);color:var(--danger);border-radius:10px;font-size:.83rem;font-weight:500;text-align:left;margin-bottom:18px;border-left:3px solid var(--danger);line-height:1.45}
+.login-error.show{display:block;animation:slideDown .3s ease}
+.btn-login{width:100%;padding:14px 20px;background:var(--gradient-primary);color:#fff;border:none;border-radius:10px;font-size:.92rem;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:var(--transition);box-shadow:0 4px 14px rgba(124,58,237,.28);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.btn-login:hover:not(:disabled){box-shadow:0 6px 20px rgba(124,58,237,.4);transform:translateY(-1px)}
+.btn-login:active:not(:disabled){transform:translateY(0)}
+.btn-login:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.login-footer{margin-top:28px;font-size:.75rem;color:var(--text-muted);line-height:1.5}
+@media (max-width:480px){
+.login-card{padding:40px 26px 32px;border-radius:16px}
+.login-title{font-size:1.2rem}
+.login-subtitle{font-size:.85rem;margin-bottom:28px}
+.login-logo img{max-width:180px}
+.login-logo{margin-bottom:24px}
+}
+
 /* ========== SPLASH ========== */
 .splash-overlay{position:fixed;inset:0;background:var(--gradient-primary);z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .4s ease}
 .splash-overlay.hidden{opacity:0;pointer-events:none}
 .splash-content{text-align:center;color:#fff;padding:20px}
-.splash-logo{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:32px}
-.splash-logo-mark{width:60px;height:60px;background:rgba(255,255,255,.18);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
-.splash-logo-text{text-align:left;line-height:1.1}
-.splash-logo-text strong{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
-.splash-logo-text span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:2px;opacity:.8;margin-top:2px}
+.splash-logo{display:flex;align-items:center;justify-content:center;margin-bottom:32px}
+.splash-logo-img{max-width:260px;width:80%;height:auto;object-fit:contain;display:block;margin:0 auto}
 .splash-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
 .splash-message{font-size:.9rem;opacity:.85}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -71,11 +97,8 @@ button{font-family:inherit;cursor:pointer}
 
 /* ========== SIDEBAR ========== */
 .sidebar{width:var(--sidebar-w);height:100vh;position:sticky;top:0;background:var(--bg-sidebar);border-right:1px solid var(--border-light);display:flex;flex-direction:column;padding:20px 14px;z-index:100;overflow-y:auto;transition:transform .3s ease,background .3s;flex-shrink:0}
-.sidebar-logo{display:flex;align-items:center;gap:12px;padding:4px 10px 20px;border-bottom:1px solid var(--border-light);margin-bottom:20px}
-.logo-mark{width:40px;height:40px;background:var(--gradient-primary);color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;box-shadow:0 4px 12px rgba(124,58,237,.25);flex-shrink:0}
-.logo-text{line-height:1.2}
-.logo-text strong{display:block;font-size:1rem;font-weight:800;color:var(--text-primary)}
-.logo-text span{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
+.sidebar-logo{display:flex;align-items:center;justify-content:center;padding:8px 10px 20px;border-bottom:1px solid var(--border-light);margin-bottom:20px}
+.sidebar-logo-img{max-height:52px;max-width:100%;width:auto;object-fit:contain;display:block}
 .sidebar-nav{flex:1;display:flex;flex-direction:column;gap:2px}
 .menu-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600;padding:16px 12px 6px}
 .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);font-weight:500;font-size:.88rem;transition:var(--transition);position:relative;user-select:none;cursor:pointer}
@@ -94,6 +117,9 @@ button{font-family:inherit;cursor:pointer}
 .btn-sync{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.8rem;font-weight:500;transition:var(--transition)}
 .btn-sync:hover{background:var(--accent-lighter);color:var(--accent);border-color:var(--accent)}
 .btn-sync.loading i{animation:spin 1s linear infinite}
+.btn-sync:disabled{opacity:.6;cursor:not-allowed}
+.btn-logout{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;background:transparent;border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-muted);font-size:.8rem;font-weight:500;transition:var(--transition);cursor:pointer;font-family:inherit;width:100%}
+.btn-logout:hover{background:var(--danger-light);color:var(--danger);border-color:var(--danger)}
 .version-info{text-align:center;font-size:.68rem;color:var(--text-muted);opacity:.6}
 
 /* ========== MAIN ========== */
@@ -474,7 +500,6 @@ button{font-family:inherit;cursor:pointer}
 }
 @media (max-width:380px){
 .metrics-grid{grid-template-columns:1fr}
-.logo-text{display:none}
 .header-title{font-size:.9rem}
 }
 .text-center{text-align:center}
@@ -483,7 +508,7 @@ button{font-family:inherit;cursor:pointer}
 .mb-16{margin-bottom:16px}
 .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 
-/* ========== MELHORIAS DE LEITURA (NOVO) ========== */
+/* ========== MELHORIAS DE LEITURA ========== */
 .questao-enunciado{white-space:pre-wrap;word-break:break-word;font-size:.95rem;line-height:1.75;color:var(--text-primary);margin-bottom:18px;padding:0 2px}
 .comentario-box p{white-space:pre-wrap;margin-bottom:12px;line-height:1.75}
 .comentario-box .fundamentacao p{white-space:pre-wrap}
@@ -500,18 +525,40 @@ button{font-family:inherit;cursor:pointer}
 </head>
 <body>
 
+<!-- ============ LOGIN ============ -->
+<div class="login-overlay hidden" id="loginOverlay">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790099245/ChatGPT_Image_22_de_set._de_2026_14_43_13_ssvwnk.png" alt="VULP+ Quest" />
+        </div>
+        <h1 class="login-title">Bem-vindo ao VULP+ Quest</h1>
+        <p class="login-subtitle">Pronto para continuar sua jornada de estudos?</p>
+        <form id="loginForm" novalidate>
+            <div class="login-field">
+                <label for="loginUser">Login</label>
+                <input type="text" id="loginUser" placeholder="Digite seu login" autocomplete="username" spellcheck="false" autocapitalize="off" />
+            </div>
+            <div class="login-field">
+                <label for="loginPass">Senha</label>
+                <input type="password" id="loginPass" placeholder="Digite sua senha" autocomplete="current-password" />
+            </div>
+            <div class="login-error" id="loginError" role="alert" aria-live="polite"></div>
+            <button type="submit" class="btn-login" id="btnLoginSubmit">
+                <i class="fas fa-arrow-right-to-bracket"></i> Entrar no aplicativo
+            </button>
+        </form>
+        <p class="login-footer">Acesso restrito. Em caso de dificuldades, entre em contato com o administrador.</p>
+    </div>
+</div>
+
 <!-- ============ SPLASH ============ -->
 <div class="splash-overlay" id="splashOverlay">
     <div class="splash-content">
         <div class="splash-logo">
-            <div class="splash-logo-mark">V+</div>
-            <div class="splash-logo-text">
-                <strong>VULP+</strong>
-                <span>Questões</span>
-            </div>
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790099245/ChatGPT_Image_22_de_set._de_2026_14_43_13_ssvwnk.png" alt="VULP+ Quest" class="splash-logo-img" />
         </div>
         <div class="splash-spinner"></div>
-        <p class="splash-message" id="splashMessage">Carregando banco de questões...</p>
+        <p class="splash-message" id="splashMessage">Preparando suas questões...</p>
     </div>
 </div>
 
@@ -521,8 +568,7 @@ button{font-family:inherit;cursor:pointer}
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <div class="logo-mark">V+</div>
-            <div class="logo-text"><strong>VULP+</strong><span>Questões</span></div>
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790099245/ChatGPT_Image_22_de_set._de_2026_14_43_13_ssvwnk.png" alt="VULP+ Quest" class="sidebar-logo-img" />
         </div>
         <nav class="sidebar-nav">
             <div class="menu-label">Principal</div>
@@ -540,7 +586,8 @@ button{font-family:inherit;cursor:pointer}
         </nav>
         <div class="sidebar-footer">
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
-            <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Atualizar banco</button>
+            <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-plus-circle"></i> Carregar mais questões</button>
+            <button class="btn-logout" id="btnLogout"><i class="fas fa-right-from-bracket"></i> Sair</button>
             <div class="version-info">VULP+ v1.3</div>
         </div>
     </aside>
@@ -795,19 +842,61 @@ button{font-family:inherit;cursor:pointer}
 <script>
 /* ============================================================
    VULP+ QUESTÕES — APLICATIVO COMPLETO v1.3
-   Melhorias: comunicação API, dashboard profissional,
-   apresentação de questões e fluxo controlado de resposta.
+   Melhorias: autenticação, logo oficial, UX de carregamento.
    ============================================================ */
 (function(){
 'use strict';
 
 /* ============================================================
-   CONFIGURAÇÃO CENTRAL — ÚNICA FONTE DE VERDADE DA API
+   CONFIGURAÇÃO CENTRAL
    ============================================================ */
+const LOGO_URL = "https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790099245/ChatGPT_Image_22_de_set._de_2026_14_43_13_ssvwnk.png";
 const API_URL = "https://script.google.com/macros/s/AKfycbwvzs9IgvokXqwU0MYlL9wFsMwz7gMEbbJUjmX34YKeNTEfSxgxC8jHgEDjeym208EzOA/exec";
 const API_CONFIG = {
     USAR_ACTION_LIST: false,
     TIMEOUT_MS: 20000,
+};
+
+/* ============================================================
+   AUTENTICAÇÃO
+   ============================================================ */
+const Auth = {
+    SESSION_KEY: 'vulp_session',
+    USER_KEY: 'vulp_user',
+    isLoggedIn() {
+        try { return localStorage.getItem(this.SESSION_KEY) === 'true'; }
+        catch { return false; }
+    },
+    getUser() {
+        try { return localStorage.getItem(this.USER_KEY) || ''; }
+        catch { return ''; }
+    },
+    login(login, senha) {
+        const l = String(login || '').trim();
+        const s = String(senha || '');
+        if (!l || !s) {
+            return { ok: false, msg: 'Preencha login e senha para continuar.' };
+        }
+        // Regra do login: precisa começar com "aluno" (minúsculas)
+        if (!l.startsWith('aluno')) {
+            return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
+        }
+        // Regra da senha: precisa começar com "VULP" (maiúsculas)
+        if (!s.startsWith('VULP')) {
+            return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
+        }
+        try {
+            localStorage.setItem(this.SESSION_KEY, 'true');
+            localStorage.setItem(this.USER_KEY, l);
+        } catch (e) { console.warn('[Auth]', e); }
+        return { ok: true };
+    },
+    logout() {
+        try {
+            localStorage.removeItem(this.SESSION_KEY);
+            localStorage.removeItem(this.USER_KEY);
+        } catch (e) { console.warn('[Auth]', e); }
+    },
 };
 
 /* ============================================================
@@ -1167,9 +1256,121 @@ const App = {
     async init() {
         this.aplicarTemaSalvo();
         this.bindEventos();
+        this.bindLogin();
+
+        if (Auth.isLoggedIn()) {
+            // Sessão existente: fluxo normal (splash → app)
+            await this.bootstrapApp();
+        } else {
+            // Sem sessão: mostrar login
+            this.showLogin();
+        }
+    },
+
+    async bootstrapApp() {
+        // Splash já está visível no HTML
         await this.carregarQuestoes();
-        this.esconderSplash();
+        this.hideSplash();
+        this.showApp();
         this.navegarPara('dashboard');
+    },
+
+    showLogin() {
+        const splash = document.getElementById('splashOverlay');
+        if (splash) splash.classList.add('hidden');
+        const login = document.getElementById('loginOverlay');
+        if (login) login.classList.remove('hidden');
+        const app = document.getElementById('appContainer');
+        if (app) app.style.display = 'none';
+    },
+
+    hideSplash() {
+        const s = document.getElementById('splashOverlay');
+        if (s) s.classList.add('hidden');
+    },
+
+    showApp() {
+        const a = document.getElementById('appContainer');
+        if (a) a.style.display = 'flex';
+    },
+
+    async entrarNoApp() {
+        // Esconder login
+        const login = document.getElementById('loginOverlay');
+        if (login) login.classList.add('hidden');
+        // Mostrar app imediatamente
+        this.showApp();
+        this.navegarPara('dashboard');
+        // Carregar questões em segundo plano
+        await this.carregarQuestoes();
+        if (!this.state.erroApi) {
+            this.navegarPara(this.state.paginaAtual);
+        }
+    },
+
+    logout() {
+        Auth.logout();
+        this.state.questoes = [];
+        this.state.questoesFiltradas = [];
+        this.state.erroApi = null;
+        // Reset formulário de login
+        const u = document.getElementById('loginUser');
+        const p = document.getElementById('loginPass');
+        const e = document.getElementById('loginError');
+        if (u) u.value = '';
+        if (p) p.value = '';
+        if (e) { e.classList.remove('show'); e.textContent = ''; }
+        this.showLogin();
+    },
+
+    bindLogin() {
+        const form = document.getElementById('loginForm');
+        const errEl = document.getElementById('loginError');
+        const btn = document.getElementById('btnLoginSubmit');
+
+        form?.addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+            const userEl = document.getElementById('loginUser');
+            const passEl = document.getElementById('loginPass');
+            const user = userEl ? userEl.value : '';
+            const pass = passEl ? passEl.value : '';
+
+            errEl.classList.remove('show');
+            errEl.textContent = '';
+
+            const result = Auth.login(user, pass);
+            if (!result.ok) {
+                errEl.textContent = result.msg;
+                errEl.classList.add('show');
+                passEl?.focus();
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Entrando...';
+            }
+
+            // Pequena pausa para dar sensação de carregamento
+            await new Promise(r => setTimeout(r, 250));
+
+            await this.entrarNoApp();
+
+            // Restaurar botão (caso volte ao login futuramente)
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Entrar no aplicativo';
+            }
+            if (passEl) passEl.value = '';
+        });
+
+        // Limpar erro ao digitar
+        ['loginUser','loginPass'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => {
+                errEl.classList.remove('show');
+                errEl.textContent = '';
+            });
+        });
     },
 
     aplicarTemaSalvo() {
@@ -1208,7 +1409,7 @@ const App = {
             console.log(`[App] ✅ Banco carregado: ${q.length} questões.`);
             document.getElementById('erroApiBox')?.remove();
             if (q.length === 0) {
-                this.toast('A API respondeu, mas o banco está vazio.', 'info');
+                this.toast('Nenhuma questão disponível no momento.', 'info');
             }
         } catch (error) {
             console.error('%c[App] ❌ ERRO ao carregar questões', 'color:#dc2626;font-weight:bold');
@@ -1227,53 +1428,22 @@ const App = {
     mostrarErroApi(error) {
         const page = document.getElementById('page-dashboard');
         if (!page) return;
-        let detalhe = '';
-        let dica = '';
-        switch (error.tipo) {
-            case 'CORS_OU_REDE':
-                detalhe = 'Não foi possível conectar à API.';
-                dica = 'Verifique se o Web App está publicado como "Qualquer pessoa" (não "Qualquer pessoa com conta Google") em Implantar → Gerenciar implantações.';
-                break;
-            case 'TIMEOUT':
-                detalhe = `A API demorou mais de ${API_CONFIG.TIMEOUT_MS / 1000}s para responder.`;
-                dica = 'Verifique se o Apps Script está executando corretamente e se a planilha não está muito grande.';
-                break;
-            case 'HTTP':
-                detalhe = `A API respondeu com status HTTP ${error.status}.`;
-                dica = 'Verifique a implantação do Web App no Apps Script.';
-                break;
-            case 'HTML':
-                detalhe = 'A API retornou uma página HTML (provavelmente tela de login do Google).';
-                dica = 'O Web App precisa estar publicado com acesso "Qualquer pessoa". Reimplante em Implantar → Gerenciar implantações.';
-                break;
-            case 'JSON_INVALIDO':
-                detalhe = 'A API respondeu, mas o conteúdo não é JSON válido.';
-                dica = 'Verifique se o doGet/doPost retorna ContentService.createTextOutput(JSON.stringify(dados)).setMimeType(ContentService.MimeType.JSON).';
-                break;
-            case 'VAZIA':
-                detalhe = 'A API respondeu vazio.';
-                dica = 'Verifique se o Apps Script está retornando dados da planilha.';
-                break;
-            case 'API_ERRO':
-                detalhe = `A API retornou um erro: ${error.body?.erro || error.message}`;
-                dica = 'Verifique o log do Apps Script (Execuções) para ver o erro detalhado.';
-                break;
-            default:
-                detalhe = error.message || 'Erro desconhecido.';
-                dica = 'Abra o Console (F12) para mais detalhes.';
-        }
 
+        // Log técnico detalhado apenas no console (não visível ao usuário)
+        console.group('%c[Diagnóstico interno]', 'color:#dc2626;font-weight:bold');
+        console.log('Tipo do erro:', error.tipo || 'desconhecido');
+        console.log('Mensagem:', error.message);
+        if (error.body) console.log('Corpo:', error.body);
+        console.log('Dica técnica: verifique publicação do Web App, CORS, formato de retorno JSON.');
+        console.groupEnd();
+
+        // Mensagem amigável ao usuário (sem termos técnicos)
         const html = `
             <div class="section-block" style="border-left:4px solid var(--danger);" id="erroApiBox">
                 <div class="section-header">
-                    <h2 style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> Falha ao carregar o banco de questões</h2>
+                    <h2 style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> Não foi possível carregar as questões</h2>
                 </div>
-                <p style="color:var(--text-secondary);margin-bottom:6px;"><strong>Tipo:</strong> ${App.escapeHtml(error.tipo || 'desconhecido')}</p>
-                <p style="color:var(--text-secondary);margin-bottom:6px;"><strong>Detalhe:</strong> ${App.escapeHtml(detalhe)}</p>
-                <p style="color:var(--text-secondary);margin-bottom:16px;"><strong>Como resolver:</strong> ${App.escapeHtml(dica)}</p>
-                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px;">
-                    🔍 Abra o Console do navegador (F12 → Console) para ver o diagnóstico técnico completo: URL, status HTTP, content-type e resposta bruta.
-                </p>
+                <p style="color:var(--text-secondary);margin-bottom:16px;">Não foi possível carregar novas questões agora. Tente novamente em alguns instantes.</p>
                 <button class="btn btn-primary" id="btnTentarNovamente"><i class="fas fa-rotate"></i> Tentar novamente</button>
             </div>
         `;
@@ -1304,10 +1474,10 @@ const App = {
         dot.classList.remove('online', 'offline');
         if (status === 'online') {
             dot.classList.add('online');
-            text.textContent = `${this.state.questoes.length} questões`;
+            text.textContent = `${this.state.questoes.length} questões disponíveis`;
         } else if (status === 'offline') {
             dot.classList.add('offline');
-            text.textContent = 'API offline';
+            text.textContent = 'Sem conexão';
         } else {
             text.textContent = 'Conectando...';
         }
@@ -1385,20 +1555,33 @@ const App = {
             sb.classList.remove('open');
         });
         document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTema());
+
+        // ---- CARREGAR MAIS QUESTÕES ----
         document.getElementById('btnAtualizarBanco')?.addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             btn.classList.add('loading');
             btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando mais questões...';
             try {
                 await this.carregarQuestoes(true);
                 if (!this.state.erroApi) {
-                    this.toast('Banco atualizado!', 'success');
+                    this.toast('Novas questões carregadas!', 'success');
                     this.navegarPara(this.state.paginaAtual);
                 } else {
-                    this.toast('Falha ao atualizar. Veja o erro no dashboard.', 'error');
+                    this.toast('Não foi possível carregar novas questões agora. Tente novamente.', 'error');
                 }
-            } catch { this.toast('Erro ao atualizar.', 'error'); }
-            finally { btn.classList.remove('loading'); btn.disabled = false; }
+            } catch {
+                this.toast('Não foi possível carregar novas questões agora. Tente novamente.', 'error');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-plus-circle"></i> Carregar mais questões';
+            }
+        });
+
+        // ---- LOGOUT ----
+        document.getElementById('btnLogout')?.addEventListener('click', () => {
+            if (confirm('Deseja sair da sua conta?')) this.logout();
         });
 
         document.getElementById('modalClose')?.addEventListener('click', () => this.fecharModal());
@@ -1729,7 +1912,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   QUESTÕES — COM FLUXO CONTROLADO DE RESPOSTA
+   QUESTÕES
    ============================================================ */
 const Questoes = {
     render() {
@@ -1855,13 +2038,6 @@ const Questoes = {
         this.renderPaginacao(totalPag);
     },
 
-    /**
-     * Renderiza um card de questão com o novo fluxo controlado:
-     * Estado 1: não respondida → botão "Responder"
-     * Estado 2: alternativa selecionada → botão "Responder"
-     * Estado 3: respondida → feedback + botão "Mostrar comentário"
-     * Estado 4: comentário aberto → botão "Ocultar comentário"
-     */
     renderCard(q, mostrarResposta) {
         const fav = storage.isFavorito(q.id);
         const tipo = q.tipo;
@@ -1933,14 +2109,12 @@ const Questoes = {
             const q = App.state.questoes.find(x => String(x.id) === String(id));
             if (!q) return;
 
-            const estado = card.dataset.estado;
             const feedback = card.querySelector('[data-feedback]');
             const comentario = card.querySelector('[data-comentario]');
             const btnResponder = card.querySelector('[data-responder]');
             const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
             const tipo = q.tipo;
 
-            // Favoritar
             card.querySelector('[data-fav]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const ativo = storage.toggleFavorito(id);
@@ -1949,7 +2123,6 @@ const Questoes = {
                 App.toast(ativo ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'info');
             });
 
-            // Revisar
             card.querySelector('[data-revisar]')?.addEventListener('click', () => {
                 const atual = storage.getStatusRevisao(id);
                 let novo;
@@ -1962,7 +2135,6 @@ const Questoes = {
                 this.renderLista();
             });
 
-            // Expandir
             card.querySelector('[data-expandir]')?.addEventListener('click', () => {
                 App.abrirComentario(`<i class="fas fa-comment-dots"></i> Questão ${q.id}`, `
                     ${q.comentario ? `<p><strong>Comentário:</strong></p><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
@@ -1971,7 +2143,6 @@ const Questoes = {
                 `);
             });
 
-            // ========== NOVO FLUXO ==========
             let selecionada = null;
             let respondida = false;
 
@@ -1981,7 +2152,6 @@ const Questoes = {
                 }
             };
 
-            // Selecionar alternativa (não revela nada)
             if (tipo === 'Certo/Errado') {
                 card.querySelectorAll('.btn-certo-errado').forEach(b => {
                     b.addEventListener('click', () => {
@@ -2013,7 +2183,6 @@ const Questoes = {
                 });
             }
 
-            // Botão Responder
             btnResponder?.addEventListener('click', () => {
                 if (respondida || !selecionada) return;
                 respondida = true;
@@ -2056,7 +2225,6 @@ const Questoes = {
                 App.toast(acertou ? '✓ Acertou!' : '✗ Errou. Veja o comentário.', acertou ? 'success' : 'error');
             });
 
-            // Toggle comentário
             btnToggleComentario?.addEventListener('click', () => {
                 const visivel = comentario.style.display !== 'none';
                 if (visivel) {
@@ -2246,11 +2414,6 @@ const Simulado = {
         }
     },
 
-    prepConfig(lista) {
-        this.pendingLista = lista;
-        App.toast(`${lista.length} questões prontas. Configure o simulado.`, 'info');
-    },
-
     iniciar(questoes, modo, aleatorio) {
         if (!questoes || questoes.length === 0) { App.toast('Nenhuma questão para iniciar.', 'error'); return; }
         const vistos = new Set();
@@ -2366,7 +2529,6 @@ const Simulado = {
         let selecionada = null;
         let respondida = jaRespondida;
 
-        // Restaurar estado se já respondida
         if (jaRespondida) {
             const resp = this.state.respostas[q.id];
             selecionada = resp;
@@ -2395,7 +2557,6 @@ const Simulado = {
             }
         };
 
-        // Selecionar alternativa (sem revelar)
         if (q.tipo === 'Certo/Errado') {
             card.querySelectorAll('.btn-certo-errado').forEach(b => {
                 b.addEventListener('click', () => {
@@ -2427,7 +2588,6 @@ const Simulado = {
             });
         }
 
-        // Botão Responder
         btnResponder?.addEventListener('click', () => {
             if (respondida || !selecionada) return;
             respondida = true;
@@ -2470,7 +2630,6 @@ const Simulado = {
             App.atualizarBadges();
         });
 
-        // Toggle comentário
         btnToggleComentario?.addEventListener('click', () => {
             const visivel = comentario.style.display !== 'none';
             if (visivel) {
@@ -2483,9 +2642,6 @@ const Simulado = {
                 card.dataset.estado = 'comentario-aberto';
             }
         });
-
-        // Botão responder aparece ao selecionar
-        // (já tratado nos listeners acima)
     },
 
     finalizar() {
@@ -2714,7 +2870,6 @@ const Admin = {
             </div>
             <div class="form-group"><label>Observações</label><textarea id="fObservacoes" rows="2">${App.escapeHtml(q.observacoes||'')}</textarea></div>
             <div class="form-group"><label>Imagem (URL)</label><input type="text" id="fImagem" value="${App.escapeHtml(q.imagemUrl||'')}"></div>
-            <p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;"><i class="fas fa-info-circle"></i> A gravação é enviada via API (POST). Se a API não suportar criação ainda, o frontend exibirá uma mensagem amigável.</p>
         `;
         App.abrirModal(ehEdicao ? 'Editar Questão' : 'Nova Questão', html, async () => {
             const dados = {
@@ -2782,6 +2937,7 @@ const Admin = {
    EXPOR GLOBAL
    ============================================================ */
 window.App = App;
+window.Auth = Auth;
 window.Questoes = Questoes;
 window.Dashboard = Dashboard;
 window.Simulado = Simulado;
