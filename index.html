@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="theme-color" content="#7c3aed" />
+<title>VULP+ Questões · Seu treino inteligente para concursos públicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+/* ========== RESET ========== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--sidebar-w:260px;--header-h:64px;--bottom-nav-h:64px;
+--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--radius-pill:999px;
+--transition:all .2s cubic-bezier(.4,0,.2,1);
+--bg-body:#f7f8fa;--bg-card:#fff;--bg-card-hover:#fafbfc;--bg-sidebar:#fff;--bg-header:rgba(255,255,255,.92);
+--border-light:#eef0f4;--border-medium:#e2e5eb;
+--text-primary:#111827;--text-secondary:#4b5563;--text-muted:#8a94a6;--text-inverse:#fff;
+--accent:#7c3aed;--accent-hover:#6d28d9;--accent-light:rgba(124,58,237,.10);--accent-lighter:rgba(124,58,237,.05);
+--success:#059669;--success-light:rgba(5,150,105,.10);
+--danger:#dc2626;--danger-light:rgba(220,38,38,.10);
+--warning:#d97706;--warning-light:rgba(217,119,6,.10);
+--info:#2563eb;--info-light:rgba(37,99,235,.10);
+--shadow-xs:0 1px 2px rgba(16,24,40,.04);
+--shadow-sm:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+--shadow-md:0 4px 12px rgba(16,24,40,.08);
+--shadow-lg:0 12px 32px rgba(16,24,40,.12);
+--shadow-xl:0 24px 48px rgba(16,24,40,.16);
+--shadow-focus:0 0 0 3px rgba(124,58,237,.18);
+--gradient-primary:linear-gradient(135deg,#7c3aed,#6366f1);
+--gradient-success:linear-gradient(135deg,#059669,#10b981);
+--gradient-danger:linear-gradient(135deg,#dc2626,#ef4444);
+}
+body.dark{
+--bg-body:#0b1120;--bg-card:#131b2e;--bg-card-hover:#1a2438;--bg-sidebar:#0f1523;--bg-header:rgba(15,21,35,.92);
+--border-light:#1e293b;--border-medium:#2d3a52;
+--text-primary:#f1f5f9;--text-secondary:#cbd5e1;--text-muted:#94a3b8;
+--accent:#a78bfa;--accent-hover:#c4b5fd;--accent-light:rgba(167,139,250,.15);--accent-lighter:rgba(167,139,250,.06);
+--shadow-xs:0 1px 2px rgba(0,0,0,.3);--shadow-sm:0 1px 3px rgba(0,0,0,.4);
+--shadow-md:0 4px 12px rgba(0,0,0,.5);--shadow-lg:0 12px 32px rgba(0,0,0,.6);--shadow-xl:0 24px 48px rgba(0,0,0,.7);
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg-body);color:var(--text-primary);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-medium);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+.hidden{display:none!important}
+
+/* ========== SPLASH ========== */
+.splash-overlay{position:fixed;inset:0;background:var(--gradient-primary);z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .4s ease}
+.splash-overlay.hidden{opacity:0;pointer-events:none}
+.splash-content{text-align:center;color:#fff;padding:20px}
+.splash-logo{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:32px}
+.splash-logo-mark{width:60px;height:60px;background:rgba(255,255,255,.18);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
+.splash-logo-text{text-align:left;line-height:1.1}
+.splash-logo-text strong{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
+.splash-logo-text span{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:2px;opacity:.8;margin-top:2px}
+.splash-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+.splash-message{font-size:.9rem;opacity:.85}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ========== APP ========== */
+.app-container{display:flex;min-height:100vh}
+
+/* ========== SIDEBAR ========== */
+.sidebar{width:var(--sidebar-w);height:100vh;position:sticky;top:0;background:var(--bg-sidebar);border-right:1px solid var(--border-light);display:flex;flex-direction:column;padding:20px 14px;z-index:100;overflow-y:auto;transition:transform .3s ease,background .3s;flex-shrink:0}
+.sidebar-logo{display:flex;align-items:center;gap:12px;padding:4px 10px 20px;border-bottom:1px solid var(--border-light);margin-bottom:20px}
+.logo-mark{width:40px;height:40px;background:var(--gradient-primary);color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;box-shadow:0 4px 12px rgba(124,58,237,.25);flex-shrink:0}
+.logo-text{line-height:1.2}
+.logo-text strong{display:block;font-size:1rem;font-weight:800;color:var(--text-primary)}
+.logo-text span{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
+.sidebar-nav{flex:1;display:flex;flex-direction:column;gap:2px}
+.menu-label{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600;padding:16px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);font-weight:500;font-size:.88rem;transition:var(--transition);position:relative;user-select:none;cursor:pointer}
+.nav-item i{width:20px;text-align:center;font-size:.95rem}
+.nav-item span{flex:1}
+.nav-item:hover{background:var(--accent-lighter);color:var(--text-primary)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-badge{background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:var(--radius-pill);min-width:22px;text-align:center}
+.sidebar-footer{border-top:1px solid var(--border-light);padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.status-indicator{display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--text-muted);padding:0 4px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--warning);box-shadow:0 0 0 3px var(--warning-light);animation:pulse 2s infinite}
+.status-dot.online{background:var(--success);box-shadow:0 0 0 3px var(--success-light)}
+.status-dot.offline{background:var(--danger);box-shadow:0 0 0 3px var(--danger-light)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.btn-sync{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.8rem;font-weight:500;transition:var(--transition)}
+.btn-sync:hover{background:var(--accent-lighter);color:var(--accent);border-color:var(--accent)}
+.btn-sync.loading i{animation:spin 1s linear infinite}
+.version-info{text-align:center;font-size:.68rem;color:var(--text-muted);opacity:.6}
+
+/* ========== MAIN ========== */
+.main-wrapper{flex:1;display:flex;flex-direction:column;min-width:0;min-height:100vh}
+
+/* ========== HEADER ========== */
+.header{height:var(--header-h);background:var(--bg-header);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:90;transition:background .3s}
+.header-left{display:flex;align-items:center;gap:12px}
+.hamburger{display:none;background:none;border:none;color:var(--text-primary);font-size:1.2rem;padding:8px;border-radius:var(--radius-sm);transition:var(--transition)}
+.hamburger:hover{background:var(--accent-lighter)}
+.header-title{font-size:1.05rem;font-weight:700;color:var(--text-primary);letter-spacing:-.3px}
+.header-right{display:flex;align-items:center;gap:10px}
+.icon-btn{width:38px;height:38px;border-radius:var(--radius-sm);background:transparent;border:1px solid transparent;color:var(--text-secondary);font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.icon-btn:hover{background:var(--accent-lighter);color:var(--accent);border-color:var(--border-light)}
+.header-user{display:flex;align-items:center;gap:10px;padding:5px 12px 5px 5px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-pill);transition:var(--transition)}
+.header-user:hover{border-color:var(--accent)}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gradient-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+.user-info{line-height:1.15}
+.user-info strong{display:block;font-size:.82rem;font-weight:600;color:var(--text-primary)}
+.user-info span{font-size:.68rem;color:var(--text-muted)}
+
+/* ========== CONTENT ========== */
+.content{flex:1;padding:24px 32px 80px;max-width:1400px;width:100%;margin:0 auto}
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-hero{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.page-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary)}
+.page-hero h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.page-hero p{color:var(--text-secondary);font-size:.95rem}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h1{font-size:1.5rem;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}
+.page-header h1 i{color:var(--accent);font-size:1.25rem}
+.subtitle{font-size:.82rem;color:var(--text-secondary);background:var(--bg-card);padding:6px 16px;border-radius:var(--radius-pill);border:1px solid var(--border-light);font-weight:500}
+
+/* ========== METRICS ========== */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.metric-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);transition:var(--transition);position:relative;overflow:hidden}
+.metric-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--border-medium)}
+.metric-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.metric-card.accent::after{background:var(--accent)}
+.metric-card.success::after{background:var(--success)}
+.metric-card.danger::after{background:var(--danger)}
+.metric-card.warning::after{background:var(--warning)}
+.metric-card.info::after{background:var(--info)}
+.metric-label{display:flex;align-items:center;gap:8px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:10px}
+.metric-label i{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.7rem}
+.metric-card.accent .metric-label i{background:var(--accent-light);color:var(--accent)}
+.metric-card.success .metric-label i{background:var(--success-light);color:var(--success)}
+.metric-card.danger .metric-label i{background:var(--danger-light);color:var(--danger)}
+.metric-card.warning .metric-label i{background:var(--warning-light);color:var(--warning)}
+.metric-card.info .metric-label i{background:var(--info-light);color:var(--info)}
+.metric-value{font-size:1.9rem;font-weight:800;letter-spacing:-.5px;line-height:1.1;color:var(--text-primary)}
+.metric-sub{font-size:.78rem;color:var(--text-muted);margin-top:4px}
+
+/* ========== SECTION ========== */
+.section-block{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:24px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.section-header h2{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-header h2 i{color:var(--accent);font-size:.95rem}
+.btn-link{background:none;border:none;color:var(--accent);font-size:.82rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:var(--transition)}
+.btn-link:hover{gap:10px}
+
+/* ========== DESEMPENHO ========== */
+.desempenho-list{display:flex;flex-direction:column;gap:14px}
+.desempenho-item{display:flex;flex-direction:column;gap:6px}
+.desempenho-header{display:flex;justify-content:space-between;align-items:center;font-size:.88rem}
+.desempenho-nome{font-weight:600;color:var(--text-primary)}
+.desempenho-pct{font-weight:700;color:var(--text-secondary)}
+.progress-bar{height:8px;background:var(--border-light);border-radius:var(--radius-pill);overflow:hidden}
+.progress-fill{height:100%;border-radius:var(--radius-pill);transition:width .6s cubic-bezier(.4,0,.2,1);background:var(--gradient-primary)}
+.progress-fill.green{background:var(--gradient-success)}
+.progress-fill.red{background:var(--gradient-danger)}
+.progress-fill.orange{background:linear-gradient(90deg,#d97706,#f59e0b)}
+
+/* ========== INSIGHTS ========== */
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.insight-card{background:var(--bg-body);border-radius:var(--radius-md);padding:16px;border-left:4px solid var(--accent);display:flex;gap:10px;align-items:flex-start;transition:var(--transition)}
+.insight-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.insight-card.success{border-left-color:var(--success)}
+.insight-card.warning{border-left-color:var(--warning)}
+.insight-card.danger{border-left-color:var(--danger)}
+.insight-card.info{border-left-color:var(--info)}
+.insight-card i{font-size:1rem;margin-top:2px}
+.insight-card.success i{color:var(--success)}
+.insight-card.warning i{color:var(--warning)}
+.insight-card.danger i{color:var(--danger)}
+.insight-card.info i{color:var(--info)}
+.insight-card.accent i{color:var(--accent)}
+.insight-text{font-size:.85rem;line-height:1.5;color:var(--text-secondary)}
+.insight-text strong{color:var(--text-primary)}
+
+/* ========== BUSCA ========== */
+.busca-wrapper{position:relative;margin-bottom:16px}
+.busca-wrapper>i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.9rem;pointer-events:none}
+.busca-wrapper input{width:100%;padding:14px 48px 14px 44px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);color:var(--text-primary);font-size:.92rem;transition:var(--transition);outline:none;font-family:inherit}
+.busca-wrapper input:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+.busca-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--border-light);border:none;width:26px;height:26px;border-radius:50%;color:var(--text-secondary);font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.busca-clear:hover{background:var(--danger);color:#fff}
+
+/* ========== FILTROS ========== */
+.filtros-panel{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
+.filtros-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.filtro-group{display:flex;flex-direction:column;gap:4px}
+.filtro-group label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+.filtro-group select{padding:9px 12px;background:var(--bg-body);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.85rem;outline:none;transition:var(--transition);font-family:inherit;cursor:pointer}
+.filtro-group select:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+.filtros-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.resultado-info{font-size:.85rem;color:var(--text-secondary);margin-bottom:16px;font-weight:500}
+
+/* ========== QUESTÕES ========== */
+.questoes-lista{display:flex;flex-direction:column;gap:16px}
+.questao-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm);transition:var(--transition);position:relative;overflow:hidden}
+.questao-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient-primary);opacity:.4;transition:opacity .3s}
+.questao-card:hover{box-shadow:var(--shadow-md);border-color:var(--border-medium)}
+.questao-card:hover::before{opacity:1}
+.questao-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.questao-badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--radius-pill);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge-accent{background:var(--accent-light);color:var(--accent)}
+.badge-success{background:var(--success-light);color:var(--success)}
+.badge-danger{background:var(--danger-light);color:var(--danger)}
+.badge-warning{background:var(--warning-light);color:var(--warning)}
+.badge-info{background:var(--info-light);color:var(--info)}
+.badge-neutral{background:var(--border-light);color:var(--text-secondary)}
+.btn-fav{width:34px;height:34px;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border-light);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:var(--transition);flex-shrink:0}
+.btn-fav:hover{color:var(--warning);border-color:var(--warning)}
+.btn-fav.active{color:var(--warning);border-color:var(--warning);background:var(--warning-light)}
+.questao-enunciado{font-size:.94rem;line-height:1.65;margin-bottom:16px;color:var(--text-primary);white-space:pre-wrap;word-break:break-word}
+.questao-meta{font-size:.78rem;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border-light)}
+.questao-meta span{display:inline-flex;align-items:center;gap:5px}
+.questao-meta i{color:var(--accent);font-size:.72rem}
+
+/* ========== ALTERNATIVAS ========== */
+.alternativas{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.alternativa{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-md);transition:var(--transition);cursor:pointer;user-select:none;font-size:.88rem;line-height:1.5}
+.alternativa:hover:not(.disabled){border-color:var(--accent);background:var(--accent-lighter);transform:translateX(2px)}
+.alternativa.disabled{cursor:default}
+.alternativa-letra{width:28px;height:28px;border-radius:50%;background:var(--border-light);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;transition:var(--transition)}
+.alternativa-texto{flex:1;padding-top:3px}
+.alternativa.selecionada{border-color:var(--accent);background:var(--accent-light)}
+.alternativa.selecionada .alternativa-letra{background:var(--accent);color:#fff}
+.alternativa.correta{border-color:var(--success);background:var(--success-light)}
+.alternativa.correta .alternativa-letra{background:var(--success);color:#fff}
+.alternativa.incorreta{border-color:var(--danger);background:var(--danger-light)}
+.alternativa.incorreta .alternativa-letra{background:var(--danger);color:#fff}
+
+/* ========== CERTO/ERRADO ========== */
+.certo-errado{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.btn-certo-errado{padding:16px;border:2px solid var(--border-light);background:var(--bg-body);border-radius:var(--radius-md);font-size:.95rem;font-weight:700;color:var(--text-secondary);transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-certo-errado:hover:not(.disabled){transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.btn-certo-errado.certo:hover:not(.disabled){border-color:var(--success);color:var(--success);background:var(--success-light)}
+.btn-certo-errado.errado:hover:not(.disabled){border-color:var(--danger);color:var(--danger);background:var(--danger-light)}
+.btn-certo-errado.selecionado.certo{border-color:var(--success);color:var(--success);background:var(--success-light)}
+.btn-certo-errado.selecionado.errado{border-color:var(--danger);color:var(--danger);background:var(--danger-light)}
+.btn-certo-errado.disabled{cursor:default;opacity:.7}
+
+/* ========== FEEDBACK ========== */
+.feedback{margin-top:16px;padding:14px 18px;border-radius:var(--radius-md);font-size:.88rem;font-weight:500;display:flex;align-items:flex-start;gap:10px;animation:slideDown .3s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.feedback.success{background:var(--success-light);color:var(--success);border-left:4px solid var(--success)}
+.feedback.danger{background:var(--danger-light);color:var(--danger);border-left:4px solid var(--danger)}
+.feedback.info{background:var(--info-light);color:var(--info);border-left:4px solid var(--info)}
+.feedback i{font-size:1rem;margin-top:1px}
+.feedback strong{display:block;margin-bottom:4px}
+.feedback-content{flex:1}
+.comentario-box{margin-top:14px;padding:16px;background:var(--accent-lighter);border-radius:var(--radius-md);border-left:4px solid var(--accent);font-size:.87rem;line-height:1.65;color:var(--text-secondary);animation:slideDown .3s ease}
+.comentario-box strong{color:var(--accent);display:block;margin-bottom:6px;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px}
+.comentario-box p{margin-bottom:10px}
+.comentario-box p:last-child{margin-bottom:0}
+.comentario-box .fundamentacao{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-medium)}
+.discursiva-box{margin-top:14px}
+.discursiva-box textarea{width:100%;min-height:140px;padding:14px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-md);color:var(--text-primary);font-size:.9rem;font-family:inherit;line-height:1.5;resize:vertical;outline:none;transition:var(--transition)}
+.discursiva-box textarea:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+
+/* ========== PAGINAÇÃO ========== */
+.paginacao{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap}
+.paginacao button{padding:8px 16px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.82rem;font-weight:600;transition:var(--transition);display:inline-flex;align-items:center;gap:6px}
+.paginacao button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.paginacao button:disabled{opacity:.4;cursor:not-allowed}
+.paginacao button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.paginacao-info{font-size:.82rem;color:var(--text-muted)}
+
+/* ========== BOTÕES ========== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border:1px solid var(--border-light);border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;cursor:pointer;transition:var(--transition);background:var(--bg-card);color:var(--text-primary);font-family:inherit;line-height:1.2;white-space:nowrap;user-select:none}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-primary{background:var(--gradient-primary);color:#fff;border:none;box-shadow:0 2px 8px rgba(124,58,237,.25)}
+.btn-primary:hover{box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.btn-success{background:var(--gradient-success);color:#fff;border:none;box-shadow:0 2px 8px rgba(5,150,105,.25)}
+.btn-danger{background:var(--gradient-danger);color:#fff;border:none;box-shadow:0 2px 8px rgba(220,38,38,.25)}
+.btn-outline{background:transparent;border-color:var(--border-medium);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-lighter)}
+.btn-block{width:100%}
+.btn-sm{padding:6px 12px;font-size:.78rem;border-radius:6px}
+.btn-icon{width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);background:transparent;border:1px solid var(--border-light);color:var(--text-secondary);transition:var(--transition)}
+.btn-icon:hover{background:var(--danger-light);color:var(--danger);border-color:var(--danger)}
+
+/* ========== SIMULADO ========== */
+.simulado-config{padding:24px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.config-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.config-row{margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
+.config-row>label{font-size:.82rem;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:8px}
+.qty-selector{display:flex;gap:8px;flex-wrap:wrap}
+.qty-selector button{padding:8px 18px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.85rem;font-weight:600;transition:var(--transition)}
+.qty-selector button:hover{border-color:var(--accent);color:var(--accent)}
+.qty-selector button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mode-selector button{padding:16px;background:var(--bg-body);border:2px solid var(--border-light);border-radius:var(--radius-md);color:var(--text-secondary);font-size:.9rem;font-weight:600;transition:var(--transition);display:flex;flex-direction:column;align-items:center;gap:6px}
+.mode-selector button small{font-size:.72rem;color:var(--text-muted);font-weight:400}
+.mode-selector button i{font-size:1.2rem;margin-bottom:4px}
+.mode-selector button:hover{border-color:var(--accent)}
+.mode-selector button.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.mode-selector button.active small{color:var(--accent);opacity:.8}
+.simulado-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.simulado-info{display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--text-secondary);font-weight:600}
+.simulado-info #simuladoModoLabel{background:var(--accent-light);color:var(--accent);padding:4px 12px;border-radius:var(--radius-pill);font-size:.72rem;letter-spacing:.5px}
+.simulado-progress-bar{height:6px;background:var(--border-light);border-radius:var(--radius-pill);overflow:hidden;margin-bottom:24px}
+.simulado-progress-fill{height:100%;background:var(--gradient-primary);border-radius:var(--radius-pill);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.simulado-nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+.questao-runner{min-height:300px}
+
+/* ========== RESULTADO ========== */
+.resultado-box{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:32px;text-align:center;box-shadow:var(--shadow-md);margin-bottom:24px;position:relative;overflow:hidden}
+.resultado-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary)}
+.resultado-pct{font-size:3.5rem;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:8px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.resultado-pct.success{background:var(--gradient-success);-webkit-background-clip:text;background-clip:text}
+.resultado-pct.danger{background:var(--gradient-danger);-webkit-background-clip:text;background-clip:text}
+.resultado-label{font-size:.9rem;color:var(--text-muted);margin-bottom:24px}
+.resultado-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.resultado-stat{padding:16px;background:var(--bg-body);border-radius:var(--radius-md)}
+.resultado-stat .num{font-size:1.6rem;font-weight:800}
+.resultado-stat .lbl{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.resultado-stat.success .num{color:var(--success)}
+.resultado-stat.danger .num{color:var(--danger)}
+.resultado-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ========== EMPTY ========== */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty-state i{font-size:3rem;opacity:.3;margin-bottom:16px;display:block;color:var(--text-muted)}
+.empty-state h3{font-size:1.1rem;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.empty-state p{font-size:.88rem;max-width:400px;margin:0 auto 20px;line-height:1.5}
+.empty-state .btn{margin-top:8px}
+
+/* ========== MODAL ========== */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);max-width:540px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--shadow-xl);animation:modalIn .3s cubic-bezier(.4,0,.2,1)}
+.modal-lg{max-width:820px}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border-light)}
+.modal-header h2{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.modal-header h2 i{color:var(--accent)}
+.modal-close{width:32px;height:32px;border-radius:var(--radius-sm);background:transparent;border:none;color:var(--text-muted);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.modal-close:hover{background:var(--danger-light);color:var(--danger)}
+.modal-body{padding:24px;overflow-y:auto;flex:1;font-size:.92rem;line-height:1.6;color:var(--text-secondary)}
+.modal-body p{margin-bottom:12px}
+.modal-body p:last-child{margin-bottom:0}
+.modal-body strong{color:var(--text-primary)}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border-light);flex-wrap:wrap}
+
+/* ========== FORM ========== */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;background:var(--bg-body);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.9rem;font-family:inherit;outline:none;transition:var(--transition)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:var(--shadow-focus);background:var(--bg-card)}
+.form-group textarea{min-height:80px;resize:vertical;line-height:1.5}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ========== TOAST ========== */
+.toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:10px;z-index:3000;max-width:400px}
+.toast{padding:14px 20px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);font-size:.88rem;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:10px;animation:slideInRight .35s cubic-bezier(.4,0,.2,1);border-left:4px solid var(--accent)}
+.toast.success{border-left-color:var(--success)}
+.toast.success i{color:var(--success)}
+.toast.error{border-left-color:var(--danger)}
+.toast.error i{color:var(--danger)}
+.toast.info{border-left-color:var(--info)}
+.toast.info i{color:var(--info)}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* ========== FAB ========== */
+.fab{position:fixed;bottom:88px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--gradient-primary);color:#fff;border:none;font-size:1.2rem;box-shadow:0 6px 20px rgba(124,58,237,.4);display:none;align-items:center;justify-content:center;z-index:500;transition:var(--transition)}
+.fab:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.5)}
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--bg-card);border-top:1px solid var(--border-light);z-index:800;padding:4px 0;box-shadow:0 -2px 12px rgba(0,0,0,.04)}
+.bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text-muted);font-size:.65rem;font-weight:500;transition:var(--transition);text-decoration:none;padding:4px;cursor:pointer}
+.bottom-nav-item i{font-size:1.05rem}
+.bottom-nav-item.active{color:var(--accent)}
+.bottom-nav-item.active i{transform:scale(1.1)}
+
+/* ========== TABELA ADMIN ========== */
+.table-responsive{overflow-x:auto;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.table{width:100%;border-collapse:collapse;font-size:.85rem}
+.table th{text-align:left;padding:12px 16px;background:var(--bg-body);color:var(--text-muted);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border-light);white-space:nowrap}
+.table td{padding:12px 16px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.table tbody tr:last-child td{border-bottom:none}
+.table tbody tr:hover{background:var(--accent-lighter)}
+.admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.admin-stat{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:14px 16px;box-shadow:var(--shadow-xs)}
+.admin-stat .num{font-size:1.4rem;font-weight:800}
+.admin-stat .lbl{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.admin-filtros{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.admin-filtros input,.admin-filtros select{padding:9px 14px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.85rem;font-family:inherit;outline:none;transition:var(--transition);flex:1;min-width:180px}
+.admin-filtros input:focus,.admin-filtros select:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+
+/* ========== TABS ========== */
+.revisao-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--bg-card);padding:4px;border-radius:var(--radius-md);border:1px solid var(--border-light);width:fit-content}
+.tab-btn{padding:8px 20px;background:transparent;border:none;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:.85rem;font-weight:600;transition:var(--transition)}
+.tab-btn:hover{color:var(--accent)}
+.tab-btn.active{background:var(--accent);color:#fff}
+
+/* ========== HISTÓRICO ========== */
+.historico-list{display:flex;flex-direction:column;gap:8px}
+.historico-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);font-size:.85rem;transition:var(--transition)}
+.historico-item:hover{border-color:var(--border-medium)}
+.historico-item .status{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.historico-item .status.success{background:var(--success-light);color:var(--success)}
+.historico-item .status.danger{background:var(--danger-light);color:var(--danger)}
+.historico-item .info{flex:1;min-width:0}
+.historico-item .info strong{display:block;font-weight:600;font-size:.85rem}
+.historico-item .info span{font-size:.75rem;color:var(--text-muted)}
+.historico-item .data{font-size:.72rem;color:var(--text-muted);white-space:nowrap}
+.continuar-card{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;background:var(--bg-body);border-radius:var(--radius-md);border:1px solid var(--border-light);flex-wrap:wrap;transition:var(--transition)}
+.continuar-card:hover{border-color:var(--accent)}
+.continuar-card .info{flex:1;min-width:200px}
+.continuar-card .info strong{display:block;font-size:.95rem;font-weight:700;margin-bottom:4px}
+.continuar-card .info span{font-size:.8rem;color:var(--text-muted)}
+
+/* ========== STATUS ========== */
+.status-badge{display:inline-block;padding:3px 10px;border-radius:var(--radius-pill);font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.status-ativa{background:var(--success-light);color:var(--success)}
+.status-revisar{background:var(--warning-light);color:var(--warning)}
+.status-anulada{background:var(--danger-light);color:var(--danger)}
+.status-arquivada{background:var(--border-light);color:var(--text-muted)}
+
+/* ========== RESPONSIVO ========== */
+@media (max-width:1024px){
+.sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);z-index:1500;box-shadow:var(--shadow-xl)}
+.sidebar.open{transform:translateX(0)}
+.hamburger{display:flex}
+.content{padding:20px 20px 90px}
+.header{padding:0 16px}
+.header-title{font-size:.95rem}
+}
+@media (max-width:640px){
+.metrics-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+.metric-value{font-size:1.5rem}
+.metric-card{padding:16px}
+.page-hero{padding:22px 20px}
+.page-hero h1{font-size:1.3rem}
+.page-header h1{font-size:1.2rem}
+.filtros-grid{grid-template-columns:1fr}
+.config-grid{grid-template-columns:1fr}
+.bottom-nav{display:flex}
+.content{padding:16px 14px 90px}
+.header-user .user-info{display:none}
+.header-user{padding:4px}
+.fab{display:flex;bottom:80px;right:16px}
+.certo-errado{grid-template-columns:1fr}
+.resultado-stats{grid-template-columns:1fr}
+.resultado-pct{font-size:2.8rem}
+.resultado-box{padding:24px 20px}
+.modal{max-height:95vh}
+.modal-header{padding:16px 20px}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px}
+.toast-container{left:14px;right:14px;bottom:80px;max-width:none}
+.questao-card{padding:18px}
+.questao-enunciado{font-size:.88rem}
+.form-row{grid-template-columns:1fr}
+.mode-selector{grid-template-columns:1fr}
+.alternativa{padding:10px 12px;font-size:.84rem}
+.page-header{flex-direction:column;align-items:flex-start}
+.paginacao{gap:6px}
+.paginacao button{padding:7px 12px;font-size:.78rem}
+}
+@media (max-width:380px){
+.metrics-grid{grid-template-columns:1fr}
+.logo-text{display:none}
+.header-title{font-size:.9rem}
+}
+.text-center{text-align:center}
+.text-muted{color:var(--text-muted)}
+.mt-16{margin-top:16px}
+.mb-16{margin-bottom:16px}
+.flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+
+<!-- ============ SPLASH ============ -->
+<div class="splash-overlay" id="splashOverlay">
+    <div class="splash-content">
+        <div class="splash-logo">
+            <div class="splash-logo-mark">V+</div>
+            <div class="splash-logo-text">
+                <strong>VULP+</strong>
+                <span>Questões</span>
+            </div>
+        </div>
+        <div class="splash-spinner"></div>
+        <p class="splash-message" id="splashMessage">Carregando banco de questões...</p>
+    </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app-container" id="appContainer" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-mark">V+</div>
+            <div class="logo-text"><strong>VULP+</strong><span>Questões</span></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="menu-label">Principal</div>
+            <a class="nav-item active" data-page="dashboard"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a class="nav-item" data-page="banco"><i class="fas fa-database"></i><span>Banco de Questões</span></a>
+            <a class="nav-item" data-page="simulado"><i class="fas fa-bullseye"></i><span>Simulados</span></a>
+            <a class="nav-item" data-page="treino"><i class="fas fa-dumbbell"></i><span>Modo Treino</span></a>
+            <div class="menu-label">Meus Estudos</div>
+            <a class="nav-item" data-page="favoritos"><i class="fas fa-star"></i><span>Favoritos</span><span class="nav-badge" id="badgeFavoritos" style="display:none;">0</span></a>
+            <a class="nav-item" data-page="caderno-erros"><i class="fas fa-book-skull"></i><span>Caderno de Erros</span><span class="nav-badge" id="badgeErros" style="display:none;">0</span></a>
+            <a class="nav-item" data-page="revisao"><i class="fas fa-clock-rotate-left"></i><span>Revisar Hoje</span><span class="nav-badge" id="badgeRevisao" style="display:none;">0</span></a>
+            <a class="nav-item" data-page="desempenho"><i class="fas fa-chart-line"></i><span>Meu Desempenho</span></a>
+            <div class="menu-label">Administração</div>
+            <a class="nav-item" data-page="admin"><i class="fas fa-sliders"></i><span>Gerenciar Questões</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
+            <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Atualizar banco</button>
+            <div class="version-info">VULP+ v1.0</div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="header-left">
+                <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+                <div class="header-title" id="headerTitle">Dashboard</div>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" id="themeToggle" title="Alternar tema"><i class="fas fa-moon"></i></button>
+                <div class="header-user">
+                    <div class="user-avatar">C</div>
+                    <div class="user-info">
+                        <strong>Concurseiro</strong>
+                        <span id="headerProgress">0% aproveitamento</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content" id="content">
+
+            <!-- DASHBOARD -->
+            <section class="page active" id="page-dashboard">
+                <div class="page-hero">
+                    <h1>Olá, concurseiro 👋</h1>
+                    <p>Seu treino inteligente para concursos públicos.</p>
+                </div>
+                <div class="metrics-grid" id="metricsGrid"></div>
+                <div class="section-block">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-simple"></i> Seu desempenho por disciplina</h2>
+                        <button class="btn-link" data-goto="desempenho">Ver detalhes <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div class="desempenho-list" id="desempenhoDisciplinas"></div>
+                </div>
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-clock-rotate-left"></i> Continuar de onde parei</h2></div>
+                    <div id="continuarEstudo"></div>
+                </div>
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-lightbulb"></i> Análise da preparação</h2></div>
+                    <div class="insights-grid" id="insightsContainer"></div>
+                </div>
+            </section>
+
+            <!-- BANCO -->
+            <section class="page" id="page-banco">
+                <div class="page-header">
+                    <h1><i class="fas fa-database"></i> Banco de Questões</h1>
+                    <span class="subtitle" id="bancoSubtitulo">—</span>
+                </div>
+                <div class="busca-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="buscaInput" placeholder="Pesquisar questão, assunto, banca, tag..." />
+                    <button class="busca-clear" id="buscaClear" style="display:none;"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="filtros-panel">
+                    <div class="filtros-grid" id="filtrosGrid"></div>
+                    <div class="filtros-actions">
+                        <button class="btn btn-outline" id="btnLimparFiltros"><i class="fas fa-eraser"></i> Limpar filtros</button>
+                        <button class="btn btn-primary" id="btnIniciarSimuladoFiltros"><i class="fas fa-play"></i> Começar simulado</button>
+                    </div>
+                </div>
+                <div class="resultado-info" id="resultadoInfo"></div>
+                <div class="questoes-lista" id="questoesLista"></div>
+                <div class="paginacao" id="paginacao"></div>
+            </section>
+
+            <!-- SIMULADO -->
+            <section class="page" id="page-simulado">
+                <div id="simuladoSetup">
+                    <div class="page-header"><h1><i class="fas fa-bullseye"></i> Configurar Simulado</h1></div>
+                    <div class="simulado-config">
+                        <div class="config-grid" id="simuladoConfigFiltros"></div>
+                        <div class="config-row">
+                            <label>Quantidade de questões</label>
+                            <div class="qty-selector" id="qtySelector">
+                                <button data-qty="5">5</button>
+                                <button data-qty="10" class="active">10</button>
+                                <button data-qty="20">20</button>
+                                <button data-qty="30">30</button>
+                                <button data-qty="50">50</button>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <label>Modo</label>
+                            <div class="mode-selector" id="modeSelector">
+                                <button data-mode="treino" class="active"><i class="fas fa-graduation-cap"></i> Treino<small>Gabarito imediato</small></button>
+                                <button data-mode="simulado"><i class="fas fa-bullseye"></i> Simulado<small>Gabarito no final</small></button>
+                            </div>
+                        </div>
+                        <div class="config-row">
+                            <label><input type="checkbox" id="simuladoAleatorio" checked /> Embaralhar questões</label>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="btnIniciarSimulado"><i class="fas fa-play"></i> Iniciar</button>
+                    </div>
+                </div>
+                <div id="simuladoRunner" style="display:none;">
+                    <div class="simulado-header">
+                        <div class="simulado-info">
+                            <span id="simuladoModoLabel">TREINO</span>
+                            <span class="simulado-progresso" id="simuladoProgresso">Questão 1 de 10</span>
+                        </div>
+                        <button class="btn-icon" id="btnSairSimulado"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="simulado-progress-bar"><div class="simulado-progress-fill" id="simuladoProgressFill"></div></div>
+                    <div class="questao-runner" id="questaoRunner"></div>
+                    <div class="simulado-nav">
+                        <button class="btn btn-outline" id="btnAnterior" disabled><i class="fas fa-chevron-left"></i> Anterior</button>
+                        <button class="btn btn-primary" id="btnProxima">Próxima <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div id="simuladoResultado" style="display:none;"></div>
+            </section>
+
+            <!-- TREINO -->
+            <section class="page" id="page-treino">
+                <div class="page-header">
+                    <h1><i class="fas fa-dumbbell"></i> Modo Treino</h1>
+                    <span class="subtitle">Resolva questões com gabarito imediato</span>
+                </div>
+                <div class="simulado-config">
+                    <p style="margin-bottom:16px;color:var(--text-secondary);">Escolha uma disciplina para treinar ou use questões aleatórias.</p>
+                    <div class="config-grid" id="treinoConfigFiltros"></div>
+                    <button class="btn btn-primary btn-block" id="btnIniciarTreino"><i class="fas fa-play"></i> Iniciar treino</button>
+                </div>
+            </section>
+
+            <!-- FAVORITOS -->
+            <section class="page" id="page-favoritos">
+                <div class="page-header">
+                    <h1><i class="fas fa-star"></i> Favoritos</h1>
+                    <span class="subtitle" id="favoritosSubtitulo">—</span>
+                </div>
+                <div class="questoes-lista" id="favoritosLista"></div>
+            </section>
+
+            <!-- CADERNO ERROS -->
+            <section class="page" id="page-caderno-erros">
+                <div class="page-header">
+                    <h1><i class="fas fa-book-skull"></i> Caderno de Erros</h1>
+                    <button class="btn btn-primary" id="btnRefazerErros"><i class="fas fa-redo"></i> Refazer questões erradas</button>
+                </div>
+                <div id="cadernoErrosConteudo"></div>
+            </section>
+
+            <!-- REVISÃO -->
+            <section class="page" id="page-revisao">
+                <div class="page-header">
+                    <h1><i class="fas fa-clock-rotate-left"></i> Revisar Hoje</h1>
+                    <span class="subtitle" id="revisaoSubtitulo">—</span>
+                </div>
+                <div class="revisao-tabs">
+                    <button class="tab-btn active" data-tab="pendente">Pendentes</button>
+                    <button class="tab-btn" data-tab="revisada">Revisadas</button>
+                </div>
+                <div class="questoes-lista" id="revisaoLista"></div>
+            </section>
+
+            <!-- DESEMPENHO -->
+            <section class="page" id="page-desempenho">
+                <div class="page-header"><h1><i class="fas fa-chart-line"></i> Meu Desempenho</h1></div>
+                <div class="metrics-grid" id="desempenhoMetrics"></div>
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-book"></i> Por Disciplina</h2></div>
+                    <div class="desempenho-list" id="desempenhoPorDisciplina"></div>
+                </div>
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-tags"></i> Por Assunto</h2></div>
+                    <div id="desempenhoPorAssunto"></div>
+                </div>
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-history"></i> Últimas questões</h2></div>
+                    <div class="historico-list" id="historicoRecente"></div>
+                </div>
+            </section>
+
+            <!-- ADMIN -->
+            <section class="page" id="page-admin">
+                <div class="page-header">
+                    <h1><i class="fas fa-sliders"></i> Gerenciar Questões</h1>
+                    <button class="btn btn-primary" id="btnNovaQuestao"><i class="fas fa-plus"></i> Nova questão</button>
+                </div>
+                <div class="admin-stats" id="adminStats"></div>
+                <div class="admin-filtros">
+                    <input type="text" id="adminBusca" placeholder="Buscar por ID ou enunciado..." />
+                    <select id="adminStatusFiltro">
+                        <option value="">Todos os status</option>
+                        <option value="Ativa">Ativa</option>
+                        <option value="Revisar">Revisar</option>
+                        <option value="Anulada">Anulada</option>
+                        <option value="Arquivada">Arquivada</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" id="adminTable">
+                        <thead><tr><th>ID</th><th>Disciplina</th><th>Assunto</th><th>Banca</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+                        <tbody id="adminTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav">
+            <a class="bottom-nav-item active" data-page="dashboard"><i class="fas fa-house"></i><span>Início</span></a>
+            <a class="bottom-nav-item" data-page="banco"><i class="fas fa-database"></i><span>Questões</span></a>
+            <a class="bottom-nav-item" data-page="simulado"><i class="fas fa-bullseye"></i><span>Simulado</span></a>
+            <a class="bottom-nav-item" data-page="favoritos"><i class="fas fa-star"></i><span>Favoritos</span></a>
+            <a class="bottom-nav-item" data-page="mais"><i class="fas fa-bars"></i><span>Mais</span></a>
+        </nav>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Título</h2>
+            <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter">
+            <button class="btn btn-outline" id="modalCancel">Cancelar</button>
+            <button class="btn btn-primary" id="modalConfirm">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMENTÁRIO -->
+<div class="modal-overlay" id="comentarioOverlay">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h2><i class="fas fa-comment-dots"></i> Comentário da questão</h2>
+            <button class="modal-close" id="comentarioClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="comentarioBody"></div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- FAB -->
+<button class="fab" id="fabNovaQuestao" title="Nova questão"><i class="fas fa-plus"></i></button>
+
+<script>
+/* ============================================================
+   VULP+ QUESTÕES — APLICATIVO COMPLETO
+   ============================================================ */
+(function(){
+'use strict';
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzPPCC9wQlf1EDiRiz6_EF4e_mR7scXhvITSzTgrOtoJDJQoDFNzOt8Xfh9Wl34Sm2oeQ/exec";
+
+/* ============================================================
+   CAMADA DE API
+   ============================================================ */
+const api = {
+    async _fetch(url, options = {}) {
+        try {
+            const response = await fetch(url, {
+                method: options.method || 'GET',
+                headers: options.headers || { 'Content-Type': 'application/json' },
+                body: options.body || null,
+                redirect: 'follow',
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const text = await response.text();
+            if (!text || !text.trim()) throw new Error('Resposta vazia da API');
+            try { return JSON.parse(text); }
+            catch (e) { throw new Error('Resposta inválida: não é JSON'); }
+        } catch (error) {
+            console.error('[API] Erro na requisição:', error);
+            throw error;
+        }
+    },
+
+    _normalizarQuestao(raw) {
+        if (!raw || typeof raw !== 'object') return null;
+        const q = {
+            id: String(raw['ID'] || raw['id'] || raw['Id'] || ''),
+            disciplina: String(raw['Disciplina'] || raw['disciplina'] || '').trim(),
+            assunto: String(raw['Assunto'] || raw['assunto'] || '').trim(),
+            subassunto: String(raw['Subassunto'] || raw['subassunto'] || raw['SubAssunto'] || '').trim(),
+            banca: String(raw['Banca'] || raw['banca'] || '').trim(),
+            orgao: String(raw['Órgão'] || raw['orgao'] || raw['Orgao'] || '').trim(),
+            concurso: String(raw['Concurso/Edital'] || raw['Concurso'] || raw['concurso'] || '').trim(),
+            cargo: String(raw['Cargo'] || raw['cargo'] || '').trim(),
+            ano: String(raw['Ano'] || raw['ano'] || '').trim(),
+            nivel: String(raw['Nível'] || raw['nivel'] || raw['Nivel'] || raw['Escolaridade'] || '').trim(),
+            tipo: String(raw['Tipo'] || raw['tipo'] || 'Múltipla escolha').trim(),
+            enunciado: String(raw['Enunciado'] || raw['enunciado'] || '').trim(),
+            alternativaA: String(raw['Alternativa A'] || raw['AlternativaA'] || '').trim(),
+            alternativaB: String(raw['Alternativa B'] || raw['AlternativaB'] || '').trim(),
+            alternativaC: String(raw['Alternativa C'] || raw['AlternativaC'] || '').trim(),
+            alternativaD: String(raw['Alternativa D'] || raw['AlternativaD'] || '').trim(),
+            alternativaE: String(raw['Alternativa E'] || raw['AlternativaE'] || '').trim(),
+            gabarito: String(raw['Gabarito'] || raw['gabarito'] || '').trim(),
+            comentario: String(raw['Comentário'] || raw['comentario'] || raw['Comentario'] || '').trim(),
+            fundamentacao: String(raw['Fundamentação'] || raw['fundamentacao'] || raw['Legislação'] || raw['Legislacao'] || '').trim(),
+            fonte: String(raw['Fonte'] || raw['fonte'] || raw['URL Fonte'] || '').trim(),
+            dificuldade: String(raw['Dificuldade'] || raw['dificuldade'] || '').trim(),
+            tags: String(raw['Tags'] || raw['tags'] || '').trim(),
+            imagemUrl: String(raw['Imagem_URL'] || raw['Imagem/Arquivo'] || raw['Imagem'] || '').trim(),
+            observacoes: String(raw['Observações'] || raw['observacoes'] || '').trim(),
+            status: String(raw['Status'] || raw['status'] || 'Ativa').trim(),
+            dataInclusao: String(raw['Data Inclusão'] || raw['dataInclusao'] || '').trim(),
+        };
+        if (!q.enunciado || !q.gabarito) return null;
+        // Normaliza tipo
+        const tipoLower = q.tipo.toLowerCase();
+        if (tipoLower.includes('certo') || tipoLower.includes('cespe') || tipoLower === 'ce') {
+            q.tipo = 'Certo/Errado';
+            q.gabarito = q.gabarito.charAt(0).toUpperCase() + q.gabarito.slice(1).toLowerCase();
+        } else if (tipoLower.includes('discursiva')) {
+            q.tipo = 'Discursiva';
+        } else {
+            q.tipo = 'Múltipla escolha';
+            q.gabarito = q.gabarito.toUpperCase().trim();
+        }
+        return q;
+    },
+
+    _extrairArray(response) {
+        if (Array.isArray(response)) return response;
+        if (response && typeof response === 'object') {
+            if (Array.isArray(response.data)) return response.data;
+            if (Array.isArray(response.questoes)) return response.questoes;
+            if (Array.isArray(response.questions)) return response.questions;
+            if (Array.isArray(response.rows)) return response.rows;
+        }
+        return [];
+    },
+
+    async getQuestoes() {
+        const url = `${API_URL}?action=list`;
+        const response = await this._fetch(url);
+        const arr = this._extrairArray(response);
+        const normalizadas = arr.map(r => this._normalizarQuestao(r)).filter(Boolean);
+        console.log(`[API] ${normalizadas.length} questões carregadas`);
+        return normalizadas;
+    },
+
+    async getQuestao(id) {
+        const url = `${API_URL}?action=get&id=${encodeURIComponent(id)}`;
+        const response = await this._fetch(url);
+        if (response && typeof response === 'object') {
+            if (response.id) return this._normalizarQuestao(response);
+            if (response.data) return this._normalizarQuestao(response.data);
+        }
+        return null;
+    },
+
+    // ⚠️ Operações de escrita — dependem de suporte na API
+    // Se a API não suportar, o frontend trata o erro e não quebra
+    async criarQuestao(dados) {
+        try {
+            await fetch(`${API_URL}?action=create`, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados),
+            });
+            return { success: true, _note: 'Enviado (no-cors)' };
+        } catch (e) { console.error('[API] criar:', e); throw e; }
+    },
+
+    async atualizarQuestao(id, dados) {
+        try {
+            await fetch(`${API_URL}?action=update&id=${encodeURIComponent(id)}`, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, ...dados }),
+            });
+            return { success: true, _note: 'Enviado (no-cors)' };
+        } catch (e) { console.error('[API] atualizar:', e); throw e; }
+    },
+
+    async excluirQuestao(id) {
+        try {
+            await fetch(`${API_URL}?action=delete&id=${encodeURIComponent(id)}`, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+            return { success: true, _note: 'Enviado (no-cors)' };
+        } catch (e) { console.error('[API] excluir:', e); throw e; }
+    },
+};
+
+/* ============================================================
+   STORAGE — localStorage
+   ============================================================ */
+const storage = {
+    KEYS: {
+        FAVORITOS: 'vulp_favoritos',
+        HISTORICO: 'vulp_historico',
+        REVISAO: 'vulp_revisao',
+        TEMA: 'vulp_tema',
+    },
+    _get(key, fallback = null) {
+        try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+        catch (e) { console.warn('[Storage]', e); return fallback; }
+    },
+    _set(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+        catch (e) { console.warn('[Storage]', e); return false; }
+    },
+    // Favoritos
+    getFavoritos() { return this._get(this.KEYS.FAVORITOS, []); },
+    isFavorito(id) { return this.getFavoritos().includes(String(id)); },
+    toggleFavorito(id) {
+        const idStr = String(id);
+        let favs = this.getFavoritos();
+        if (favs.includes(idStr)) {
+            favs = favs.filter(f => f !== idStr);
+            this._set(this.KEYS.FAVORITOS, favs);
+            return false;
+        }
+        favs.push(idStr);
+        this._set(this.KEYS.FAVORITOS, favs);
+        return true;
+    },
+    getTotalFavoritos() { return this.getFavoritos().length; },
+    // Histórico
+    getHistorico() { return this._get(this.KEYS.HISTORICO, []); },
+    salvarHistorico(entry) {
+        const h = this.getHistorico();
+        h.unshift({ ...entry, data: entry.data || new Date().toISOString() });
+        if (h.length > 2000) h.length = 2000;
+        this._set(this.KEYS.HISTORICO, h);
+    },
+    getUltimaQuestao() {
+        const h = this.getHistorico();
+        return h.length > 0 ? h[0] : null;
+    },
+    limparHistorico() { this._set(this.KEYS.HISTORICO, []); },
+    getEstatisticas() {
+        const h = this.getHistorico();
+        const total = h.length;
+        const acertos = h.filter(x => x.acertou).length;
+        const erros = total - acertos;
+        return { total, acertos, erros, aproveitamento: total > 0 ? (acertos / total) * 100 : 0 };
+    },
+    getEstatisticasPorDisciplina() {
+        const h = this.getHistorico();
+        const map = {};
+        h.forEach(x => {
+            const d = x.disciplina || 'Sem disciplina';
+            if (!map[d]) map[d] = { total: 0, acertos: 0, erros: 0 };
+            map[d].total++;
+            if (x.acertou) map[d].acertos++; else map[d].erros++;
+        });
+        Object.keys(map).forEach(k => {
+            map[k].aproveitamento = map[k].total > 0 ? (map[k].acertos / map[k].total) * 100 : 0;
+        });
+        return map;
+    },
+    getEstatisticasPorAssunto() {
+        const h = this.getHistorico();
+        const map = {};
+        h.forEach(x => {
+            const key = `${x.disciplina || 'Sem disciplina'} › ${x.assunto || 'Sem assunto'}`;
+            if (!map[key]) map[key] = { total: 0, acertos: 0, erros: 0, disciplina: x.disciplina, assunto: x.assunto };
+            map[key].total++;
+            if (x.acertou) map[key].acertos++; else map[key].erros++;
+        });
+        Object.keys(map).forEach(k => {
+            map[k].aproveitamento = map[k].total > 0 ? (map[k].acertos / map[k].total) * 100 : 0;
+        });
+        return map;
+    },
+    getQuestoesErradas() {
+        const h = this.getHistorico();
+        const ids = new Set();
+        h.forEach(x => { if (!x.acertou && x.questaoId) ids.add(String(x.questaoId)); });
+        return Array.from(ids);
+    },
+    // Revisão
+    getRevisao() { return this._get(this.KEYS.REVISAO, {}); },
+    getStatusRevisao(id) { const r = this.getRevisao(); return r[String(id)] || null; },
+    setStatusRevisao(id, status) {
+        const r = this.getRevisao();
+        const idStr = String(id);
+        if (status === null) delete r[idStr];
+        else r[idStr] = { status, data: new Date().toISOString() };
+        this._set(this.KEYS.REVISAO, r);
+    },
+    getRevisaoPendentes() {
+        const r = this.getRevisao();
+        return Object.keys(r).filter(id => r[id].status === 'pendente');
+    },
+    getRevisaoRevisadas() {
+        const r = this.getRevisao();
+        return Object.keys(r).filter(id => r[id].status === 'revisada');
+    },
+    getTotalRevisao() { return this.getRevisaoPendentes().length; },
+    // Tema
+    getTema() { return this._get(this.KEYS.TEMA, 'light'); },
+    setTema(t) { this._set(this.KEYS.TEMA, t); },
+};
+
+/* ============================================================
+   APP PRINCIPAL
+   ============================================================ */
+const App = {
+    state: {
+        questoes: [],
+        questoesFiltradas: [],
+        carregando: false,
+        paginaAtual: 'dashboard',
+        filtros: { disciplina:'', assunto:'', subassunto:'', banca:'', orgao:'', concurso:'', cargo:'', ano:'', nivel:'', tipo:'', dificuldade:'', status:'' },
+        busca: '',
+        pagina: 1,
+        porPagina: 10,
+    },
+
+    async init() {
+        this.aplicarTemaSalvo();
+        this.bindEventos();
+        await this.carregarQuestoes();
+        this.esconderSplash();
+        this.navegarPara('dashboard');
+    },
+
+    aplicarTemaSalvo() {
+        if (storage.getTema() === 'dark') document.body.classList.add('dark');
+        this.atualizarIconeTema();
+    },
+
+    atualizarIconeTema() {
+        const icon = document.querySelector('#themeToggle i');
+        if (!icon) return;
+        icon.className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
+    },
+
+    toggleTema() {
+        document.body.classList.toggle('dark');
+        storage.setTema(document.body.classList.contains('dark') ? 'dark' : 'light');
+        this.atualizarIconeTema();
+    },
+
+    async carregarQuestoes(forcar = false) {
+        if (this.state.carregando) return;
+        if (!forcar && this.state.questoes.length > 0) return;
+        this.state.carregando = true;
+        this.atualizarStatusApi('loading');
+        try {
+            const q = await api.getQuestoes();
+            this.state.questoes = q;
+            this.atualizarStatusApi('online');
+            this.atualizarBadges();
+        } catch (error) {
+            console.error('[App]', error);
+            this.atualizarStatusApi('offline');
+            this.toast('Não foi possível carregar o banco de questões. Verifique sua conexão.', 'error');
+        } finally {
+            this.state.carregando = false;
+        }
+    },
+
+    atualizarStatusApi(status) {
+        const dot = document.getElementById('apiStatusDot');
+        const text = document.getElementById('apiStatusText');
+        if (!dot || !text) return;
+        dot.classList.remove('online', 'offline');
+        if (status === 'online') {
+            dot.classList.add('online');
+            text.textContent = `${this.state.questoes.length} questões`;
+        } else if (status === 'offline') {
+            dot.classList.add('offline');
+            text.textContent = 'API offline';
+        } else {
+            text.textContent = 'Conectando...';
+        }
+    },
+
+    atualizarBadges() {
+        const set = (id, v) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (v > 0) { el.textContent = v; el.style.display = ''; }
+            else el.style.display = 'none';
+        };
+        set('badgeFavoritos', storage.getTotalFavoritos());
+        set('badgeErros', storage.getQuestoesErradas().length);
+        set('badgeRevisao', storage.getTotalRevisao());
+    },
+
+    navegarPara(page) {
+        if (!page) return;
+        document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(el => {
+            el.classList.toggle('active', el.dataset.page === page);
+        });
+        document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById(`page-${page}`);
+        if (target) target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const titulos = {
+            dashboard: 'Dashboard', banco: 'Banco de Questões', simulado: 'Simulados',
+            treino: 'Modo Treino', favoritos: 'Favoritos', 'caderno-erros': 'Caderno de Erros',
+            revisao: 'Revisar Hoje', desempenho: 'Meu Desempenho', admin: 'Gerenciar Questões',
+        };
+        const t = document.getElementById('headerTitle');
+        if (t) t.textContent = titulos[page] || 'VULP+';
+
+        document.getElementById('sidebar')?.classList.remove('open');
+        this.state.paginaAtual = page;
+
+        switch (page) {
+            case 'dashboard': Dashboard.render(); break;
+            case 'banco': Questoes.render(); break;
+            case 'simulado': Simulado.renderSetup(); break;
+            case 'treino': Questoes.renderTreinoConfig(); break;
+            case 'favoritos': Questoes.renderFavoritos(); break;
+            case 'caderno-erros': Questoes.renderCadernoErros(); break;
+            case 'revisao': Questoes.renderRevisao(); break;
+            case 'desempenho': Dashboard.renderDesempenho(); break;
+            case 'admin': Admin.render(); break;
+        }
+    },
+
+    bindEventos() {
+        document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = el.dataset.page;
+                if (page === 'mais') {
+                    document.getElementById('sidebar')?.classList.add('open');
+                    return;
+                }
+                this.navegarPara(page);
+            });
+        });
+        document.querySelectorAll('[data-goto]').forEach(el => {
+            el.addEventListener('click', () => this.navegarPara(el.dataset.goto));
+        });
+        document.getElementById('hamburgerBtn')?.addEventListener('click', () => {
+            document.getElementById('sidebar')?.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            const sb = document.getElementById('sidebar');
+            const hb = document.getElementById('hamburgerBtn');
+            if (!sb || !sb.classList.contains('open')) return;
+            if (sb.contains(e.target) || hb?.contains(e.target)) return;
+            sb.classList.remove('open');
+        });
+        document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTema());
+        document.getElementById('btnAtualizarBanco')?.addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            btn.classList.add('loading');
+            btn.disabled = true;
+            try {
+                await this.carregarQuestoes(true);
+                this.toast('Banco atualizado!', 'success');
+                this.navegarPara(this.state.paginaAtual);
+            } catch { this.toast('Erro ao atualizar.', 'error'); }
+            finally { btn.classList.remove('loading'); btn.disabled = false; }
+        });
+
+        document.getElementById('modalClose')?.addEventListener('click', () => this.fecharModal());
+        document.getElementById('modalCancel')?.addEventListener('click', () => this.fecharModal());
+        document.getElementById('modalOverlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'modalOverlay') this.fecharModal();
+        });
+        document.getElementById('comentarioClose')?.addEventListener('click', () => this.fecharComentario());
+        document.getElementById('comentarioOverlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'comentarioOverlay') this.fecharComentario();
+        });
+        document.getElementById('fabNovaQuestao')?.addEventListener('click', () => Admin.abrirModalNovaQuestao());
+        document.getElementById('btnNovaQuestao')?.addEventListener('click', () => Admin.abrirModalNovaQuestao());
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.fecharModal();
+                this.fecharComentario();
+                document.getElementById('sidebar')?.classList.remove('open');
+            }
+        });
+    },
+
+    abrirModal(titulo, html, onConfirm = null, opcoes = {}) {
+        document.getElementById('modalTitle').textContent = titulo;
+        document.getElementById('modalBody').innerHTML = html;
+        const footer = document.getElementById('modalFooter');
+        if (opcoes.botoes) {
+            footer.innerHTML = opcoes.botoes.map((b, i) =>
+                `<button class="btn ${b.classe || 'btn-primary'}" data-mb="${i}">${b.texto}</button>`
+            ).join('');
+            footer.querySelectorAll('[data-mb]').forEach((btn, i) => {
+                btn.addEventListener('click', () => opcoes.botoes[i].action && opcoes.botoes[i].action());
+            });
+        } else {
+            footer.innerHTML = `
+                <button class="btn btn-outline" id="modalCancel">Cancelar</button>
+                <button class="btn btn-primary" id="modalConfirm">Salvar</button>`;
+            document.getElementById('modalCancel')?.addEventListener('click', () => this.fecharModal());
+            document.getElementById('modalConfirm')?.addEventListener('click', () => {
+                if (onConfirm) onConfirm();
+            });
+        }
+        document.getElementById('modalOverlay').classList.add('open');
+    },
+
+    fecharModal() { document.getElementById('modalOverlay')?.classList.remove('open'); },
+
+    abrirComentario(titulo, html) {
+        document.getElementById('comentarioOverlay')?.classList.add('open');
+        const h = document.querySelector('#comentarioOverlay h2');
+        if (h) h.innerHTML = titulo;
+        document.getElementById('comentarioBody').innerHTML = html;
+    },
+
+    fecharComentario() { document.getElementById('comentarioOverlay')?.classList.remove('open'); },
+
+    toast(msg, tipo = 'info') {
+        const c = document.getElementById('toastContainer');
+        if (!c) return;
+        const el = document.createElement('div');
+        el.className = `toast ${tipo}`;
+        const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle' };
+        el.innerHTML = `<i class="fas ${icons[tipo] || icons.info}"></i><span>${msg}</span>`;
+        c.appendChild(el);
+        setTimeout(() => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(30px)';
+            el.style.transition = 'all .3s';
+            setTimeout(() => el.remove(), 300);
+        }, 4000);
+    },
+
+    esconderSplash() {
+        const s = document.getElementById('splashOverlay');
+        const a = document.getElementById('appContainer');
+        if (s) { s.classList.add('hidden'); setTimeout(() => s.remove(), 400); }
+        if (a) a.style.display = 'flex';
+    },
+
+    escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    },
+
+    formatarData(iso) {
+        if (!iso) return '—';
+        try {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return iso;
+            return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+        } catch { return iso; }
+    },
+
+    corDesempenho(pct) {
+        if (pct >= 80) return 'green';
+        if (pct >= 60) return '';
+        if (pct >= 40) return 'orange';
+        return 'red';
+    },
+
+    classificarLabel(pct) {
+        if (pct >= 90) return 'Excelente';
+        if (pct >= 80) return 'Muito bom';
+        if (pct >= 70) return 'Bom';
+        if (pct >= 60) return 'Regular';
+        if (pct >= 40) return 'Baixo';
+        return 'Muito baixo';
+    },
+};
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+const Dashboard = {
+    render() {
+        this.renderMetrics();
+        this.renderDesempenhoDisciplinas();
+        this.renderContinuarEstudo();
+        this.renderInsights();
+        this.atualizarHeader();
+    },
+
+    atualizarHeader() {
+        const stats = storage.getEstatisticas();
+        const el = document.getElementById('headerProgress');
+        if (el) el.textContent = stats.total > 0 ? `${stats.aproveitamento.toFixed(0)}% aproveitamento` : '0% aproveitamento';
+    },
+
+    renderMetrics() {
+        const c = document.getElementById('metricsGrid');
+        if (!c) return;
+        const stats = storage.getEstatisticas();
+        const total = App.state.questoes.length;
+        const favCount = storage.getTotalFavoritos();
+        const revCount = storage.getTotalRevisao();
+        const errCount = storage.getQuestoesErradas().length;
+        const aprovClass = stats.aproveitamento >= 80 ? 'success' : stats.aproveitamento >= 60 ? 'info' : stats.aproveitamento >= 40 ? 'warning' : 'danger';
+
+        const cards = [
+            { label:'Questões disponíveis', icon:'fa-database', value: total, sub:'no banco de dados', classe:'accent' },
+            { label:'Respondidas', icon:'fa-check-double', value: stats.total, sub:`${stats.acertos} acertos · ${stats.erros} erros`, classe:'info' },
+            { label:'Aproveitamento', icon:'fa-percent', value: stats.total > 0 ? stats.aproveitamento.toFixed(1)+'%' : '—', sub: stats.total > 0 ? App.classificarLabel(stats.aproveitamento) : 'Sem dados', classe: aprovClass },
+            { label:'Favoritas', icon:'fa-star', value: favCount, sub:'questões salvas', classe:'warning' },
+            { label:'Para revisar', icon:'fa-clock-rotate-left', value: revCount, sub:'revisões pendentes', classe:'accent' },
+            { label:'Caderno de erros', icon:'fa-book-skull', value: errCount, sub:'questões para refazer', classe:'danger' },
+        ];
+
+        c.innerHTML = cards.map(x => `
+            <div class="metric-card ${x.classe}">
+                <div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div>
+                <div class="metric-value">${x.value}</div>
+                <div class="metric-sub">${x.sub}</div>
+            </div>
+        `).join('');
+    },
+
+    renderDesempenhoDisciplinas() {
+        const c = document.getElementById('desempenhoDisciplinas');
+        if (!c) return;
+        const pd = storage.getEstatisticasPorDisciplina();
+        const entries = Object.entries(pd).filter(([_,v]) => v.total > 0).sort((a,b) => b[1].total - a[1].total).slice(0, 8);
+        if (entries.length === 0) {
+            c.innerHTML = `<div class="empty-state" style="padding:30px 10px;"><i class="fas fa-chart-simple"></i><p>Responda questões para ver seu desempenho por disciplina.</p></div>`;
+            return;
+        }
+        c.innerHTML = entries.map(([nome, v]) => `
+            <div class="desempenho-item">
+                <div class="desempenho-header">
+                    <span class="desempenho-nome">${App.escapeHtml(nome)}</span>
+                    <span class="desempenho-pct">${v.aproveitamento.toFixed(1)}% <small style="font-weight:400;color:var(--text-muted);">(${v.total})</small></span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill ${App.corDesempenho(v.aproveitamento)}" style="width:${v.aproveitamento}%"></div></div>
+            </div>
+        `).join('');
+    },
+
+    renderContinuarEstudo() {
+        const c = document.getElementById('continuarEstudo');
+        if (!c) return;
+        const ultima = storage.getUltimaQuestao();
+        if (!ultima) {
+            c.innerHTML = `
+                <div class="continuar-card">
+                    <div class="info"><strong>Nenhum estudo recente</strong><span>Comece a responder questões para acompanhar seu progresso.</span></div>
+                    <button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-play"></i> Começar agora</button>
+                </div>`;
+            return;
+        }
+        const q = App.state.questoes.find(x => String(x.id) === String(ultima.questaoId));
+        const enun = q ? q.enunciado.substring(0, 100) + '...' : 'Questão ' + ultima.questaoId;
+        c.innerHTML = `
+            <div class="continuar-card">
+                <div class="info">
+                    <strong>${App.escapeHtml(ultima.disciplina || 'Disciplina')}</strong>
+                    <span>${App.escapeHtml(enun)}</span>
+                    <span style="font-size:.72rem;margin-top:4px;display:block;"><i class="fas fa-clock"></i> ${App.formatarData(ultima.data)}</span>
+                </div>
+                <button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-arrow-right"></i> Continuar</button>
+            </div>`;
+    },
+
+    renderInsights() {
+        const c = document.getElementById('insightsContainer');
+        if (!c) return;
+        const insights = [];
+        const stats = storage.getEstatisticas();
+        const pd = storage.getEstatisticasPorDisciplina();
+        const pa = storage.getEstatisticasPorAssunto();
+
+        if (stats.total === 0) {
+            insights.push({ tipo:'info', icone:'fa-info-circle', texto:'Responda pelo menos uma questão para receber análises personalizadas.' });
+        } else {
+            const entries = Object.entries(pd).filter(([_,v]) => v.total >= 3);
+            if (entries.length > 0) {
+                entries.sort((a,b) => b[1].aproveitamento - a[1].aproveitamento);
+                const melhor = entries[0];
+                const pior = entries[entries.length - 1];
+                if (melhor[1].aproveitamento >= 80) {
+                    insights.push({ tipo:'success', icone:'fa-trophy', texto:`<strong>Ponto forte:</strong> melhor desempenho em <strong>${App.escapeHtml(melhor[0])}</strong> com ${melhor[1].aproveitamento.toFixed(1)}%.` });
+                }
+                if (pior[1].aproveitamento < 60 && pior[0] !== melhor[0]) {
+                    insights.push({ tipo:'danger', icone:'fa-exclamation-triangle', texto:`<strong>Atenção:</strong> <strong>${App.escapeHtml(pior[0])}</strong> está com ${pior[1].aproveitamento.toFixed(1)}%. Revise a teoria.` });
+                }
+            }
+            const assuntos = Object.entries(pa).filter(([_,v]) => v.total >= 3).sort((a,b) => a[1].aproveitamento - b[1].aproveitamento).slice(0, 2);
+            assuntos.forEach(([k, v]) => {
+                if (v.aproveitamento < 50) {
+                    insights.push({ tipo:'warning', icone:'fa-book', texto:`<strong>${App.escapeHtml(v.assunto || k)}</strong>: ${v.aproveitamento.toFixed(1)}% de acerto em ${v.total} questões.` });
+                }
+            });
+            const errCount = storage.getQuestoesErradas().length;
+            if (errCount >= 10) {
+                insights.push({ tipo:'info', icone:'fa-book-skull', texto:`<strong>${errCount} questões</strong> no caderno de erros. Que tal refazê-las?` });
+            }
+            const h = storage.getHistorico();
+            const u7 = h.filter(x => (Date.now() - new Date(x.data).getTime()) / 864e5 <= 7);
+            const dias = new Set(u7.map(x => new Date(x.data).toDateString())).size;
+            if (dias >= 5) insights.push({ tipo:'success', icone:'fa-fire', texto:`<strong>Consistência:</strong> você estudou em ${dias} dos últimos 7 dias!` });
+            else if (dias > 0) insights.push({ tipo:'warning', icone:'fa-calendar', texto:`Você estudou em ${dias} dos últimos 7 dias. Tente manter constância.` });
+            else insights.push({ tipo:'danger', icone:'fa-calendar-times', texto:'Nenhum estudo nos últimos 7 dias. Retome o ritmo!' });
+        }
+
+        c.innerHTML = insights.map(i => `
+            <div class="insight-card ${i.tipo}">
+                <i class="fas ${i.icone}"></i>
+                <div class="insight-text">${i.texto}</div>
+            </div>
+        `).join('');
+    },
+
+    renderDesempenho() {
+        this.renderDesempenhoMetrics();
+        this.renderDesempenhoPorDisciplina();
+        this.renderDesempenhoPorAssunto();
+        this.renderHistoricoRecente();
+    },
+
+    renderDesempenhoMetrics() {
+        const c = document.getElementById('desempenhoMetrics');
+        if (!c) return;
+        const s = storage.getEstatisticas();
+        const cards = [
+            { label:'Total respondidas', icon:'fa-check-double', value:s.total, classe:'accent' },
+            { label:'Acertos', icon:'fa-check-circle', value:s.acertos, classe:'success' },
+            { label:'Erros', icon:'fa-times-circle', value:s.erros, classe:'danger' },
+            { label:'Aproveitamento', icon:'fa-percent', value: s.total > 0 ? s.aproveitamento.toFixed(1)+'%' : '—', classe:'info' },
+        ];
+        c.innerHTML = cards.map(x => `
+            <div class="metric-card ${x.classe}">
+                <div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div>
+                <div class="metric-value">${x.value}</div>
+            </div>
+        `).join('');
+    },
+
+    renderDesempenhoPorDisciplina() {
+        const c = document.getElementById('desempenhoPorDisciplina');
+        if (!c) return;
+        const pd = storage.getEstatisticasPorDisciplina();
+        const entries = Object.entries(pd).sort((a,b) => b[1].total - a[1].total);
+        if (entries.length === 0) { c.innerHTML = `<div class="empty-state"><p>Nenhum dado disponível.</p></div>`; return; }
+        c.innerHTML = entries.map(([n, v]) => `
+            <div class="desempenho-item">
+                <div class="desempenho-header">
+                    <span class="desempenho-nome">${App.escapeHtml(n)}</span>
+                    <span class="desempenho-pct">${v.aproveitamento.toFixed(1)}% <small style="font-weight:400;color:var(--text-muted);">(${v.acertos}/${v.total})</small></span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill ${App.corDesempenho(v.aproveitamento)}" style="width:${v.aproveitamento}%"></div></div>
+            </div>
+        `).join('');
+    },
+
+    renderDesempenhoPorAssunto() {
+        const c = document.getElementById('desempenhoPorAssunto');
+        if (!c) return;
+        const pa = storage.getEstatisticasPorAssunto();
+        const entries = Object.entries(pa).filter(([_,v]) => v.total > 0).sort((a,b) => a[1].aproveitamento - b[1].aproveitamento);
+        if (entries.length === 0) { c.innerHTML = `<div class="empty-state"><p>Nenhum dado disponível.</p></div>`; return; }
+        c.innerHTML = entries.slice(0, 15).map(([k, v]) => `
+            <div class="desempenho-item">
+                <div class="desempenho-header">
+                    <span class="desempenho-nome" style="font-size:.82rem;"><span style="color:var(--text-muted);">${App.escapeHtml(v.disciplina)} ›</span> ${App.escapeHtml(v.assunto || 'Geral')}</span>
+                    <span class="desempenho-pct">${v.aproveitamento.toFixed(0)}% (${v.total})</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill ${App.corDesempenho(v.aproveitamento)}" style="width:${v.aproveitamento}%"></div></div>
+            </div>
+        `).join('');
+    },
+
+    renderHistoricoRecente() {
+        const c = document.getElementById('historicoRecente');
+        if (!c) return;
+        const h = storage.getHistorico().slice(0, 10);
+        if (h.length === 0) { c.innerHTML = `<div class="empty-state"><p>Nenhuma questão respondida ainda.</p></div>`; return; }
+        c.innerHTML = h.map(x => `
+            <div class="historico-item">
+                <div class="status ${x.acertou ? 'success' : 'danger'}"><i class="fas ${x.acertou ? 'fa-check' : 'fa-times'}"></i></div>
+                <div class="info">
+                    <strong>${App.escapeHtml(x.disciplina || 'Disciplina')}</strong>
+                    <span>${App.escapeHtml(x.assunto || 'Assunto')} · ${x.acertou ? 'Acertou' : 'Errou'}</span>
+                </div>
+                <div class="data">${App.formatarData(x.data)}</div>
+            </div>
+        `).join('');
+    },
+};
+
+/* ============================================================
+   QUESTÕES — Banco, favoritos, caderno, revisão
+   ============================================================ */
+const Questoes = {
+    render() {
+        this.renderFiltros();
+        this.renderLista();
+    },
+
+    renderFiltros() {
+        const c = document.getElementById('filtrosGrid');
+        if (!c) return;
+        const qs = App.state.questoes;
+        const uniq = (campo) => {
+            const s = new Set();
+            qs.forEach(q => { if (q[campo]) s.add(q[campo]); });
+            return Array.from(s).sort((a,b) => {
+                const na = parseFloat(a), nb = parseFloat(b);
+                if (!isNaN(na) && !isNaN(nb)) return na - nb;
+                return String(a).localeCompare(String(b), 'pt-BR');
+            });
+        };
+        const filtros = [
+            { key:'disciplina', label:'Disciplina', v: uniq('disciplina') },
+            { key:'assunto', label:'Assunto', v: uniq('assunto') },
+            { key:'banca', label:'Banca', v: uniq('banca') },
+            { key:'orgao', label:'Órgão', v: uniq('orgao') },
+            { key:'ano', label:'Ano', v: uniq('ano') },
+            { key:'tipo', label:'Tipo', v: uniq('tipo') },
+            { key:'dificuldade', label:'Dificuldade', v: uniq('dificuldade') },
+            { key:'nivel', label:'Escolaridade', v: uniq('nivel') },
+        ];
+        c.innerHTML = filtros.map(f => {
+            if (f.v.length === 0) return '';
+            const opts = f.v.map(v => `<option value="${App.escapeHtml(v)}" ${App.state.filtros[f.key] === v ? 'selected' : ''}>${App.escapeHtml(v)}</option>`).join('');
+            return `<div class="filtro-group"><label>${f.label}</label><select data-filtro="${f.key}"><option value="">Todos</option>${opts}</select></div>`;
+        }).join('');
+
+        c.querySelectorAll('select[data-filtro]').forEach(sel => {
+            sel.addEventListener('change', (e) => {
+                App.state.filtros[e.target.dataset.filtro] = e.target.value;
+                App.state.pagina = 1;
+                this.renderLista();
+            });
+        });
+
+        document.getElementById('btnLimparFiltros')?.addEventListener('click', () => {
+            App.state.filtros = { disciplina:'', assunto:'', subassunto:'', banca:'', orgao:'', concurso:'', cargo:'', ano:'', nivel:'', tipo:'', dificuldade:'', status:'' };
+            App.state.busca = '';
+            App.state.pagina = 1;
+            const bi = document.getElementById('buscaInput');
+            if (bi) bi.value = '';
+            document.getElementById('buscaClear').style.display = 'none';
+            this.renderFiltros();
+            this.renderLista();
+            App.toast('Filtros limpos.', 'info');
+        });
+
+        document.getElementById('btnIniciarSimuladoFiltros')?.addEventListener('click', () => {
+            const f = this.aplicarFiltros();
+            if (f.length === 0) { App.toast('Nenhuma questão com os filtros atuais.', 'error'); return; }
+            App.navegarPara('simulado');
+            setTimeout(() => Simulado.prepConfig(f), 200);
+        });
+
+        const bi = document.getElementById('buscaInput');
+        const bc = document.getElementById('buscaClear');
+        if (bi) {
+            bi.value = App.state.busca;
+            bi.addEventListener('input', (e) => {
+                App.state.busca = e.target.value;
+                App.state.pagina = 1;
+                if (bc) bc.style.display = e.target.value ? 'flex' : 'none';
+                this.renderLista();
+            });
+        }
+        if (bc) {
+            bc.addEventListener('click', () => {
+                if (bi) bi.value = '';
+                App.state.busca = '';
+                bc.style.display = 'none';
+                App.state.pagina = 1;
+                this.renderLista();
+            });
+        }
+    },
+
+    aplicarFiltros() {
+        let l = [...App.state.questoes];
+        Object.entries(App.state.filtros).forEach(([k, v]) => {
+            if (!v) return;
+            l = l.filter(q => String(q[k] || '').toLowerCase() === String(v).toLowerCase());
+        });
+        if (App.state.busca && App.state.busca.trim()) {
+            const t = App.state.busca.trim().toLowerCase();
+            l = l.filter(q => {
+                const campos = [q.enunciado, q.assunto, q.subassunto, q.banca, q.concurso, q.cargo, q.tags, q.disciplina, q.orgao];
+                return campos.some(c => String(c || '').toLowerCase().includes(t));
+            });
+        }
+        return l;
+    },
+
+    renderLista() {
+        const c = document.getElementById('questoesLista');
+        const info = document.getElementById('resultadoInfo');
+        const pag = document.getElementById('paginacao');
+        if (!c) return;
+        const f = this.aplicarFiltros();
+        App.state.questoesFiltradas = f;
+        const subtitle = document.getElementById('bancoSubtitulo');
+        if (subtitle) subtitle.textContent = `${f.length} questão${f.length !== 1 ? 's' : ''}`;
+        if (info) info.innerHTML = `<i class="fas fa-filter"></i> ${f.length} de ${App.state.questoes.length} questões ${f.length !== App.state.questoes.length ? '(filtros aplicados)' : ''}`;
+        if (f.length === 0) {
+            c.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhuma questão encontrada</h3><p>Tente alterar os filtros ou a busca.</p></div>`;
+            if (pag) pag.innerHTML = '';
+            return;
+        }
+        const totalPag = Math.ceil(f.length / App.state.porPagina);
+        if (App.state.pagina > totalPag) App.state.pagina = totalPag;
+        const ini = (App.state.pagina - 1) * App.state.porPagina;
+        const fim = Math.min(ini + App.state.porPagina, f.length);
+        const page = f.slice(ini, fim);
+        c.innerHTML = page.map(q => this.renderCard(q, false)).join('');
+        this.bindCards(c);
+        this.renderPaginacao(totalPag);
+    },
+
+    renderCard(q, mostrarResposta) {
+        const fav = storage.isFavorito(q.id);
+        const tipo = q.tipo;
+        let alternativasHtml = '';
+        if (tipo === 'Certo/Errado') {
+            alternativasHtml = `
+                <div class="certo-errado">
+                    <button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button>
+                    <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
+                </div>`;
+        } else if (tipo === 'Discursiva') {
+            alternativasHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea><button class="btn btn-primary btn-block mt-16" data-confirmar-discursiva>Confirmar resposta</button></div>`;
+        } else {
+            const alts = [
+                { letra:'A', texto:q.alternativaA },
+                { letra:'B', texto:q.alternativaB },
+                { letra:'C', texto:q.alternativaC },
+                { letra:'D', texto:q.alternativaD },
+                { letra:'E', texto:q.alternativaE },
+            ].filter(a => a.texto);
+            alternativasHtml = `<div class="alternativas">${alts.map(a => `
+                <div class="alternativa" data-alt="${a.letra}">
+                    <span class="alternativa-letra">${a.letra}</span>
+                    <span class="alternativa-texto">${App.escapeHtml(a.texto)}</span>
+                </div>
+            `).join('')}</div>`;
+        }
+
+        const rev = storage.getStatusRevisao(q.id);
+        const revBadge = rev ? `<span class="badge ${rev.status === 'pendente' ? 'badge-warning' : 'badge-success'}"><i class="fas fa-clock-rotate-left"></i> ${rev.status === 'pendente' ? 'Revisar' : 'Revisada'}</span>` : '';
+
+        return `
+            <div class="questao-card" data-id="${App.escapeHtml(q.id)}">
+                <div class="questao-header">
+                    <div class="questao-badges">
+                        <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
+                        ${q.assunto ? `<span class="badge badge-info">${App.escapeHtml(q.assunto)}</span>` : ''}
+                        ${q.banca ? `<span class="badge badge-neutral">${App.escapeHtml(q.banca)}</span>` : ''}
+                        ${q.ano ? `<span class="badge badge-neutral">${App.escapeHtml(q.ano)}</span>` : ''}
+                        ${q.dificuldade ? `<span class="badge badge-warning">${App.escapeHtml(q.dificuldade)}</span>` : ''}
+                        ${revBadge}
+                    </div>
+                    <button class="btn-fav ${fav ? 'active' : ''}" data-fav="${App.escapeHtml(q.id)}" title="Favoritar">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+                <div class="questao-enunciado">${App.escapeHtml(q.enunciado)}</div>
+                ${alternativasHtml}
+                <div class="feedback" style="display:none;" data-feedback></div>
+                <div class="comentario-box" style="display:none;" data-comentario>
+                    ${q.comentario ? `<strong>💬 Comentário</strong><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
+                    ${q.fundamentacao ? `<div class="fundamentacao"><strong>📖 Fundamentação</strong><p>${App.escapeHtml(q.fundamentacao).replace(/\n/g,'<br>')}</p></div>` : ''}
+                    ${q.fonte ? `<div class="fundamentacao"><strong>🔗 Fonte</strong><p>${App.escapeHtml(q.fonte)}</p></div>` : ''}
+                </div>
+                <div class="mt-16 flex-between">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="btn btn-sm btn-outline" data-revisar="${App.escapeHtml(q.id)}"><i class="fas fa-clock-rotate-left"></i> ${rev ? (rev.status === 'pendente' ? 'Revisada' : 'Revisar') : 'Revisar depois'}</button>
+                        <button class="btn btn-sm btn-outline" data-expandir="${App.escapeHtml(q.id)}"><i class="fas fa-expand-alt"></i> Expandir</button>
+                    </div>
+                </div>
+            </div>`;
+    },
+
+    bindCards(container) {
+        container.querySelectorAll('.questao-card').forEach(card => {
+            const id = card.dataset.id;
+            const q = App.state.questoes.find(x => String(x.id) === String(id));
+            if (!q) return;
+            const feedback = card.querySelector('[data-feedback]');
+            const comentario = card.querySelector('[data-comentario]');
+
+            // Favoritar
+            card.querySelector('[data-fav]')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const ativo = storage.toggleFavorito(id);
+                e.currentTarget.classList.toggle('active', ativo);
+                App.atualizarBadges();
+                App.toast(ativo ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'info');
+            });
+
+            // Revisão
+            card.querySelector('[data-revisar]')?.addEventListener('click', (e) => {
+                const atual = storage.getStatusRevisao(id);
+                let novo;
+                if (!atual) novo = 'pendente';
+                else if (atual.status === 'pendente') novo = 'revisada';
+                else novo = null;
+                storage.setStatusRevisao(id, novo);
+                App.atualizarBadges();
+                App.toast(novo === 'pendente' ? 'Marcada para revisão.' : novo === 'revisada' ? 'Marcada como revisada.' : 'Removida da revisão.', 'info');
+                this.renderLista();
+            });
+
+            // Expandir comentário
+            card.querySelector('[data-expandir]')?.addEventListener('click', () => {
+                App.abrirComentario(`<i class="fas fa-comment-dots"></i> Questão ${q.id}`, `
+                    ${q.comentario ? `<p><strong>Comentário:</strong></p><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
+                    ${q.fundamentacao ? `<p><strong>Fundamentação:</strong></p><p>${App.escapeHtml(q.fundamentacao).replace(/\n/g,'<br>')}</p>` : ''}
+                    ${q.fonte ? `<p><strong>Fonte:</strong> ${App.escapeHtml(q.fonte)}</p>` : ''}
+                `);
+            });
+
+            // Responder
+            const responder = (resposta) => {
+                if (card.dataset.respondida === 'true') return;
+                card.dataset.respondida = 'true';
+                const gab = q.gabarito;
+                const acertou = String(resposta).toLowerCase() === String(gab).toLowerCase();
+                // Marca visual
+                if (q.tipo === 'Certo/Errado') {
+                    card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                        b.classList.add('disabled');
+                        if (b.dataset.op === resposta) b.classList.add('selecionado');
+                        if (b.dataset.op === gab) b.classList.add('selecionado');
+                    });
+                } else {
+                    card.querySelectorAll('.alternativa').forEach(a => {
+                        a.classList.add('disabled');
+                        if (a.dataset.alt === resposta) a.classList.add(acertou ? 'correta' : 'incorreta');
+                        if (a.dataset.alt === gab && !acertou) a.classList.add('correta');
+                    });
+                }
+                // Feedback
+                feedback.style.display = 'flex';
+                feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
+                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resposta)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
+                // Comentário
+                comentario.style.display = 'block';
+                // Salva histórico
+                storage.salvarHistorico({
+                    questaoId: q.id,
+                    resposta,
+                    gabarito: gab,
+                    acertou,
+                    disciplina: q.disciplina,
+                    assunto: q.assunto,
+                    tipo: q.tipo,
+                });
+                App.atualizarBadges();
+                App.toast(acertou ? '✓ Acertou!' : '✗ Errou. Veja o comentário.', acertou ? 'success' : 'error');
+            };
+
+            card.querySelectorAll('.alternativa').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (a.classList.contains('disabled')) return;
+                    responder(a.dataset.alt);
+                });
+            });
+            card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                b.addEventListener('click', () => {
+                    if (b.classList.contains('disabled')) return;
+                    responder(b.dataset.op);
+                });
+            });
+            card.querySelector('[data-confirmar-discursiva]')?.addEventListener('click', () => {
+                const txt = card.querySelector('[data-discursiva]').value.trim();
+                if (!txt) { App.toast('Digite sua resposta.', 'error'); return; }
+                card.dataset.respondida = 'true';
+                feedback.style.display = 'flex';
+                feedback.className = 'feedback info';
+                feedback.innerHTML = `<i class="fas fa-info-circle"></i><div><strong>Resposta registrada.</strong>Compare com o comentário abaixo.</div>`;
+                comentario.style.display = 'block';
+                storage.salvarHistorico({ questaoId: q.id, resposta: txt.substring(0, 200), gabarito: q.gabarito, acertou: false, disciplina: q.disciplina, assunto: q.assunto, tipo: q.tipo });
+                App.atualizarBadges();
+            });
+        });
+    },
+
+    renderPaginacao(totalPag) {
+        const p = document.getElementById('paginacao');
+        if (!p) return;
+        if (totalPag <= 1) { p.innerHTML = ''; return; }
+        p.innerHTML = `
+            <button id="pgPrev" ${App.state.pagina === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i> Anterior</button>
+            <span class="paginacao-info">Página ${App.state.pagina} de ${totalPag}</span>
+            <button id="pgNext" ${App.state.pagina === totalPag ? 'disabled' : ''}>Próxima <i class="fas fa-chevron-right"></i></button>
+        `;
+        document.getElementById('pgPrev')?.addEventListener('click', () => {
+            if (App.state.pagina > 1) { App.state.pagina--; this.renderLista(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        });
+        document.getElementById('pgNext')?.addEventListener('click', () => {
+            if (App.state.pagina < totalPag) { App.state.pagina++; this.renderLista(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        });
+    },
+
+    renderFavoritos() {
+        const c = document.getElementById('favoritosLista');
+        const sub = document.getElementById('favoritosSubtitulo');
+        if (!c) return;
+        const favIds = storage.getFavoritos();
+        const favs = App.state.questoes.filter(q => favIds.includes(String(q.id)));
+        if (sub) sub.textContent = `${favs.length} questão${favs.length !== 1 ? 's' : ''}`;
+        if (favs.length === 0) {
+            c.innerHTML = `<div class="empty-state"><i class="fas fa-star"></i><h3>Nenhum favorito ainda</h3><p>Favorite questões do banco para acessá-las rapidamente aqui.</p><button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-database"></i> Ir ao banco</button></div>`;
+            return;
+        }
+        c.innerHTML = favs.map(q => this.renderCard(q, false)).join('');
+        this.bindCards(c);
+    },
+
+    renderCadernoErros() {
+        const c = document.getElementById('cadernoErrosConteudo');
+        if (!c) return;
+        const errIds = storage.getQuestoesErradas();
+        const errs = App.state.questoes.filter(q => errIds.includes(String(q.id)));
+        if (errs.length === 0) {
+            c.innerHTML = `<div class="empty-state"><i class="fas fa-book-skull"></i><h3>Nenhum erro registrado</h3><p>As questões que você errar aparecerão aqui para revisão.</p></div>`;
+            return;
+        }
+        // Agrupa por disciplina
+        const porDisc = {};
+        errs.forEach(q => {
+            const d = q.disciplina || 'Sem disciplina';
+            if (!porDisc[d]) porDisc[d] = [];
+            porDisc[d].push(q);
+        });
+        c.innerHTML = Object.entries(porDisc).map(([d, lista]) => `
+            <div class="section-block">
+                <div class="section-header">
+                    <h2><i class="fas fa-book"></i> ${App.escapeHtml(d)}</h2>
+                    <span class="badge badge-danger">${lista.length} questões</span>
+                </div>
+                <div class="questoes-lista">${lista.map(q => this.renderCard(q, false)).join('')}</div>
+            </div>
+        `).join('');
+        this.bindCards(c);
+        document.getElementById('btnRefazerErros')?.addEventListener('click', () => {
+            if (errs.length === 0) return;
+            Simulado.iniciar(errs, 'treino', true);
+        }, { once: true });
+    },
+
+    renderRevisao() {
+        const c = document.getElementById('revisaoLista');
+        const sub = document.getElementById('revisaoSubtitulo');
+        if (!c) return;
+        const tabAtiva = document.querySelector('.revisao-tabs .tab-btn.active')?.dataset.tab || 'pendente';
+        const ids = tabAtiva === 'pendente' ? storage.getRevisaoPendentes() : storage.getRevisaoRevisadas();
+        const lista = App.state.questoes.filter(q => ids.includes(String(q.id)));
+        if (sub) sub.textContent = `${lista.length} questão${lista.length !== 1 ? 's' : ''}`;
+        if (lista.length === 0) {
+            c.innerHTML = `<div class="empty-state"><i class="fas fa-clock-rotate-left"></i><h3>Nenhuma questão ${tabAtiva === 'pendente' ? 'pendente' : 'revisada'}</h3><p>Use o botão "Revisar depois" nas questões para agendá-las.</p></div>`;
+            return;
+        }
+        c.innerHTML = lista.map(q => this.renderCard(q, false)).join('');
+        this.bindCards(c);
+        document.querySelectorAll('.revisao-tabs .tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.revisao-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.renderRevisao();
+            };
+        });
+    },
+
+    renderTreinoConfig() {
+        const c = document.getElementById('treinoConfigFiltros');
+        if (!c) return;
+        const disciplinas = [...new Set(App.state.questoes.map(q => q.disciplina).filter(Boolean))].sort();
+        c.innerHTML = `
+            <div class="filtro-group"><label>Disciplina</label><select id="treinoDisciplina"><option value="">Todas</option>${disciplinas.map(d => `<option value="${App.escapeHtml(d)}">${App.escapeHtml(d)}</option>`).join('')}</select></div>
+            <div class="filtro-group"><label>Dificuldade</label><select id="treinoDificuldade"><option value="">Todas</option><option>Fácil</option><option>Média</option><option>Difícil</option><option>Muito difícil</option></select></div>
+        `;
+        document.getElementById('btnIniciarTreino')?.addEventListener('click', () => {
+            const disc = document.getElementById('treinoDisciplina').value;
+            const dif = document.getElementById('treinoDificuldade').value;
+            let lista = App.state.questoes;
+            if (disc) lista = lista.filter(q => q.disciplina === disc);
+            if (dif) lista = lista.filter(q => q.dificuldade === dif);
+            if (lista.length === 0) { App.toast('Nenhuma questão encontrada.', 'error'); return; }
+            const shuffled = [...lista].sort(() => Math.random() - 0.5).slice(0, 20);
+            Simulado.iniciar(shuffled, 'treino', false);
+        }, { once: true });
+    },
+};
+
+/* ============================================================
+   SIMULADO
+   ============================================================ */
+const Simulado = {
+    state: {
+        questoes: [],
+        indice: 0,
+        respostas: {},
+        modo: 'treino',
+        finalizado: false,
+    },
+
+    renderSetup() {
+        const c = document.getElementById('simuladoConfigFiltros');
+        if (!c) return;
+        const disciplinas = [...new Set(App.state.questoes.map(q => q.disciplina).filter(Boolean))].sort();
+        const bancas = [...new Set(App.state.questoes.map(q => q.banca).filter(Boolean))].sort();
+        c.innerHTML = `
+            <div class="filtro-group"><label>Disciplina</label><select id="simDisciplina"><option value="">Todas</option>${disciplinas.map(d => `<option value="${App.escapeHtml(d)}">${App.escapeHtml(d)}</option>`).join('')}</select></div>
+            <div class="filtro-group"><label>Banca</label><select id="simBanca"><option value="">Todas</option>${bancas.map(b => `<option value="${App.escapeHtml(b)}">${App.escapeHtml(b)}</option>`).join('')}</select></div>
+            <div class="filtro-group"><label>Tipo</label><select id="simTipo"><option value="">Todos</option><option>Múltipla escolha</option><option>Certo/Errado</option></select></div>
+        `;
+        document.getElementById('simuladoSetup').style.display = 'block';
+        document.getElementById('simuladoRunner').style.display = 'none';
+        document.getElementById('simuladoResultado').style.display = 'none';
+
+        document.querySelectorAll('#qtySelector button').forEach(b => {
+            b.onclick = () => {
+                document.querySelectorAll('#qtySelector button').forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+            };
+        });
+        document.querySelectorAll('#modeSelector button').forEach(b => {
+            b.onclick = () => {
+                document.querySelectorAll('#modeSelector button').forEach(x => x.classList.remove('active'));
+                b.classList.add('active');
+            };
+        });
+
+        document.getElementById('btnIniciarSimulado')?.addEventListener('click', () => {
+            const disc = document.getElementById('simDisciplina').value;
+            const banca = document.getElementById('simBanca').value;
+            const tipo = document.getElementById('simTipo').value;
+            const qty = parseInt(document.querySelector('#qtySelector button.active')?.dataset.qty || '10');
+            const modo = document.querySelector('#modeSelector button.active')?.dataset.mode || 'treino';
+            const aleatorio = document.getElementById('simuladoAleatorio').checked;
+
+            let lista = App.state.questoes;
+            if (disc) lista = lista.filter(q => q.disciplina === disc);
+            if (banca) lista = lista.filter(q => q.banca === banca);
+            if (tipo) lista = lista.filter(q => q.tipo === tipo);
+            if (lista.length === 0) { App.toast('Nenhuma questão com esses filtros.', 'error'); return; }
+            if (aleatorio) lista = [...lista].sort(() => Math.random() - 0.5);
+            lista = lista.slice(0, Math.min(qty, lista.length));
+            this.iniciar(lista, modo, aleatorio);
+        }, { once: true });
+    },
+
+    prepConfig(lista) {
+        this.pendingLista = lista;
+        App.toast(`${lista.length} questões prontas. Configure o simulado.`, 'info');
+    },
+
+    iniciar(questoes, modo, aleatorio) {
+        if (!questoes || questoes.length === 0) { App.toast('Nenhuma questão para iniciar.', 'error'); return; }
+        // Remove duplicatas por ID
+        const vistos = new Set();
+        const unicas = questoes.filter(q => {
+            if (vistos.has(q.id)) return false;
+            vistos.add(q.id);
+            return true;
+        });
+        this.state = {
+            questoes: unicas,
+            indice: 0,
+            respostas: {},
+            modo,
+            finalizado: false,
+        };
+        document.getElementById('simuladoSetup').style.display = 'none';
+        document.getElementById('simuladoResultado').style.display = 'none';
+        document.getElementById('simuladoRunner').style.display = 'block';
+        document.getElementById('simuladoModoLabel').textContent = modo === 'treino' ? 'TREINO' : 'SIMULADO';
+        this.renderQuestao();
+        this.bindNav();
+    },
+
+    bindNav() {
+        document.getElementById('btnAnterior')?.addEventListener('click', () => {
+            if (this.state.indice > 0) { this.state.indice--; this.renderQuestao(); }
+        });
+        document.getElementById('btnProxima')?.addEventListener('click', () => {
+            if (this.state.indice < this.state.questoes.length - 1) {
+                this.state.indice++;
+                this.renderQuestao();
+            } else {
+                this.finalizar();
+            }
+        });
+        document.getElementById('btnSairSimulado')?.addEventListener('click', () => {
+            if (confirm('Deseja sair do simulado? O progresso será perdido.')) {
+                document.getElementById('simuladoRunner').style.display = 'none';
+                document.getElementById('simuladoSetup').style.display = 'block';
+            }
+        });
+    },
+
+    renderQuestao() {
+        const q = this.state.questoes[this.state.indice];
+        if (!q) return;
+        const total = this.state.questoes.length;
+        const idx = this.state.indice;
+        document.getElementById('simuladoProgresso').textContent = `Questão ${idx + 1} de ${total}`;
+        document.getElementById('simuladoProgressFill').style.width = `${((idx + 1) / total) * 100}%`;
+        document.getElementById('btnAnterior').disabled = idx === 0;
+        const btnProx = document.getElementById('btnProxima');
+        btnProx.innerHTML = idx === total - 1 ? 'Finalizar <i class="fas fa-check"></i>' : 'Próxima <i class="fas fa-chevron-right"></i>';
+
+        const container = document.getElementById('questaoRunner');
+        const jaRespondida = this.state.respostas[q.id] !== undefined;
+
+        let altsHtml = '';
+        if (q.tipo === 'Certo/Errado') {
+            altsHtml = `<div class="certo-errado">
+                <button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button>
+                <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
+            </div>`;
+        } else if (q.tipo === 'Discursiva') {
+            altsHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea></div>`;
+        } else {
+            const alts = [
+                { letra:'A', texto:q.alternativaA },
+                { letra:'B', texto:q.alternativaB },
+                { letra:'C', texto:q.alternativaC },
+                { letra:'D', texto:q.alternativaD },
+                { letra:'E', texto:q.alternativaE },
+            ].filter(a => a.texto);
+            altsHtml = `<div class="alternativas">${alts.map(a => `
+                <div class="alternativa" data-alt="${a.letra}">
+                    <span class="alternativa-letra">${a.letra}</span>
+                    <span class="alternativa-texto">${App.escapeHtml(a.texto)}</span>
+                </div>
+            `).join('')}</div>`;
+        }
+
+        container.innerHTML = `
+            <div class="questao-card" data-id="${App.escapeHtml(q.id)}">
+                <div class="questao-header">
+                    <div class="questao-badges">
+                        <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
+                        ${q.assunto ? `<span class="badge badge-info">${App.escapeHtml(q.assunto)}</span>` : ''}
+                        ${q.banca ? `<span class="badge badge-neutral">${App.escapeHtml(q.banca)}</span>` : ''}
+                        ${q.ano ? `<span class="badge badge-neutral">${App.escapeHtml(q.ano)}</span>` : ''}
+                    </div>
+                </div>
+                <div class="questao-enunciado">${App.escapeHtml(q.enunciado)}</div>
+                ${altsHtml}
+                <div class="feedback" style="display:none;" data-feedback></div>
+                <div class="comentario-box" style="display:none;" data-comentario>
+                    ${q.comentario ? `<strong>💬 Comentário</strong><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
+                    ${q.fundamentacao ? `<div class="fundamentacao"><strong>📖 Fundamentação</strong><p>${App.escapeHtml(q.fundamentacao).replace(/\n/g,'<br>')}</p></div>` : ''}
+                    ${q.fonte ? `<div class="fundamentacao"><strong>🔗 Fonte</strong><p>${App.escapeHtml(q.fonte)}</p></div>` : ''}
+                </div>
+            </div>`;
+
+        const card = container.querySelector('.questao-card');
+        const feedback = card.querySelector('[data-feedback]');
+        const comentario = card.querySelector('[data-comentario]');
+
+        const registrar = (resp) => {
+            if (this.state.respostas[q.id] !== undefined) return;
+            this.state.respostas[q.id] = resp;
+            const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
+            // Marca visual
+            if (q.tipo === 'Certo/Errado') {
+                card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                    b.classList.add('disabled');
+                    if (b.dataset.op === resp) b.classList.add('selecionado');
+                    if (b.dataset.op === q.gabarito) b.classList.add('selecionado');
+                });
+            } else {
+                card.querySelectorAll('.alternativa').forEach(a => {
+                    a.classList.add('disabled');
+                    if (a.dataset.alt === resp) a.classList.add(acertou ? 'correta' : 'incorreta');
+                    if (a.dataset.alt === q.gabarito && !acertou) a.classList.add('correta');
+                });
+            }
+            // No modo simulado, só mostra feedback ao final
+            if (this.state.modo === 'treino') {
+                feedback.style.display = 'flex';
+                feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
+                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
+                comentario.style.display = 'block';
+            }
+            // Salva histórico
+            storage.salvarHistorico({
+                questaoId: q.id,
+                resposta: resp,
+                gabarito: q.gabarito,
+                acertou,
+                disciplina: q.disciplina,
+                assunto: q.assunto,
+                tipo: q.tipo,
+            });
+            App.atualizarBadges();
+        };
+
+        card.querySelectorAll('.alternativa').forEach(a => {
+            a.addEventListener('click', () => {
+                if (a.classList.contains('disabled')) return;
+                registrar(a.dataset.alt);
+            });
+        });
+        card.querySelectorAll('.btn-certo-errado').forEach(b => {
+            b.addEventListener('click', () => {
+                if (b.classList.contains('disabled')) return;
+                registrar(b.dataset.op);
+            });
+        });
+        card.querySelector('[data-discursiva]')?.addEventListener('blur', (e) => {
+            if (e.target.value.trim()) registrar(e.target.value.trim().substring(0, 200));
+        });
+
+        // Se já respondida (voltou), marca
+        if (jaRespondida) {
+            const resp = this.state.respostas[q.id];
+            const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
+            if (q.tipo === 'Certo/Errado') {
+                card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                    b.classList.add('disabled');
+                    if (b.dataset.op === resp) b.classList.add('selecionado');
+                    if (b.dataset.op === q.gabarito) b.classList.add('selecionado');
+                });
+            } else {
+                card.querySelectorAll('.alternativa').forEach(a => {
+                    a.classList.add('disabled');
+                    if (a.dataset.alt === resp) a.classList.add(acertou ? 'correta' : 'incorreta');
+                    if (a.dataset.alt === q.gabarito && !acertou) a.classList.add('correta');
+                });
+            }
+            if (this.state.modo === 'treino') {
+                feedback.style.display = 'flex';
+                feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
+                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
+                comentario.style.display = 'block';
+            }
+        }
+    },
+
+    finalizar() {
+        const total = this.state.questoes.length;
+        const respondidas = Object.keys(this.state.respostas).length;
+        let acertos = 0;
+        let erros = 0;
+        const porDisciplina = {};
+        const errosLista = [];
+
+        this.state.questoes.forEach(q => {
+            const resp = this.state.respostas[q.id];
+            if (resp === undefined) return;
+            const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
+            const disc = q.disciplina || 'Geral';
+            if (!porDisciplina[disc]) porDisciplina[disc] = { acertos: 0, total: 0 };
+            porDisciplina[disc].total++;
+            if (acertou) { acertos++; porDisciplina[disc].acertos++; }
+            else { erros++; errosLista.push({ q, resp }); }
+        });
+
+        const pct = respondidas > 0 ? (acertos / respondidas) * 100 : 0;
+        const pctClass = pct >= 80 ? 'success' : pct >= 60 ? '' : 'danger';
+
+        document.getElementById('simuladoRunner').style.display = 'none';
+        const c = document.getElementById('simuladoResultado');
+        c.style.display = 'block';
+
+        c.innerHTML = `
+            <div class="resultado-box">
+                <div class="resultado-pct ${pctClass}">${pct.toFixed(0)}%</div>
+                <div class="resultado-label">Aproveitamento no ${this.state.modo === 'treino' ? 'treino' : 'simulado'}</div>
+                <div class="resultado-stats">
+                    <div class="resultado-stat"><div class="num">${respondidas}</div><div class="lbl">Respondidas</div></div>
+                    <div class="resultado-stat success"><div class="num">${acertos}</div><div class="lbl">Acertos</div></div>
+                    <div class="resultado-stat danger"><div class="num">${erros}</div><div class="lbl">Erros</div></div>
+                </div>
+                <div class="resultado-actions">
+                    ${errosLista.length > 0 ? `<button class="btn btn-danger" id="btnRevisarErros"><i class="fas fa-redo"></i> Revisar erros</button>` : ''}
+                    <button class="btn btn-primary" id="btnNovoSimulado"><i class="fas fa-plus"></i> Novo simulado</button>
+                    <button class="btn btn-outline" id="btnVoltarDash"><i class="fas fa-home"></i> Voltar ao dashboard</button>
+                </div>
+            </div>
+            <div class="section-block">
+                <div class="section-header"><h2><i class="fas fa-book"></i> Desempenho por disciplina</h2></div>
+                <div class="desempenho-list">
+                    ${Object.entries(porDisciplina).map(([d, v]) => {
+                        const p = (v.acertos / v.total) * 100;
+                        return `<div class="desempenho-item">
+                            <div class="desempenho-header">
+                                <span class="desempenho-nome">${App.escapeHtml(d)}</span>
+                                <span class="desempenho-pct">${p.toFixed(0)}% (${v.acertos}/${v.total})</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill ${App.corDesempenho(p)}" style="width:${p}%"></div></div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
+            ${errosLista.length > 0 ? `
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-times-circle"></i> Questões que você errou</h2></div>
+                    <div class="questoes-lista">${errosLista.map(e => Questoes.renderCard(e.q, false)).join('')}</div>
+                </div>
+            ` : ''}
+        `;
+
+        // Bind
+        document.getElementById('btnNovoSimulado')?.addEventListener('click', () => {
+            this.renderSetup();
+        });
+        document.getElementById('btnVoltarDash')?.addEventListener('click', () => {
+            App.navegarPara('dashboard');
+        });
+        document.getElementById('btnRevisarErros')?.addEventListener('click', () => {
+            const qs = errosLista.map(e => e.q);
+            this.iniciar(qs, 'treino', false);
+        });
+        // Bind nos cards de erro (para poder responder de novo)
+        const cardsContainer = c.querySelector('.questoes-lista');
+        if (cardsContainer) Questoes.bindCards(cardsContainer);
+    },
+};
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+const Admin = {
+    render() {
+        this.renderStats();
+        this.renderTable();
+        document.getElementById('adminBusca')?.addEventListener('input', () => this.renderTable());
+        document.getElementById('adminStatusFiltro')?.addEventListener('change', () => this.renderTable());
+    },
+
+    renderStats() {
+        const c = document.getElementById('adminStats');
+        if (!c) return;
+        const qs = App.state.questoes;
+        const stats = {
+            total: qs.length,
+            ativas: qs.filter(q => (q.status || '').toLowerCase() === 'ativa').length,
+            revisar: qs.filter(q => (q.status || '').toLowerCase() === 'revisar').length,
+            anuladas: qs.filter(q => (q.status || '').toLowerCase() === 'anulada').length,
+            inativas: qs.filter(q => (q.status || '').toLowerCase() === 'arquivada' || (q.status || '').toLowerCase() === 'inativa').length,
+        };
+        c.innerHTML = `
+            <div class="admin-stat"><div class="num">${stats.total}</div><div class="lbl">Total</div></div>
+            <div class="admin-stat"><div class="num" style="color:var(--success);">${stats.ativas}</div><div class="lbl">Ativas</div></div>
+            <div class="admin-stat"><div class="num" style="color:var(--warning);">${stats.revisar}</div><div class="lbl">Revisar</div></div>
+            <div class="admin-stat"><div class="num" style="color:var(--danger);">${stats.anuladas}</div><div class="lbl">Anuladas</div></div>
+            <div class="admin-stat"><div class="num" style="color:var(--text-muted);">${stats.inativas}</div><div class="lbl">Inativas</div></div>
+        `;
+    },
+
+    renderTable() {
+        const tbody = document.getElementById('adminTableBody');
+        if (!tbody) return;
+        const busca = (document.getElementById('adminBusca')?.value || '').toLowerCase();
+        const statusFiltro = document.getElementById('adminStatusFiltro')?.value || '';
+        let lista = App.state.questoes;
+        if (busca) lista = lista.filter(q => String(q.id).toLowerCase().includes(busca) || (q.enunciado || '').toLowerCase().includes(busca));
+        if (statusFiltro) lista = lista.filter(q => (q.status || '').toLowerCase() === statusFiltro.toLowerCase());
+        if (lista.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhuma questão encontrada.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = lista.slice(0, 200).map(q => {
+            const statusClass = `status-${(q.status || 'ativa').toLowerCase()}`;
+            return `<tr>
+                <td><strong>${App.escapeHtml(q.id)}</strong></td>
+                <td>${App.escapeHtml(q.disciplina || '—')}</td>
+                <td>${App.escapeHtml(q.assunto || '—')}</td>
+                <td>${App.escapeHtml(q.banca || '—')}</td>
+                <td>${App.escapeHtml(q.tipo || '—')}</td>
+                <td><span class="status-badge ${statusClass}">${App.escapeHtml(q.status || 'Ativa')}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline" data-admin-ver="${App.escapeHtml(q.id)}"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-sm btn-outline" data-admin-edit="${App.escapeHtml(q.id)}"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" data-admin-del="${App.escapeHtml(q.id)}"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('[data-admin-ver]').forEach(b => b.onclick = () => {
+            const q = App.state.questoes.find(x => String(x.id) === b.dataset.adminVer);
+            if (q) App.abrirComentario(`<i class="fas fa-eye"></i> Questão ${q.id}`, `<pre style="white-space:pre-wrap;font-family:inherit;">${App.escapeHtml(q.enunciado)}\n\nGabarito: ${q.gabarito}\n\nComentário: ${q.comentario || '—'}</pre>`);
+        });
+        tbody.querySelectorAll('[data-admin-edit]').forEach(b => b.onclick = () => this.abrirModalEditar(b.dataset.adminEdit));
+        tbody.querySelectorAll('[data-admin-del]').forEach(b => b.onclick = () => this.confirmarExcluir(b.dataset.adminDel));
+    },
+
+    abrirModalNovaQuestao() {
+        this.abrirModalForm(null);
+    },
+
+    abrirModalEditar(id) {
+        const q = App.state.questoes.find(x => String(x.id) === String(id));
+        if (q) this.abrirModalForm(q);
+    },
+
+    abrirModalForm(q) {
+        const ehEdicao = !!q;
+        q = q || { tipo: 'Múltipla escolha', status: 'Ativa' };
+        const html = `
+            <div class="form-row">
+                <div class="form-group"><label>Disciplina *</label><input type="text" id="fDisciplina" value="${App.escapeHtml(q.disciplina||'')}"></div>
+                <div class="form-group"><label>Assunto</label><input type="text" id="fAssunto" value="${App.escapeHtml(q.assunto||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Subassunto</label><input type="text" id="fSubassunto" value="${App.escapeHtml(q.subassunto||'')}"></div>
+                <div class="form-group"><label>Banca</label><input type="text" id="fBanca" value="${App.escapeHtml(q.banca||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Órgão</label><input type="text" id="fOrgao" value="${App.escapeHtml(q.orgao||'')}"></div>
+                <div class="form-group"><label>Concurso</label><input type="text" id="fConcurso" value="${App.escapeHtml(q.concurso||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Cargo</label><input type="text" id="fCargo" value="${App.escapeHtml(q.cargo||'')}"></div>
+                <div class="form-group"><label>Ano</label><input type="text" id="fAno" value="${App.escapeHtml(q.ano||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Escolaridade</label><input type="text" id="fNivel" value="${App.escapeHtml(q.nivel||'')}"></div>
+                <div class="form-group"><label>Tipo *</label>
+                    <select id="fTipo">
+                        <option value="Múltipla escolha" ${q.tipo==='Múltipla escolha'?'selected':''}>Múltipla escolha</option>
+                        <option value="Certo/Errado" ${q.tipo==='Certo/Errado'?'selected':''}>Certo/Errado</option>
+                        <option value="Discursiva" ${q.tipo==='Discursiva'?'selected':''}>Discursiva</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group"><label>Enunciado *</label><textarea id="fEnunciado" rows="4">${App.escapeHtml(q.enunciado||'')}</textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>Alternativa A</label><input type="text" id="fA" value="${App.escapeHtml(q.alternativaA||'')}"></div>
+                <div class="form-group"><label>Alternativa B</label><input type="text" id="fB" value="${App.escapeHtml(q.alternativaB||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Alternativa C</label><input type="text" id="fC" value="${App.escapeHtml(q.alternativaC||'')}"></div>
+                <div class="form-group"><label>Alternativa D</label><input type="text" id="fD" value="${App.escapeHtml(q.alternativaD||'')}"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Alternativa E</label><input type="text" id="fE" value="${App.escapeHtml(q.alternativaE||'')}"></div>
+                <div class="form-group"><label>Gabarito *</label><input type="text" id="fGabarito" value="${App.escapeHtml(q.gabarito||'')}" placeholder="A/B/C/D/E ou Certo/Errado"></div>
+            </div>
+            <div class="form-group"><label>Comentário</label><textarea id="fComentario" rows="3">${App.escapeHtml(q.comentario||'')}</textarea></div>
+            <div class="form-group"><label>Fundamentação</label><textarea id="fFundamentacao" rows="2">${App.escapeHtml(q.fundamentacao||'')}</textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>Fonte</label><input type="text" id="fFonte" value="${App.escapeHtml(q.fonte||'')}"></div>
+                <div class="form-group"><label>Dificuldade</label>
+                    <select id="fDificuldade">
+                        <option value="">—</option>
+                        <option ${q.dificuldade==='Fácil'?'selected':''}>Fácil</option>
+                        <option ${q.dificuldade==='Média'?'selected':''}>Média</option>
+                        <option ${q.dificuldade==='Difícil'?'selected':''}>Difícil</option>
+                        <option ${q.dificuldade==='Muito difícil'?'selected':''}>Muito difícil</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Tags</label><input type="text" id="fTags" value="${App.escapeHtml(q.tags||'')}"></div>
+                <div class="form-group"><label>Status</label>
+                    <select id="fStatus">
+                        <option ${q.status==='Ativa'?'selected':''}>Ativa</option>
+                        <option ${q.status==='Revisar'?'selected':''}>Revisar</option>
+                        <option ${q.status==='Anulada'?'selected':''}>Anulada</option>
+                        <option ${q.status==='Arquivada'?'selected':''}>Arquivada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group"><label>Observações</label><textarea id="fObservacoes" rows="2">${App.escapeHtml(q.observacoes||'')}</textarea></div>
+            <div class="form-group"><label>Imagem (URL)</label><input type="text" id="fImagem" value="${App.escapeHtml(q.imagemUrl||'')}"></div>
+            <p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;"><i class="fas fa-info-circle"></i> A gravação é enviada via API (POST). Se a API não suportar criação ainda, o frontend exibirá uma mensagem amigável.</p>
+        `;
+        App.abrirModal(ehEdicao ? 'Editar Questão' : 'Nova Questão', html, async () => {
+            const dados = {
+                disciplina: document.getElementById('fDisciplina').value.trim(),
+                assunto: document.getElementById('fAssunto').value.trim(),
+                subassunto: document.getElementById('fSubassunto').value.trim(),
+                banca: document.getElementById('fBanca').value.trim(),
+                orgao: document.getElementById('fOrgao').value.trim(),
+                concurso: document.getElementById('fConcurso').value.trim(),
+                cargo: document.getElementById('fCargo').value.trim(),
+                ano: document.getElementById('fAno').value.trim(),
+                nivel: document.getElementById('fNivel').value.trim(),
+                tipo: document.getElementById('fTipo').value,
+                enunciado: document.getElementById('fEnunciado').value.trim(),
+                alternativaA: document.getElementById('fA').value.trim(),
+                alternativaB: document.getElementById('fB').value.trim(),
+                alternativaC: document.getElementById('fC').value.trim(),
+                alternativaD: document.getElementById('fD').value.trim(),
+                alternativaE: document.getElementById('fE').value.trim(),
+                gabarito: document.getElementById('fGabarito').value.trim(),
+                comentario: document.getElementById('fComentario').value.trim(),
+                fundamentacao: document.getElementById('fFundamentacao').value.trim(),
+                fonte: document.getElementById('fFonte').value.trim(),
+                dificuldade: document.getElementById('fDificuldade').value,
+                tags: document.getElementById('fTags').value.trim(),
+                status: document.getElementById('fStatus').value,
+                observacoes: document.getElementById('fObservacoes').value.trim(),
+                imagemUrl: document.getElementById('fImagem').value.trim(),
+            };
+            if (!dados.disciplina || !dados.enunciado || !dados.gabarito) {
+                App.toast('Preencha os campos obrigatórios (*).', 'error');
+                return;
+            }
+            try {
+                if (ehEdicao) {
+                    await api.atualizarQuestao(q.id, dados);
+                    App.toast('Requisição de atualização enviada!', 'success');
+                } else {
+                    await api.criarQuestao(dados);
+                    App.toast('Requisição de criação enviada!', 'success');
+                }
+                App.fecharModal();
+                // Recarrega após 2s
+                setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
+            } catch (e) {
+                App.toast('Erro ao enviar. Verifique se a API suporta esta operação.', 'error');
+            }
+        });
+    },
+
+    confirmarExcluir(id) {
+        App.abrirModal('Excluir Questão', `<p>Tem certeza que deseja excluir a questão <strong>${App.escapeHtml(id)}</strong>? Esta ação não pode ser desfeita.</p>`, async () => {
+            try {
+                await api.excluirQuestao(id);
+                App.toast('Requisição de exclusão enviada!', 'success');
+                App.fecharModal();
+                setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
+            } catch (e) {
+                App.toast('Erro ao excluir. Verifique se a API suporta esta operação.', 'error');
+            }
+        });
+    },
+};
+
+/* ============================================================
+   EXPOR GLOBAL
+   ============================================================ */
+window.App = App;
+window.Questoes = Questoes;
+window.Dashboard = Dashboard;
+window.Simulado = Simulado;
+window.Admin = Admin;
+window.api = api;
+window.storage = storage;
+
+/* ========== BOOT ========== */
+document.addEventListener('DOMContentLoaded', () => {
+    App.init();
+});
+
+})();
+</script>
+</body>
+</html>
