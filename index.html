@@ -481,6 +481,20 @@ button{font-family:inherit;cursor:pointer}
 .mt-16{margin-top:16px}
 .mb-16{margin-bottom:16px}
 .flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+
+/* ========== MELHORIAS DE LEITURA (NOVO) ========== */
+.questao-enunciado{white-space:pre-wrap;word-break:break-word;font-size:.95rem;line-height:1.75;color:var(--text-primary);margin-bottom:18px;padding:0 2px}
+.comentario-box p{white-space:pre-wrap;margin-bottom:12px;line-height:1.75}
+.comentario-box .fundamentacao p{white-space:pre-wrap}
+.modal-body p{white-space:pre-wrap}
+.questao-card{scroll-margin-top:80px}
+.carregando-inline{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px 20px;color:var(--text-muted);font-size:.9rem}
+.carregando-inline i{animation:spin 1s linear infinite}
+.skeleton{background:linear-gradient(90deg,var(--border-light) 25%,var(--bg-body) 50%,var(--border-light) 75%);background-size:200% 100%;animation:skeleton 1.5s infinite;border-radius:var(--radius-sm)}
+@keyframes skeleton{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.btn-responder{margin-top:16px;width:100%;padding:14px;font-size:.95rem;font-weight:700;letter-spacing:.3px}
+.comentario-toggle{margin-top:12px}
+.feedback-oculto{display:none}
 </style>
 </head>
 <body>
@@ -526,7 +540,7 @@ button{font-family:inherit;cursor:pointer}
         <div class="sidebar-footer">
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
             <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Atualizar banco</button>
-            <div class="version-info">VULP+ v1.2</div>
+            <div class="version-info">VULP+ v1.3</div>
         </div>
     </aside>
 
@@ -617,7 +631,7 @@ button{font-family:inherit;cursor:pointer}
                         <div class="config-row">
                             <label>Modo</label>
                             <div class="mode-selector" id="modeSelector">
-                                <button data-mode="treino" class="active"><i class="fas fa-graduation-cap"></i> Treino<small>Gabarito imediato</small></button>
+                                <button data-mode="treino" class="active"><i class="fas fa-graduation-cap"></i> Treino<small>Gabarito no final</small></button>
                                 <button data-mode="simulado"><i class="fas fa-bullseye"></i> Simulado<small>Gabarito no final</small></button>
                             </div>
                         </div>
@@ -779,8 +793,9 @@ button{font-family:inherit;cursor:pointer}
 
 <script>
 /* ============================================================
-   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.2
-   Comunicação corrigida com Google Apps Script
+   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.3
+   Melhorias: comunicação API, dashboard profissional,
+   apresentação de questões e fluxo controlado de resposta.
    ============================================================ */
 (function(){
 'use strict';
@@ -790,9 +805,7 @@ button{font-family:inherit;cursor:pointer}
    ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbwvzs9IgvokXqwU0MYlL9wFsMwz7gMEbbJUjmX34YKeNTEfSxgxC8jHgEDjeym208EzOA/exec";
 const API_CONFIG = {
-    // Se seu Apps Script usar ?action=list, mude para true.
     USAR_ACTION_LIST: false,
-    // Tempo máximo de espera (ms)
     TIMEOUT_MS: 20000,
 };
 
@@ -871,7 +884,6 @@ const api = {
         const trimmed = text.trim();
         if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!doctype')) {
             console.error('[API] ❌ API retornou HTML em vez de JSON');
-            console.error('[API] HTML recebido:', trimmed.substring(0, 800));
             console.groupEnd();
             const e = new Error('A API retornou HTML (provável página de login/erro do Google). Verifique se o Web App está publicado como "Qualquer pessoa".');
             e.tipo = 'HTML';
@@ -884,7 +896,6 @@ const api = {
             json = JSON.parse(text);
         } catch (parseErr) {
             console.error('[API] ❌ JSON inválido:', parseErr);
-            console.error('[API] Texto recebido:', text.substring(0, 800));
             console.groupEnd();
             const e = new Error('A API retornou conteúdo que não é JSON válido.');
             e.tipo = 'JSON_INVALIDO';
@@ -1717,7 +1728,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   QUESTÕES
+   QUESTÕES — COM FLUXO CONTROLADO DE RESPOSTA
    ============================================================ */
 const Questoes = {
     render() {
@@ -1843,6 +1854,13 @@ const Questoes = {
         this.renderPaginacao(totalPag);
     },
 
+    /**
+     * Renderiza um card de questão com o novo fluxo controlado:
+     * Estado 1: não respondida → botão "Responder"
+     * Estado 2: alternativa selecionada → botão "Responder"
+     * Estado 3: respondida → feedback + botão "Mostrar comentário"
+     * Estado 4: comentário aberto → botão "Ocultar comentário"
+     */
     renderCard(q, mostrarResposta) {
         const fav = storage.isFavorito(q.id);
         const tipo = q.tipo;
@@ -1854,7 +1872,7 @@ const Questoes = {
                     <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
                 </div>`;
         } else if (tipo === 'Discursiva') {
-            alternativasHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea><button class="btn btn-primary btn-block mt-16" data-confirmar-discursiva>Confirmar resposta</button></div>`;
+            alternativasHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea></div>`;
         } else {
             const alts = [
                 { letra:'A', texto:q.alternativaA },
@@ -1875,7 +1893,7 @@ const Questoes = {
         const revBadge = rev ? `<span class="badge ${rev.status === 'pendente' ? 'badge-warning' : 'badge-success'}"><i class="fas fa-clock-rotate-left"></i> ${rev.status === 'pendente' ? 'Revisar' : 'Revisada'}</span>` : '';
 
         return `
-            <div class="questao-card" data-id="${App.escapeHtml(q.id)}">
+            <div class="questao-card" data-id="${App.escapeHtml(q.id)}" data-estado="nao-respondida">
                 <div class="questao-header">
                     <div class="questao-badges">
                         <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
@@ -1891,7 +1909,9 @@ const Questoes = {
                 </div>
                 <div class="questao-enunciado">${App.escapeHtml(q.enunciado)}</div>
                 ${alternativasHtml}
-                <div class="feedback" style="display:none;" data-feedback></div>
+                <button class="btn btn-primary btn-responder" data-responder style="display:none;">Responder</button>
+                <div class="feedback feedback-oculto" data-feedback></div>
+                <button class="btn btn-outline comentario-toggle" data-toggle-comentario style="display:none;">Mostrar comentário</button>
                 <div class="comentario-box" style="display:none;" data-comentario>
                     ${q.comentario ? `<strong>💬 Comentário</strong><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
                     ${q.fundamentacao ? `<div class="fundamentacao"><strong>📖 Fundamentação</strong><p>${App.escapeHtml(q.fundamentacao).replace(/\n/g,'<br>')}</p></div>` : ''}
@@ -1911,9 +1931,15 @@ const Questoes = {
             const id = card.dataset.id;
             const q = App.state.questoes.find(x => String(x.id) === String(id));
             if (!q) return;
+
+            const estado = card.dataset.estado;
             const feedback = card.querySelector('[data-feedback]');
             const comentario = card.querySelector('[data-comentario]');
+            const btnResponder = card.querySelector('[data-responder]');
+            const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
+            const tipo = q.tipo;
 
+            // Favoritar
             card.querySelector('[data-fav]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const ativo = storage.toggleFavorito(id);
@@ -1922,6 +1948,7 @@ const Questoes = {
                 App.toast(ativo ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'info');
             });
 
+            // Revisar
             card.querySelector('[data-revisar]')?.addEventListener('click', () => {
                 const atual = storage.getStatusRevisao(id);
                 let novo;
@@ -1934,6 +1961,7 @@ const Questoes = {
                 this.renderLista();
             });
 
+            // Expandir
             card.querySelector('[data-expandir]')?.addEventListener('click', () => {
                 App.abrirComentario(`<i class="fas fa-comment-dots"></i> Questão ${q.id}`, `
                     ${q.comentario ? `<p><strong>Comentário:</strong></p><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
@@ -1942,31 +1970,81 @@ const Questoes = {
                 `);
             });
 
-            const responder = (resposta) => {
-                if (card.dataset.respondida === 'true') return;
-                card.dataset.respondida = 'true';
-                const gab = q.gabarito;
-                const acertou = String(resposta).toLowerCase() === String(gab).toLowerCase();
-                if (q.tipo === 'Certo/Errado') {
-                    card.querySelectorAll('.btn-certo-errado').forEach(b => {
-                        b.classList.add('disabled');
-                        if (b.dataset.op === resposta) b.classList.add('selecionado');
-                        if (b.dataset.op === gab) b.classList.add('selecionado');
+            // ========== NOVO FLUXO ==========
+            let selecionada = null;
+            let respondida = false;
+
+            const habilitarBotaoResponder = () => {
+                if (btnResponder && !respondida) {
+                    btnResponder.style.display = 'inline-flex';
+                }
+            };
+
+            // Selecionar alternativa (não revela nada)
+            if (tipo === 'Certo/Errado') {
+                card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                    b.addEventListener('click', () => {
+                        if (respondida) return;
+                        card.querySelectorAll('.btn-certo-errado').forEach(x => x.classList.remove('selecionado'));
+                        b.classList.add('selecionado');
+                        selecionada = b.dataset.op;
+                        habilitarBotaoResponder();
                     });
-                } else {
-                    card.querySelectorAll('.alternativa').forEach(a => {
-                        a.classList.add('disabled');
-                        if (a.dataset.alt === resposta) a.classList.add(acertou ? 'correta' : 'incorreta');
-                        if (a.dataset.alt === gab && !acertou) a.classList.add('correta');
+                });
+            } else if (tipo === 'Discursiva') {
+                const txt = card.querySelector('[data-discursiva]');
+                if (txt) {
+                    txt.addEventListener('input', () => {
+                        if (respondida) return;
+                        selecionada = txt.value.trim();
+                        if (selecionada) habilitarBotaoResponder();
                     });
                 }
-                feedback.style.display = 'flex';
+            } else {
+                card.querySelectorAll('.alternativa').forEach(a => {
+                    a.addEventListener('click', () => {
+                        if (respondida) return;
+                        card.querySelectorAll('.alternativa').forEach(x => x.classList.remove('selecionada'));
+                        a.classList.add('selecionada');
+                        selecionada = a.dataset.alt;
+                        habilitarBotaoResponder();
+                    });
+                });
+            }
+
+            // Botão Responder
+            btnResponder?.addEventListener('click', () => {
+                if (respondida || !selecionada) return;
+                respondida = true;
+                card.dataset.estado = 'respondida';
+                btnResponder.style.display = 'none';
+
+                const gab = q.gabarito;
+                const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
+
+                if (tipo === 'Certo/Errado') {
+                    card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                        b.classList.add('disabled');
+                        if (b.dataset.op === gab) b.classList.add('selecionado');
+                    });
+                } else if (tipo === 'Múltipla escolha') {
+                    card.querySelectorAll('.alternativa').forEach(a => {
+                        a.classList.add('disabled');
+                        if (a.dataset.alt === gab) a.classList.add('correta');
+                        if (a.dataset.alt === selecionada && !acertou) a.classList.add('incorreta');
+                    });
+                }
+
+                feedback.classList.remove('feedback-oculto');
                 feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
-                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resposta)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
-                comentario.style.display = 'block';
+                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
+
+                btnToggleComentario.style.display = 'inline-flex';
+                btnToggleComentario.textContent = 'Mostrar comentário';
+
                 storage.salvarHistorico({
                     questaoId: q.id,
-                    resposta,
+                    resposta: selecionada,
                     gabarito: gab,
                     acertou,
                     disciplina: q.disciplina,
@@ -1975,30 +2053,20 @@ const Questoes = {
                 });
                 App.atualizarBadges();
                 App.toast(acertou ? '✓ Acertou!' : '✗ Errou. Veja o comentário.', acertou ? 'success' : 'error');
-            };
+            });
 
-            card.querySelectorAll('.alternativa').forEach(a => {
-                a.addEventListener('click', () => {
-                    if (a.classList.contains('disabled')) return;
-                    responder(a.dataset.alt);
-                });
-            });
-            card.querySelectorAll('.btn-certo-errado').forEach(b => {
-                b.addEventListener('click', () => {
-                    if (b.classList.contains('disabled')) return;
-                    responder(b.dataset.op);
-                });
-            });
-            card.querySelector('[data-confirmar-discursiva]')?.addEventListener('click', () => {
-                const txt = card.querySelector('[data-discursiva]').value.trim();
-                if (!txt) { App.toast('Digite sua resposta.', 'error'); return; }
-                card.dataset.respondida = 'true';
-                feedback.style.display = 'flex';
-                feedback.className = 'feedback info';
-                feedback.innerHTML = `<i class="fas fa-info-circle"></i><div><strong>Resposta registrada.</strong>Compare com o comentário abaixo.</div>`;
-                comentario.style.display = 'block';
-                storage.salvarHistorico({ questaoId: q.id, resposta: txt.substring(0, 200), gabarito: q.gabarito, acertou: false, disciplina: q.disciplina, assunto: q.assunto, tipo: q.tipo });
-                App.atualizarBadges();
+            // Toggle comentário
+            btnToggleComentario?.addEventListener('click', () => {
+                const visivel = comentario.style.display !== 'none';
+                if (visivel) {
+                    comentario.style.display = 'none';
+                    btnToggleComentario.textContent = 'Mostrar comentário';
+                    card.dataset.estado = 'respondida';
+                } else {
+                    comentario.style.display = 'block';
+                    btnToggleComentario.textContent = 'Ocultar comentário';
+                    card.dataset.estado = 'comentario-aberto';
+                }
             });
         });
     },
@@ -2267,7 +2335,7 @@ const Simulado = {
         }
 
         container.innerHTML = `
-            <div class="questao-card" data-id="${App.escapeHtml(q.id)}">
+            <div class="questao-card" data-id="${App.escapeHtml(q.id)}" data-estado="${jaRespondida ? 'respondida' : 'nao-respondida'}">
                 <div class="questao-header">
                     <div class="questao-badges">
                         <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
@@ -2278,7 +2346,9 @@ const Simulado = {
                 </div>
                 <div class="questao-enunciado">${App.escapeHtml(q.enunciado)}</div>
                 ${altsHtml}
-                <div class="feedback" style="display:none;" data-feedback></div>
+                <button class="btn btn-primary btn-responder" data-responder style="display:${jaRespondida ? 'none' : 'none'};">Responder</button>
+                <div class="feedback ${jaRespondida ? '' : 'feedback-oculto'}" data-feedback></div>
+                <button class="btn btn-outline comentario-toggle" data-toggle-comentario style="display:${jaRespondida ? 'inline-flex' : 'none'};">Mostrar comentário</button>
                 <div class="comentario-box" style="display:none;" data-comentario>
                     ${q.comentario ? `<strong>💬 Comentário</strong><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
                     ${q.fundamentacao ? `<div class="fundamentacao"><strong>📖 Fundamentação</strong><p>${App.escapeHtml(q.fundamentacao).replace(/\n/g,'<br>')}</p></div>` : ''}
@@ -2289,10 +2359,16 @@ const Simulado = {
         const card = container.querySelector('.questao-card');
         const feedback = card.querySelector('[data-feedback]');
         const comentario = card.querySelector('[data-comentario]');
+        const btnResponder = card.querySelector('[data-responder]');
+        const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
 
-        const registrar = (resp) => {
-            if (this.state.respostas[q.id] !== undefined) return;
-            this.state.respostas[q.id] = resp;
+        let selecionada = null;
+        let respondida = jaRespondida;
+
+        // Restaurar estado se já respondida
+        if (jaRespondida) {
+            const resp = this.state.respostas[q.id];
+            selecionada = resp;
             const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
             if (q.tipo === 'Certo/Errado') {
                 card.querySelectorAll('.btn-certo-errado').forEach(b => {
@@ -2307,63 +2383,108 @@ const Simulado = {
                     if (a.dataset.alt === q.gabarito && !acertou) a.classList.add('correta');
                 });
             }
-            if (this.state.modo === 'treino') {
-                feedback.style.display = 'flex';
-                feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
-                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
-                comentario.style.display = 'block';
+            feedback.classList.remove('feedback-oculto');
+            feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
+            feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
+        }
+
+        const habilitarBotaoResponder = () => {
+            if (btnResponder && !respondida) {
+                btnResponder.style.display = 'inline-flex';
             }
+        };
+
+        // Selecionar alternativa (sem revelar)
+        if (q.tipo === 'Certo/Errado') {
+            card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                b.addEventListener('click', () => {
+                    if (respondida) return;
+                    card.querySelectorAll('.btn-certo-errado').forEach(x => x.classList.remove('selecionado'));
+                    b.classList.add('selecionado');
+                    selecionada = b.dataset.op;
+                    habilitarBotaoResponder();
+                });
+            });
+        } else if (q.tipo === 'Discursiva') {
+            const txt = card.querySelector('[data-discursiva]');
+            if (txt) {
+                txt.addEventListener('input', () => {
+                    if (respondida) return;
+                    selecionada = txt.value.trim();
+                    if (selecionada) habilitarBotaoResponder();
+                });
+            }
+        } else {
+            card.querySelectorAll('.alternativa').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (respondida) return;
+                    card.querySelectorAll('.alternativa').forEach(x => x.classList.remove('selecionada'));
+                    a.classList.add('selecionada');
+                    selecionada = a.dataset.alt;
+                    habilitarBotaoResponder();
+                });
+            });
+        }
+
+        // Botão Responder
+        btnResponder?.addEventListener('click', () => {
+            if (respondida || !selecionada) return;
+            respondida = true;
+            card.dataset.estado = 'respondida';
+            btnResponder.style.display = 'none';
+
+            const gab = q.gabarito;
+            const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
+
+            if (q.tipo === 'Certo/Errado') {
+                card.querySelectorAll('.btn-certo-errado').forEach(b => {
+                    b.classList.add('disabled');
+                    if (b.dataset.op === gab) b.classList.add('selecionado');
+                });
+            } else if (q.tipo === 'Múltipla escolha') {
+                card.querySelectorAll('.alternativa').forEach(a => {
+                    a.classList.add('disabled');
+                    if (a.dataset.alt === gab) a.classList.add('correta');
+                    if (a.dataset.alt === selecionada && !acertou) a.classList.add('incorreta');
+                });
+            }
+
+            feedback.classList.remove('feedback-oculto');
+            feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
+            feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
+
+            btnToggleComentario.style.display = 'inline-flex';
+            btnToggleComentario.textContent = 'Mostrar comentário';
+
+            this.state.respostas[q.id] = selecionada;
             storage.salvarHistorico({
                 questaoId: q.id,
-                resposta: resp,
-                gabarito: q.gabarito,
+                resposta: selecionada,
+                gabarito: gab,
                 acertou,
                 disciplina: q.disciplina,
                 assunto: q.assunto,
                 tipo: q.tipo,
             });
             App.atualizarBadges();
-        };
-
-        card.querySelectorAll('.alternativa').forEach(a => {
-            a.addEventListener('click', () => {
-                if (a.classList.contains('disabled')) return;
-                registrar(a.dataset.alt);
-            });
-        });
-        card.querySelectorAll('.btn-certo-errado').forEach(b => {
-            b.addEventListener('click', () => {
-                if (b.classList.contains('disabled')) return;
-                registrar(b.dataset.op);
-            });
-        });
-        card.querySelector('[data-discursiva]')?.addEventListener('blur', (e) => {
-            if (e.target.value.trim()) registrar(e.target.value.trim().substring(0, 200));
         });
 
-        if (jaRespondida) {
-            const resp = this.state.respostas[q.id];
-            const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
-            if (q.tipo === 'Certo/Errado') {
-                card.querySelectorAll('.btn-certo-errado').forEach(b => {
-                    b.classList.add('disabled');
-                    if (b.dataset.op === resp) b.classList.add('selecionado');
-                    if (b.dataset.op === q.gabarito) b.classList.add('selecionado');
-                });
+        // Toggle comentário
+        btnToggleComentario?.addEventListener('click', () => {
+            const visivel = comentario.style.display !== 'none';
+            if (visivel) {
+                comentario.style.display = 'none';
+                btnToggleComentario.textContent = 'Mostrar comentário';
+                card.dataset.estado = 'respondida';
             } else {
-                card.querySelectorAll('.alternativa').forEach(a => {
-                    a.classList.add('disabled');
-                    if (a.dataset.alt === resp) a.classList.add(acertou ? 'correta' : 'incorreta');
-                    if (a.dataset.alt === q.gabarito && !acertou) a.classList.add('correta');
-                });
-            }
-            if (this.state.modo === 'treino') {
-                feedback.style.display = 'flex';
-                feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
-                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
                 comentario.style.display = 'block';
+                btnToggleComentario.textContent = 'Ocultar comentário';
+                card.dataset.estado = 'comentario-aberto';
             }
-        }
+        });
+
+        // Botão responder aparece ao selecionar
+        // (já tratado nos listeners acima)
     },
 
     finalizar() {
