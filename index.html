@@ -526,7 +526,7 @@ button{font-family:inherit;cursor:pointer}
         <div class="sidebar-footer">
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
             <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Atualizar banco</button>
-            <div class="version-info">VULP+ v1.0</div>
+            <div class="version-info">VULP+ v1.2</div>
         </div>
     </aside>
 
@@ -779,34 +779,131 @@ button{font-family:inherit;cursor:pointer}
 
 <script>
 /* ============================================================
-   VULP+ QUESTÕES — APLICATIVO COMPLETO
+   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.2
+   Comunicação corrigida com Google Apps Script
    ============================================================ */
 (function(){
 'use strict';
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzPPCC9wQlf1EDiRiz6_EF4e_mR7scXhvITSzTgrOtoJDJQoDFNzOt8Xfh9Wl34Sm2oeQ/exec";
+/* ============================================================
+   CONFIGURAÇÃO CENTRAL — ÚNICA FONTE DE VERDADE DA API
+   ============================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbwvzs9IgvokXqwU0MYlL9wFsMwz7gMEbbJUjmX34YKeNTEfSxgxC8jHgEDjeym208EzOA/exec";
+const API_CONFIG = {
+    // Se seu Apps Script usar ?action=list, mude para true.
+    USAR_ACTION_LIST: false,
+    // Tempo máximo de espera (ms)
+    TIMEOUT_MS: 20000,
+};
 
 /* ============================================================
-   CAMADA DE API
+   CAMADA DE API — DIAGNÓSTICO COMPLETO
    ============================================================ */
 const api = {
     async _fetch(url, options = {}) {
+        console.group('%c[API] Requisição', 'color:#7c3aed;font-weight:bold');
+        console.log('[API] URL:', url);
+        console.log('[API] Método:', options.method || 'GET');
+        const t0 = performance.now();
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT_MS);
+
+        let response;
         try {
-            const response = await fetch(url, {
+            response = await fetch(url, {
                 method: options.method || 'GET',
-                headers: options.headers || { 'Content-Type': 'application/json' },
+                headers: options.headers || (options.body ? { 'Content-Type': 'application/json' } : {}),
                 body: options.body || null,
                 redirect: 'follow',
+                signal: controller.signal,
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            const text = await response.text();
-            if (!text || !text.trim()) throw new Error('Resposta vazia da API');
-            try { return JSON.parse(text); }
-            catch (e) { throw new Error('Resposta inválida: não é JSON'); }
-        } catch (error) {
-            console.error('[API] Erro na requisição:', error);
-            throw error;
+        } catch (netErr) {
+            clearTimeout(timeoutId);
+            console.error('[API] ❌ ERRO DE CONEXÃO/CORS:', netErr);
+            if (netErr.name === 'AbortError') {
+                console.error('[API] Timeout após', API_CONFIG.TIMEOUT_MS, 'ms');
+            }
+            console.groupEnd();
+            const e = new Error(
+                netErr.name === 'AbortError'
+                    ? `Timeout de ${API_CONFIG.TIMEOUT_MS / 1000}s na API.`
+                    : 'Falha de conexão com a API (possível CORS ou rede).'
+            );
+            e.tipo = netErr.name === 'AbortError' ? 'TIMEOUT' : 'CORS_OU_REDE';
+            e.original = netErr;
+            throw e;
+        } finally {
+            clearTimeout(timeoutId);
         }
+
+        const dt = (performance.now() - t0).toFixed(0);
+        console.log(`[API] ✅ Resposta em ${dt}ms`);
+        console.log('[API] Status HTTP:', response.status, response.statusText);
+        console.log('[API] Content-Type:', response.headers.get('content-type'));
+        console.log('[API] URL final (após redirect):', response.url);
+        console.log('[API] redirected:', response.redirected);
+
+        const text = await response.text();
+        console.log('[API] Tamanho da resposta:', text.length, 'caracteres');
+        if (text.length > 0) {
+            console.log('[API] Primeiros 300 chars:', text.substring(0, 300));
+        }
+
+        if (!response.ok) {
+            console.error('[API] ❌ ERRO HTTP:', response.status);
+            console.groupEnd();
+            const e = new Error(`HTTP ${response.status} ${response.statusText}`);
+            e.tipo = 'HTTP';
+            e.status = response.status;
+            e.body = text.substring(0, 800);
+            throw e;
+        }
+
+        if (!text || !text.trim()) {
+            console.error('[API] ❌ Resposta VAZIA');
+            console.groupEnd();
+            const e = new Error('A API retornou uma resposta vazia.');
+            e.tipo = 'VAZIA';
+            throw e;
+        }
+
+        const trimmed = text.trim();
+        if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!doctype')) {
+            console.error('[API] ❌ API retornou HTML em vez de JSON');
+            console.error('[API] HTML recebido:', trimmed.substring(0, 800));
+            console.groupEnd();
+            const e = new Error('A API retornou HTML (provável página de login/erro do Google). Verifique se o Web App está publicado como "Qualquer pessoa".');
+            e.tipo = 'HTML';
+            e.body = trimmed.substring(0, 800);
+            throw e;
+        }
+
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (parseErr) {
+            console.error('[API] ❌ JSON inválido:', parseErr);
+            console.error('[API] Texto recebido:', text.substring(0, 800));
+            console.groupEnd();
+            const e = new Error('A API retornou conteúdo que não é JSON válido.');
+            e.tipo = 'JSON_INVALIDO';
+            e.body = text.substring(0, 800);
+            throw e;
+        }
+
+        if (json && typeof json === 'object' && !Array.isArray(json) && json.erro) {
+            console.error('[API] ❌ API retornou erro explícito:', json.erro);
+            console.groupEnd();
+            const e = new Error(`Erro retornado pela API: ${json.erro}`);
+            e.tipo = 'API_ERRO';
+            e.body = json;
+            throw e;
+        }
+
+        console.log('[API] ✅ JSON decodificado com sucesso.');
+        console.groupEnd();
+        return json;
     },
 
     _normalizarQuestao(raw) {
@@ -824,11 +921,11 @@ const api = {
             nivel: String(raw['Nível'] || raw['nivel'] || raw['Nivel'] || raw['Escolaridade'] || '').trim(),
             tipo: String(raw['Tipo'] || raw['tipo'] || 'Múltipla escolha').trim(),
             enunciado: String(raw['Enunciado'] || raw['enunciado'] || '').trim(),
-            alternativaA: String(raw['Alternativa A'] || raw['AlternativaA'] || '').trim(),
-            alternativaB: String(raw['Alternativa B'] || raw['AlternativaB'] || '').trim(),
-            alternativaC: String(raw['Alternativa C'] || raw['AlternativaC'] || '').trim(),
-            alternativaD: String(raw['Alternativa D'] || raw['AlternativaD'] || '').trim(),
-            alternativaE: String(raw['Alternativa E'] || raw['AlternativaE'] || '').trim(),
+            alternativaA: String(raw['Alternativa A'] || raw['AlternativaA'] || raw['A'] || '').trim(),
+            alternativaB: String(raw['Alternativa B'] || raw['AlternativaB'] || raw['B'] || '').trim(),
+            alternativaC: String(raw['Alternativa C'] || raw['AlternativaC'] || raw['C'] || '').trim(),
+            alternativaD: String(raw['Alternativa D'] || raw['AlternativaD'] || raw['D'] || '').trim(),
+            alternativaE: String(raw['Alternativa E'] || raw['AlternativaE'] || raw['E'] || '').trim(),
             gabarito: String(raw['Gabarito'] || raw['gabarito'] || '').trim(),
             comentario: String(raw['Comentário'] || raw['comentario'] || raw['Comentario'] || '').trim(),
             fundamentacao: String(raw['Fundamentação'] || raw['fundamentacao'] || raw['Legislação'] || raw['Legislacao'] || '').trim(),
@@ -841,7 +938,6 @@ const api = {
             dataInclusao: String(raw['Data Inclusão'] || raw['dataInclusao'] || '').trim(),
         };
         if (!q.enunciado || !q.gabarito) return null;
-        // Normaliza tipo
         const tipoLower = q.tipo.toLowerCase();
         if (tipoLower.includes('certo') || tipoLower.includes('cespe') || tipoLower === 'ce') {
             q.tipo = 'Certo/Errado';
@@ -862,37 +958,48 @@ const api = {
             if (Array.isArray(response.questoes)) return response.questoes;
             if (Array.isArray(response.questions)) return response.questions;
             if (Array.isArray(response.rows)) return response.rows;
+            if (Array.isArray(response.result)) return response.result;
+            if (Array.isArray(response.items)) return response.items;
+            if (response.enunciado || response.Enunciado) return [response];
         }
         return [];
     },
 
     async getQuestoes() {
-        const url = `${API_URL}?action=list`;
+        const url = API_CONFIG.USAR_ACTION_LIST ? `${API_URL}?action=list` : API_URL;
         const response = await this._fetch(url);
         const arr = this._extrairArray(response);
+
+        console.log(`[API] Registros brutos recebidos: ${arr.length}`);
+
         const normalizadas = arr.map(r => this._normalizarQuestao(r)).filter(Boolean);
-        console.log(`[API] ${normalizadas.length} questões carregadas`);
+        console.log(`[API] ✅ ${normalizadas.length} questões válidas após normalização.`);
+
+        if (arr.length > 0 && normalizadas.length === 0) {
+            console.warn('[API] ⚠️ Nenhuma questão passou na validação.');
+            console.warn('[API] Verifique se os nomes das colunas batem. Exemplo do 1º registro:', arr[0]);
+            console.warn('[API] Colunas esperadas: ID, Disciplina, Assunto, Enunciado, Gabarito, etc.');
+        }
+
         return normalizadas;
     },
 
     async getQuestao(id) {
-        const url = `${API_URL}?action=get&id=${encodeURIComponent(id)}`;
+        const url = `${API_URL}?id=${encodeURIComponent(id)}`;
         const response = await this._fetch(url);
         if (response && typeof response === 'object') {
-            if (response.id) return this._normalizarQuestao(response);
+            if (response.id || response.ID) return this._normalizarQuestao(response);
             if (response.data) return this._normalizarQuestao(response.data);
         }
         return null;
     },
 
-    // ⚠️ Operações de escrita — dependem de suporte na API
-    // Se a API não suportar, o frontend trata o erro e não quebra
     async criarQuestao(dados) {
         try {
-            await fetch(`${API_URL}?action=create`, {
+            await fetch(API_URL, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados),
+                body: JSON.stringify({ action: 'create', ...dados }),
             });
             return { success: true, _note: 'Enviado (no-cors)' };
         } catch (e) { console.error('[API] criar:', e); throw e; }
@@ -900,10 +1007,10 @@ const api = {
 
     async atualizarQuestao(id, dados) {
         try {
-            await fetch(`${API_URL}?action=update&id=${encodeURIComponent(id)}`, {
+            await fetch(API_URL, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, ...dados }),
+                body: JSON.stringify({ action: 'update', id, ...dados }),
             });
             return { success: true, _note: 'Enviado (no-cors)' };
         } catch (e) { console.error('[API] atualizar:', e); throw e; }
@@ -911,10 +1018,10 @@ const api = {
 
     async excluirQuestao(id) {
         try {
-            await fetch(`${API_URL}?action=delete&id=${encodeURIComponent(id)}`, {
+            await fetch(API_URL, {
                 method: 'POST', mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ action: 'delete', id }),
             });
             return { success: true, _note: 'Enviado (no-cors)' };
         } catch (e) { console.error('[API] excluir:', e); throw e; }
@@ -922,7 +1029,7 @@ const api = {
 };
 
 /* ============================================================
-   STORAGE — localStorage
+   STORAGE
    ============================================================ */
 const storage = {
     KEYS: {
@@ -939,7 +1046,6 @@ const storage = {
         try { localStorage.setItem(key, JSON.stringify(value)); return true; }
         catch (e) { console.warn('[Storage]', e); return false; }
     },
-    // Favoritos
     getFavoritos() { return this._get(this.KEYS.FAVORITOS, []); },
     isFavorito(id) { return this.getFavoritos().includes(String(id)); },
     toggleFavorito(id) {
@@ -955,7 +1061,6 @@ const storage = {
         return true;
     },
     getTotalFavoritos() { return this.getFavoritos().length; },
-    // Histórico
     getHistorico() { return this._get(this.KEYS.HISTORICO, []); },
     salvarHistorico(entry) {
         const h = this.getHistorico();
@@ -1009,7 +1114,6 @@ const storage = {
         h.forEach(x => { if (!x.acertou && x.questaoId) ids.add(String(x.questaoId)); });
         return Array.from(ids);
     },
-    // Revisão
     getRevisao() { return this._get(this.KEYS.REVISAO, {}); },
     getStatusRevisao(id) { const r = this.getRevisao(); return r[String(id)] || null; },
     setStatusRevisao(id, status) {
@@ -1028,7 +1132,6 @@ const storage = {
         return Object.keys(r).filter(id => r[id].status === 'revisada');
     },
     getTotalRevisao() { return this.getRevisaoPendentes().length; },
-    // Tema
     getTema() { return this._get(this.KEYS.TEMA, 'light'); },
     setTema(t) { this._set(this.KEYS.TEMA, t); },
 };
@@ -1042,6 +1145,7 @@ const App = {
         questoesFiltradas: [],
         carregando: false,
         paginaAtual: 'dashboard',
+        erroApi: null,
         filtros: { disciplina:'', assunto:'', subassunto:'', banca:'', orgao:'', concurso:'', cargo:'', ano:'', nivel:'', tipo:'', dificuldade:'', status:'' },
         busca: '',
         pagina: 1,
@@ -1077,19 +1181,108 @@ const App = {
         if (this.state.carregando) return;
         if (!forcar && this.state.questoes.length > 0) return;
         this.state.carregando = true;
+        this.state.erroApi = null;
         this.atualizarStatusApi('loading');
+        console.log('%c[App] Iniciando carregamento do banco de questões...', 'color:#7c3aed;font-weight:bold');
+
         try {
             const q = await api.getQuestoes();
+            if (!Array.isArray(q)) {
+                throw new Error('A API não retornou um array de questões.');
+            }
             this.state.questoes = q;
             this.atualizarStatusApi('online');
             this.atualizarBadges();
+            console.log(`[App] ✅ Banco carregado: ${q.length} questões.`);
+            document.getElementById('erroApiBox')?.remove();
+            if (q.length === 0) {
+                this.toast('A API respondeu, mas o banco está vazio.', 'info');
+            }
         } catch (error) {
-            console.error('[App]', error);
+            console.error('%c[App] ❌ ERRO ao carregar questões', 'color:#dc2626;font-weight:bold');
+            console.error('[App] Tipo:', error.tipo || 'desconhecido');
+            console.error('[App] Mensagem:', error.message);
+            if (error.body) console.error('[App] Corpo da resposta:', error.body);
+            if (error.original) console.error('[App] Erro original:', error.original);
+            this.state.erroApi = error;
             this.atualizarStatusApi('offline');
-            this.toast('Não foi possível carregar o banco de questões. Verifique sua conexão.', 'error');
+            this.mostrarErroApi(error);
         } finally {
             this.state.carregando = false;
         }
+    },
+
+    mostrarErroApi(error) {
+        const page = document.getElementById('page-dashboard');
+        if (!page) return;
+        let detalhe = '';
+        let dica = '';
+        switch (error.tipo) {
+            case 'CORS_OU_REDE':
+                detalhe = 'Não foi possível conectar à API.';
+                dica = 'Verifique se o Web App está publicado como "Qualquer pessoa" (não "Qualquer pessoa com conta Google") em Implantar → Gerenciar implantações.';
+                break;
+            case 'TIMEOUT':
+                detalhe = `A API demorou mais de ${API_CONFIG.TIMEOUT_MS / 1000}s para responder.`;
+                dica = 'Verifique se o Apps Script está executando corretamente e se a planilha não está muito grande.';
+                break;
+            case 'HTTP':
+                detalhe = `A API respondeu com status HTTP ${error.status}.`;
+                dica = 'Verifique a implantação do Web App no Apps Script.';
+                break;
+            case 'HTML':
+                detalhe = 'A API retornou uma página HTML (provavelmente tela de login do Google).';
+                dica = 'O Web App precisa estar publicado com acesso "Qualquer pessoa". Reimplante em Implantar → Gerenciar implantações.';
+                break;
+            case 'JSON_INVALIDO':
+                detalhe = 'A API respondeu, mas o conteúdo não é JSON válido.';
+                dica = 'Verifique se o doGet/doPost retorna ContentService.createTextOutput(JSON.stringify(dados)).setMimeType(ContentService.MimeType.JSON).';
+                break;
+            case 'VAZIA':
+                detalhe = 'A API respondeu vazio.';
+                dica = 'Verifique se o Apps Script está retornando dados da planilha.';
+                break;
+            case 'API_ERRO':
+                detalhe = `A API retornou um erro: ${error.body?.erro || error.message}`;
+                dica = 'Verifique o log do Apps Script (Execuções) para ver o erro detalhado.';
+                break;
+            default:
+                detalhe = error.message || 'Erro desconhecido.';
+                dica = 'Abra o Console (F12) para mais detalhes.';
+        }
+
+        const html = `
+            <div class="section-block" style="border-left:4px solid var(--danger);" id="erroApiBox">
+                <div class="section-header">
+                    <h2 style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i> Falha ao carregar o banco de questões</h2>
+                </div>
+                <p style="color:var(--text-secondary);margin-bottom:6px;"><strong>Tipo:</strong> ${App.escapeHtml(error.tipo || 'desconhecido')}</p>
+                <p style="color:var(--text-secondary);margin-bottom:6px;"><strong>Detalhe:</strong> ${App.escapeHtml(detalhe)}</p>
+                <p style="color:var(--text-secondary);margin-bottom:16px;"><strong>Como resolver:</strong> ${App.escapeHtml(dica)}</p>
+                <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px;">
+                    🔍 Abra o Console do navegador (F12 → Console) para ver o diagnóstico técnico completo: URL, status HTTP, content-type e resposta bruta.
+                </p>
+                <button class="btn btn-primary" id="btnTentarNovamente"><i class="fas fa-rotate"></i> Tentar novamente</button>
+            </div>
+        `;
+        document.getElementById('erroApiBox')?.remove();
+        const hero = page.querySelector('.page-hero');
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const box = div.firstElementChild;
+        hero?.insertAdjacentElement('afterend', box);
+
+        document.getElementById('btnTentarNovamente')?.addEventListener('click', async (e) => {
+            e.currentTarget.disabled = true;
+            e.currentTarget.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Tentando...';
+            await App.carregarQuestoes(true);
+            if (!App.state.erroApi) {
+                App.navegarPara('dashboard');
+            } else {
+                e.currentTarget.disabled = false;
+                e.currentTarget.innerHTML = '<i class="fas fa-rotate"></i> Tentar novamente';
+            }
+        });
     },
 
     atualizarStatusApi(status) {
@@ -1186,8 +1379,12 @@ const App = {
             btn.disabled = true;
             try {
                 await this.carregarQuestoes(true);
-                this.toast('Banco atualizado!', 'success');
-                this.navegarPara(this.state.paginaAtual);
+                if (!this.state.erroApi) {
+                    this.toast('Banco atualizado!', 'success');
+                    this.navegarPara(this.state.paginaAtual);
+                } else {
+                    this.toast('Falha ao atualizar. Veja o erro no dashboard.', 'error');
+                }
             } catch { this.toast('Erro ao atualizar.', 'error'); }
             finally { btn.classList.remove('loading'); btn.disabled = false; }
         });
@@ -1520,7 +1717,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   QUESTÕES — Banco, favoritos, caderno, revisão
+   QUESTÕES
    ============================================================ */
 const Questoes = {
     render() {
@@ -1581,7 +1778,6 @@ const Questoes = {
             const f = this.aplicarFiltros();
             if (f.length === 0) { App.toast('Nenhuma questão com os filtros atuais.', 'error'); return; }
             App.navegarPara('simulado');
-            setTimeout(() => Simulado.prepConfig(f), 200);
         });
 
         const bi = document.getElementById('buscaInput');
@@ -1718,7 +1914,6 @@ const Questoes = {
             const feedback = card.querySelector('[data-feedback]');
             const comentario = card.querySelector('[data-comentario]');
 
-            // Favoritar
             card.querySelector('[data-fav]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const ativo = storage.toggleFavorito(id);
@@ -1727,8 +1922,7 @@ const Questoes = {
                 App.toast(ativo ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'info');
             });
 
-            // Revisão
-            card.querySelector('[data-revisar]')?.addEventListener('click', (e) => {
+            card.querySelector('[data-revisar]')?.addEventListener('click', () => {
                 const atual = storage.getStatusRevisao(id);
                 let novo;
                 if (!atual) novo = 'pendente';
@@ -1740,7 +1934,6 @@ const Questoes = {
                 this.renderLista();
             });
 
-            // Expandir comentário
             card.querySelector('[data-expandir]')?.addEventListener('click', () => {
                 App.abrirComentario(`<i class="fas fa-comment-dots"></i> Questão ${q.id}`, `
                     ${q.comentario ? `<p><strong>Comentário:</strong></p><p>${App.escapeHtml(q.comentario).replace(/\n/g,'<br>')}</p>` : ''}
@@ -1749,13 +1942,11 @@ const Questoes = {
                 `);
             });
 
-            // Responder
             const responder = (resposta) => {
                 if (card.dataset.respondida === 'true') return;
                 card.dataset.respondida = 'true';
                 const gab = q.gabarito;
                 const acertou = String(resposta).toLowerCase() === String(gab).toLowerCase();
-                // Marca visual
                 if (q.tipo === 'Certo/Errado') {
                     card.querySelectorAll('.btn-certo-errado').forEach(b => {
                         b.classList.add('disabled');
@@ -1769,13 +1960,10 @@ const Questoes = {
                         if (a.dataset.alt === gab && !acertou) a.classList.add('correta');
                     });
                 }
-                // Feedback
                 feedback.style.display = 'flex';
                 feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
                 feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resposta)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
-                // Comentário
                 comentario.style.display = 'block';
-                // Salva histórico
                 storage.salvarHistorico({
                     questaoId: q.id,
                     resposta,
@@ -1856,7 +2044,6 @@ const Questoes = {
             c.innerHTML = `<div class="empty-state"><i class="fas fa-book-skull"></i><h3>Nenhum erro registrado</h3><p>As questões que você errar aparecerão aqui para revisão.</p></div>`;
             return;
         }
-        // Agrupa por disciplina
         const porDisc = {};
         errs.forEach(q => {
             const d = q.disciplina || 'Sem disciplina';
@@ -1873,10 +2060,13 @@ const Questoes = {
             </div>
         `).join('');
         this.bindCards(c);
-        document.getElementById('btnRefazerErros')?.addEventListener('click', () => {
-            if (errs.length === 0) return;
-            Simulado.iniciar(errs, 'treino', true);
-        }, { once: true });
+        const btnRefazer = document.getElementById('btnRefazerErros');
+        if (btnRefazer) {
+            btnRefazer.onclick = () => {
+                if (errs.length === 0) return;
+                Simulado.iniciar(errs, 'treino', true);
+            };
+        }
     },
 
     renderRevisao() {
@@ -1910,16 +2100,19 @@ const Questoes = {
             <div class="filtro-group"><label>Disciplina</label><select id="treinoDisciplina"><option value="">Todas</option>${disciplinas.map(d => `<option value="${App.escapeHtml(d)}">${App.escapeHtml(d)}</option>`).join('')}</select></div>
             <div class="filtro-group"><label>Dificuldade</label><select id="treinoDificuldade"><option value="">Todas</option><option>Fácil</option><option>Média</option><option>Difícil</option><option>Muito difícil</option></select></div>
         `;
-        document.getElementById('btnIniciarTreino')?.addEventListener('click', () => {
-            const disc = document.getElementById('treinoDisciplina').value;
-            const dif = document.getElementById('treinoDificuldade').value;
-            let lista = App.state.questoes;
-            if (disc) lista = lista.filter(q => q.disciplina === disc);
-            if (dif) lista = lista.filter(q => q.dificuldade === dif);
-            if (lista.length === 0) { App.toast('Nenhuma questão encontrada.', 'error'); return; }
-            const shuffled = [...lista].sort(() => Math.random() - 0.5).slice(0, 20);
-            Simulado.iniciar(shuffled, 'treino', false);
-        }, { once: true });
+        const btn = document.getElementById('btnIniciarTreino');
+        if (btn) {
+            btn.onclick = () => {
+                const disc = document.getElementById('treinoDisciplina').value;
+                const dif = document.getElementById('treinoDificuldade').value;
+                let lista = App.state.questoes;
+                if (disc) lista = lista.filter(q => q.disciplina === disc);
+                if (dif) lista = lista.filter(q => q.dificuldade === dif);
+                if (lista.length === 0) { App.toast('Nenhuma questão encontrada.', 'error'); return; }
+                const shuffled = [...lista].sort(() => Math.random() - 0.5).slice(0, 20);
+                Simulado.iniciar(shuffled, 'treino', false);
+            };
+        }
     },
 };
 
@@ -1962,23 +2155,26 @@ const Simulado = {
             };
         });
 
-        document.getElementById('btnIniciarSimulado')?.addEventListener('click', () => {
-            const disc = document.getElementById('simDisciplina').value;
-            const banca = document.getElementById('simBanca').value;
-            const tipo = document.getElementById('simTipo').value;
-            const qty = parseInt(document.querySelector('#qtySelector button.active')?.dataset.qty || '10');
-            const modo = document.querySelector('#modeSelector button.active')?.dataset.mode || 'treino';
-            const aleatorio = document.getElementById('simuladoAleatorio').checked;
+        const btn = document.getElementById('btnIniciarSimulado');
+        if (btn) {
+            btn.onclick = () => {
+                const disc = document.getElementById('simDisciplina').value;
+                const banca = document.getElementById('simBanca').value;
+                const tipo = document.getElementById('simTipo').value;
+                const qty = parseInt(document.querySelector('#qtySelector button.active')?.dataset.qty || '10');
+                const modo = document.querySelector('#modeSelector button.active')?.dataset.mode || 'treino';
+                const aleatorio = document.getElementById('simuladoAleatorio').checked;
 
-            let lista = App.state.questoes;
-            if (disc) lista = lista.filter(q => q.disciplina === disc);
-            if (banca) lista = lista.filter(q => q.banca === banca);
-            if (tipo) lista = lista.filter(q => q.tipo === tipo);
-            if (lista.length === 0) { App.toast('Nenhuma questão com esses filtros.', 'error'); return; }
-            if (aleatorio) lista = [...lista].sort(() => Math.random() - 0.5);
-            lista = lista.slice(0, Math.min(qty, lista.length));
-            this.iniciar(lista, modo, aleatorio);
-        }, { once: true });
+                let lista = App.state.questoes;
+                if (disc) lista = lista.filter(q => q.disciplina === disc);
+                if (banca) lista = lista.filter(q => q.banca === banca);
+                if (tipo) lista = lista.filter(q => q.tipo === tipo);
+                if (lista.length === 0) { App.toast('Nenhuma questão com esses filtros.', 'error'); return; }
+                if (aleatorio) lista = [...lista].sort(() => Math.random() - 0.5);
+                lista = lista.slice(0, Math.min(qty, lista.length));
+                this.iniciar(lista, modo, aleatorio);
+            };
+        }
     },
 
     prepConfig(lista) {
@@ -1988,7 +2184,6 @@ const Simulado = {
 
     iniciar(questoes, modo, aleatorio) {
         if (!questoes || questoes.length === 0) { App.toast('Nenhuma questão para iniciar.', 'error'); return; }
-        // Remove duplicatas por ID
         const vistos = new Set();
         const unicas = questoes.filter(q => {
             if (vistos.has(q.id)) return false;
@@ -2011,23 +2206,26 @@ const Simulado = {
     },
 
     bindNav() {
-        document.getElementById('btnAnterior')?.addEventListener('click', () => {
+        const btnAnt = document.getElementById('btnAnterior');
+        const btnProx = document.getElementById('btnProxima');
+        const btnSair = document.getElementById('btnSairSimulado');
+        if (btnAnt) btnAnt.onclick = () => {
             if (this.state.indice > 0) { this.state.indice--; this.renderQuestao(); }
-        });
-        document.getElementById('btnProxima')?.addEventListener('click', () => {
+        };
+        if (btnProx) btnProx.onclick = () => {
             if (this.state.indice < this.state.questoes.length - 1) {
                 this.state.indice++;
                 this.renderQuestao();
             } else {
                 this.finalizar();
             }
-        });
-        document.getElementById('btnSairSimulado')?.addEventListener('click', () => {
+        };
+        if (btnSair) btnSair.onclick = () => {
             if (confirm('Deseja sair do simulado? O progresso será perdido.')) {
                 document.getElementById('simuladoRunner').style.display = 'none';
                 document.getElementById('simuladoSetup').style.display = 'block';
             }
-        });
+        };
     },
 
     renderQuestao() {
@@ -2096,7 +2294,6 @@ const Simulado = {
             if (this.state.respostas[q.id] !== undefined) return;
             this.state.respostas[q.id] = resp;
             const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
-            // Marca visual
             if (q.tipo === 'Certo/Errado') {
                 card.querySelectorAll('.btn-certo-errado').forEach(b => {
                     b.classList.add('disabled');
@@ -2110,14 +2307,12 @@ const Simulado = {
                     if (a.dataset.alt === q.gabarito && !acertou) a.classList.add('correta');
                 });
             }
-            // No modo simulado, só mostra feedback ao final
             if (this.state.modo === 'treino') {
                 feedback.style.display = 'flex';
                 feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
                 feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Resposta correta!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(resp)}</b> · Gabarito: <b>${App.escapeHtml(q.gabarito)}</b></div>`;
                 comentario.style.display = 'block';
             }
-            // Salva histórico
             storage.salvarHistorico({
                 questaoId: q.id,
                 resposta: resp,
@@ -2146,7 +2341,6 @@ const Simulado = {
             if (e.target.value.trim()) registrar(e.target.value.trim().substring(0, 200));
         });
 
-        // Se já respondida (voltou), marca
         if (jaRespondida) {
             const resp = this.state.respostas[q.id];
             const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
@@ -2236,7 +2430,6 @@ const Simulado = {
             ` : ''}
         `;
 
-        // Bind
         document.getElementById('btnNovoSimulado')?.addEventListener('click', () => {
             this.renderSetup();
         });
@@ -2247,7 +2440,6 @@ const Simulado = {
             const qs = errosLista.map(e => e.q);
             this.iniciar(qs, 'treino', false);
         });
-        // Bind nos cards de erro (para poder responder de novo)
         const cardsContainer = c.querySelector('.questoes-lista');
         if (cardsContainer) Questoes.bindCards(cardsContainer);
     },
@@ -2443,7 +2635,6 @@ const Admin = {
                     App.toast('Requisição de criação enviada!', 'success');
                 }
                 App.fecharModal();
-                // Recarrega após 2s
                 setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
             } catch (e) {
                 App.toast('Erro ao enviar. Verifique se a API suporta esta operação.', 'error');
