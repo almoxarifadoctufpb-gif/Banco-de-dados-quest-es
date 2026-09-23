@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 /* ========== RESET ========== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -220,7 +222,7 @@ button{font-family:inherit;cursor:pointer}
 .busca-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--border-light);border:none;width:26px;height:26px;border-radius:50%;color:var(--text-secondary);font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
 .busca-clear:hover{background:var(--danger);color:#fff}
 
-/* ========== FILTROS ========== */
+/* ========== FILTROS (legado simples mantido p/ outras telas) ========== */
 .filtros-panel{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
 .filtros-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
 .filtro-group{display:flex;flex-direction:column;gap:4px}
@@ -229,6 +231,76 @@ button{font-family:inherit;cursor:pointer}
 .filtro-group select:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
 .filtros-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .resultado-info{font-size:.85rem;color:var(--text-secondary);margin-bottom:16px;font-weight:500}
+
+/* ========== FILTROS PROFISSIONAIS v2 ========== */
+.banco-layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start}
+@media(max-width:1100px){.banco-layout{grid-template-columns:1fr}.filter-sidebar{position:static!important;max-height:none!important}}
+
+.filter-sidebar{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:18px;position:sticky;top:calc(var(--header-h) + 16px);max-height:calc(100vh - var(--header-h) - 32px);overflow-y:auto;box-shadow:var(--shadow-sm)}
+.filter-sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-light)}
+.filter-sidebar-header h3{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.filter-sidebar-header h3 i{color:var(--accent)}
+.filter-sidebar-header .btn-limpar{background:none;border:none;color:var(--danger);font-size:.75rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;transition:var(--transition)}
+.filter-sidebar-header .btn-limpar:hover{background:var(--danger-light)}
+
+.status-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border-light)}
+.status-chip{padding:6px 12px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-pill);font-size:.75rem;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.status-chip:hover{border-color:var(--accent);color:var(--accent)}
+.status-chip.active{color:#fff;border-color:transparent}
+.status-chip.active[data-status="todas"]{background:var(--accent)}
+.status-chip.active[data-status="nao_resolvidas"]{background:var(--info)}
+.status-chip.active[data-status="resolvidas"]{background:var(--text-secondary)}
+.status-chip.active[data-status="acertei"]{background:var(--success)}
+.status-chip.active[data-status="errei"]{background:var(--danger)}
+
+.filter-group-block{margin-bottom:4px;border-bottom:1px solid var(--border-light)}
+.filter-group-block:last-child{border-bottom:none}
+.filter-group-title{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;font-weight:700;color:var(--text-primary);cursor:pointer;padding:11px 2px;user-select:none;gap:8px}
+.filter-group-title:hover{color:var(--accent)}
+.filter-group-title .fg-left{display:flex;align-items:center;gap:8px}
+.filter-group-title .chevron{transition:transform .2s;color:var(--text-muted);font-size:.65rem}
+.filter-group-block.collapsed .chevron{transform:rotate(-90deg)}
+.filter-group-block.collapsed .filter-options,
+.filter-group-block.collapsed .filter-options-search{display:none}
+.filter-count{background:var(--accent);color:#fff;font-size:.62rem;padding:1px 7px;border-radius:999px;font-weight:700;min-width:18px;text-align:center;line-height:1.6}
+
+.filter-options{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;max-height:230px;overflow-y:auto;padding-right:4px}
+.filter-options::-webkit-scrollbar{width:6px}
+.filter-options-search{padding:6px 10px;border:1px solid var(--border-light);border-radius:6px;font-size:.78rem;outline:none;margin-bottom:8px;background:var(--bg-body);font-family:inherit;color:var(--text-primary);width:100%}
+.filter-options-search:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+.filter-option{display:flex;align-items:center;gap:8px;padding:5px 6px;font-size:.8rem;color:var(--text-secondary);cursor:pointer;border-radius:6px;transition:var(--transition);user-select:none;line-height:1.35}
+.filter-option:hover{background:var(--accent-lighter);color:var(--text-primary)}
+.filter-option input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;flex-shrink:0;margin:0}
+.filter-option .opt-label{flex:1;overflow:hidden;text-overflow:ellipsis}
+.filter-option .opt-count{font-size:.68rem;color:var(--text-muted);flex-shrink:0}
+
+.filter-checkline{display:flex;align-items:center;gap:8px;padding:5px 6px;font-size:.8rem;color:var(--text-secondary);cursor:pointer;border-radius:6px}
+.filter-checkline:hover{background:var(--accent-lighter)}
+.filter-checkline input{accent-color:var(--danger)}
+.filter-checkline.conteudo input{accent-color:var(--info)}
+
+.applied-panel{background:var(--bg-body);border-radius:var(--radius-md);padding:12px;margin-bottom:14px;border:1px solid var(--border-light)}
+.applied-panel h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:8px;font-weight:700;display:flex;align-items:center;gap:6px}
+.applied-group{margin-bottom:6px}
+.applied-group-label{font-size:.65rem;text-transform:uppercase;color:var(--text-muted);font-weight:600;letter-spacing:.4px;margin-bottom:3px}
+.applied-item{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:6px;font-size:.75rem;margin-bottom:3px;color:var(--text-secondary);gap:6px}
+.applied-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.applied-item button{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0 2px;font-size:.9rem;line-height:1}
+.applied-item button:hover{color:var(--danger)}
+.applied-empty{font-size:.78rem;color:var(--text-muted);text-align:center;padding:10px 6px;font-style:italic}
+
+.btn-buscar-wrap{position:sticky;bottom:0;background:var(--bg-card);padding-top:12px;margin-top:6px;border-top:1px solid var(--border-light)}
+.btn-buscar-wrap .btn{width:100%;padding:12px;font-size:.88rem;font-weight:700}
+
+.resultados-header{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow-xs)}
+.resultados-count{font-size:.92rem;font-weight:600;color:var(--text-primary)}
+.resultados-count strong{color:var(--accent);font-size:1.05rem}
+.resultados-acoes{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.chips-ativos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip-ativo{padding:4px 10px;background:var(--accent-light);color:var(--accent);border-radius:999px;font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:5px;border:1px solid transparent}
+.chip-ativo button{background:none;border:none;color:inherit;cursor:pointer;padding:0;font-size:.85rem;line-height:1;display:inline-flex;align-items:center}
+.chip-ativo button:hover{opacity:.7}
 
 /* ========== QUESTÕES ========== */
 .questoes-lista{display:flex;flex-direction:column;gap:16px}
@@ -267,7 +339,7 @@ button{font-family:inherit;cursor:pointer}
 .alternativa.incorreta{border-color:var(--danger);background:var(--danger-light)}
 .alternativa.incorreta .alternativa-letra{background:var(--danger);color:#fff}
 
-/* ========== TESOURA (RISCAR ALTERNATIVA) ========== */
+/* ========== TESOURA ========== */
 .btn-tesoura{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:transparent;border:1.5px solid var(--border-medium);color:var(--text-muted);font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);cursor:pointer;padding:0;z-index:3;line-height:1}
 .btn-tesoura:hover{border-color:var(--warning);color:var(--warning);background:var(--warning-light);transform:translateY(-50%) rotate(-15deg)}
 .btn-tesoura.ativa{border-color:var(--warning);color:#fff;background:var(--warning)}
@@ -391,6 +463,16 @@ button{font-family:inherit;cursor:pointer}
 .modal-body strong{color:var(--text-primary)}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border-light);flex-wrap:wrap}
 
+/* ========== CACHE CLEANUP OPTIONS ========== */
+.cache-options{display:flex;flex-direction:column;gap:10px;margin:14px 0}
+.cache-option{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg-body);border:1px solid var(--border-light);border-radius:var(--radius-md);cursor:pointer;transition:var(--transition)}
+.cache-option:hover{border-color:var(--danger);background:var(--danger-light)}
+.cache-option input[type=checkbox]{accent-color:var(--danger);width:16px;height:16px;cursor:pointer;flex-shrink:0}
+.cache-option .cache-info{flex:1}
+.cache-option .cache-info strong{display:block;font-size:.88rem;color:var(--text-primary);margin-bottom:2px}
+.cache-option .cache-info span{font-size:.75rem;color:var(--text-muted)}
+.cache-option .cache-size{font-size:.72rem;font-weight:700;color:var(--accent);background:var(--accent-light);padding:2px 10px;border-radius:999px;white-space:nowrap}
+
 /* ========== FORM ========== */
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);margin-bottom:6px}
@@ -410,10 +492,6 @@ button{font-family:inherit;cursor:pointer}
 .toast.info i{color:var(--info)}
 @keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 
-/* ========== FAB ========== */
-.fab{position:fixed;bottom:88px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--gradient-primary);color:#fff;border:none;font-size:1.2rem;box-shadow:0 6px 20px rgba(124,58,237,.4);display:none;align-items:center;justify-content:center;z-index:500;transition:var(--transition)}
-.fab:hover{transform:scale(1.08) translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.5)}
-
 /* ========== BOTTOM NAV ========== */
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--bg-card);border-top:1px solid var(--border-light);z-index:800;padding:4px 0;box-shadow:0 -2px 12px rgba(0,0,0,.04)}
 .bottom-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text-muted);font-size:.65rem;font-weight:500;transition:var(--transition);text-decoration:none;padding:4px;cursor:pointer}
@@ -421,7 +499,7 @@ button{font-family:inherit;cursor:pointer}
 .bottom-nav-item.active{color:var(--accent)}
 .bottom-nav-item.active i{transform:scale(1.1)}
 
-/* ========== TABELA ADMIN ========== */
+/* ========== TABELA ADMIN (somente leitura) ========== */
 .table-responsive{overflow-x:auto;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
 .table{width:100%;border-collapse:collapse;font-size:.85rem}
 .table th{text-align:left;padding:12px 16px;background:var(--bg-body);color:var(--text-muted);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border-light);white-space:nowrap}
@@ -435,6 +513,10 @@ button{font-family:inherit;cursor:pointer}
 .admin-filtros{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .admin-filtros input,.admin-filtros select{padding:9px 14px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.85rem;font-family:inherit;outline:none;transition:var(--transition);flex:1;min-width:180px}
 .admin-filtros input:focus,.admin-filtros select:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+
+.readonly-banner{background:var(--info-light);border:1px solid var(--info);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;color:var(--info);font-size:.85rem;line-height:1.5}
+.readonly-banner i{font-size:1.1rem;margin-top:1px;flex-shrink:0}
+.readonly-banner strong{display:block;margin-bottom:2px;color:var(--info)}
 
 /* ========== TABS ========== */
 .revisao-tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--bg-card);padding:4px;border-radius:var(--radius-md);border:1px solid var(--border-light);width:fit-content}
@@ -466,6 +548,44 @@ button{font-family:inherit;cursor:pointer}
 .status-anulada{background:var(--danger-light);color:var(--danger)}
 .status-arquivada{background:var(--border-light);color:var(--text-muted)}
 
+/* ========== GRÁFICOS ========== */
+.charts-filters{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;margin-bottom:24px;box-shadow:var(--shadow-sm)}
+.charts-filters-title{font-size:.85rem;font-weight:700;color:var(--text-secondary);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.charts-filters-title i{color:var(--accent)}
+.charts-filters-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.charts-filter-group{display:flex;flex-direction:column;gap:4px}
+.charts-filter-group label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+.charts-filter-group select{padding:8px 10px;background:var(--bg-body);border:1px solid var(--border-light);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.82rem;outline:none;font-family:inherit;cursor:pointer;transition:var(--transition)}
+.charts-filter-group select:focus{border-color:var(--accent);box-shadow:var(--shadow-focus)}
+
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;margin-bottom:24px}
+.chart-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm);transition:var(--transition);position:relative}
+.chart-card:hover{box-shadow:var(--shadow-md)}
+.chart-card.full-width{grid-column:1/-1}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.chart-header h3{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.chart-header h3 i{color:var(--accent);font-size:.85rem}
+.chart-header .chart-sub{font-size:.72rem;color:var(--text-muted);font-weight:500}
+.chart-toggle{display:flex;gap:4px;background:var(--bg-body);padding:3px;border-radius:var(--radius-pill);border:1px solid var(--border-light);flex-wrap:wrap}
+.chart-toggle button{padding:5px 12px;background:transparent;border:none;border-radius:var(--radius-pill);color:var(--text-muted);font-size:.72rem;font-weight:600;transition:var(--transition);cursor:pointer}
+.chart-toggle button.active{background:var(--accent);color:#fff}
+.chart-body{position:relative;height:280px;width:100%}
+.chart-body.tall{height:340px}
+.chart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text-muted);text-align:center;font-size:.85rem;gap:8px}
+.chart-empty i{font-size:2rem;opacity:.4}
+
+.metric-card .metric-trend{font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-pill);margin-top:8px}
+.metric-trend.up{background:var(--success-light);color:var(--success)}
+.metric-trend.down{background:var(--danger-light);color:var(--danger)}
+.metric-trend.neutral{background:var(--border-light);color:var(--text-muted)}
+
+.session-timer{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-secondary);font-weight:600;background:var(--bg-card);padding:6px 14px;border-radius:var(--radius-pill);border:1px solid var(--border-light)}
+.session-timer i{color:var(--accent)}
+.session-timer.paused{opacity:.6}
+
+.streak-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;padding:4px 12px;border-radius:var(--radius-pill);font-size:.75rem;font-weight:700;box-shadow:0 2px 8px rgba(245,158,11,.3)}
+.streak-badge i{font-size:.8rem}
+
 /* ========== RESPONSIVO ========== */
 @media (max-width:1024px){
 .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);z-index:1500;box-shadow:var(--shadow-xl)}
@@ -488,7 +608,6 @@ button{font-family:inherit;cursor:pointer}
 .content{padding:16px 14px 90px}
 .header-user .user-info{display:none}
 .header-user{padding:4px}
-.fab{display:flex;bottom:80px;right:16px}
 .certo-errado{grid-template-columns:1fr}
 .resultado-stats{grid-template-columns:1fr}
 .resultado-pct{font-size:2.8rem}
@@ -507,6 +626,11 @@ button{font-family:inherit;cursor:pointer}
 .page-header{flex-direction:column;align-items:flex-start}
 .paginacao{gap:6px}
 .paginacao button{padding:7px 12px;font-size:.78rem}
+.session-timer{display:none}
+.charts-grid{grid-template-columns:1fr}
+.chart-body{height:240px}
+.chart-body.tall{height:280px}
+.charts-filters-grid{grid-template-columns:1fr 1fr}
 }
 @media (max-width:380px){
 .metrics-grid{grid-template-columns:1fr}
@@ -591,14 +715,15 @@ button{font-family:inherit;cursor:pointer}
             <a class="nav-item" data-page="caderno-erros"><i class="fas fa-book-skull"></i><span>Caderno de Erros</span><span class="nav-badge" id="badgeErros" style="display:none;">0</span></a>
             <a class="nav-item" data-page="revisao"><i class="fas fa-clock-rotate-left"></i><span>Revisar Hoje</span><span class="nav-badge" id="badgeRevisao" style="display:none;">0</span></a>
             <a class="nav-item" data-page="desempenho"><i class="fas fa-chart-line"></i><span>Meu Desempenho</span></a>
-            <div class="menu-label">Administração</div>
-            <a class="nav-item" data-page="admin"><i class="fas fa-sliders"></i><span>Gerenciar Questões</span></a>
+            <div class="menu-label">Sistema</div>
+            <a class="nav-item" data-page="admin"><i class="fas fa-magnifying-glass-chart"></i><span>Consultar Questões</span></a>
+            <a class="nav-item" data-page="dados"><i class="fas fa-database"></i><span>Meus Dados</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
-            <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-plus-circle"></i> Carregar mais questões</button>
+            <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Recarregar questões</button>
             <button class="btn-logout" id="btnLogout"><i class="fas fa-right-from-bracket"></i> Sair</button>
-            <div class="version-info">VULP+ v1.4</div>
+            <div class="version-info">VULP+ v1.7 · Leitura</div>
         </div>
     </aside>
 
@@ -610,6 +735,14 @@ button{font-family:inherit;cursor:pointer}
                 <div class="header-title" id="headerTitle">Dashboard</div>
             </div>
             <div class="header-right">
+                <div class="session-timer hidden" id="sessionTimer" title="Tempo de estudo nesta sessão">
+                    <i class="fas fa-stopwatch"></i>
+                    <span id="sessionTimerText">00:00</span>
+                </div>
+                <div class="streak-badge hidden" id="streakBadge" title="Dias consecutivos de estudo">
+                    <i class="fas fa-fire"></i>
+                    <span id="streakText">0</span>
+                </div>
                 <button class="icon-btn" id="themeToggle" title="Alternar tema"><i class="fas fa-moon"></i></button>
                 <div class="header-user">
                     <div class="user-avatar">C</div>
@@ -630,6 +763,63 @@ button{font-family:inherit;cursor:pointer}
                     <p>Seu treino inteligente para concursos públicos.</p>
                 </div>
                 <div class="metrics-grid" id="metricsGrid"></div>
+                <div class="charts-filters">
+                    <div class="charts-filters-title"><i class="fas fa-filter"></i> Filtros da análise</div>
+                    <div class="charts-filters-grid" id="chartsFiltersGrid"></div>
+                </div>
+                <div class="section-block">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-pie"></i> Visão geral do desempenho</h2>
+                        <span class="subtitle" id="chartsPeriodoLabel">Todo o período</span>
+                    </div>
+                    <div class="charts-grid" id="chartsGrid">
+                        <div class="chart-card full-width">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-line"></i> Evolução temporal</h3>
+                                <div class="chart-toggle" id="linePeriodToggle">
+                                    <button data-days="7">7d</button>
+                                    <button data-days="30" class="active">30d</button>
+                                    <button data-days="90">90d</button>
+                                    <button data-days="0">Tudo</button>
+                                </div>
+                            </div>
+                            <div class="chart-body tall"><canvas id="chartEvolucao"></canvas></div>
+                        </div>
+                        <div class="chart-card full-width">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-column"></i> Desempenho por disciplina</h3>
+                                <span class="chart-sub">Aproveitamento % · volume de questões</span>
+                            </div>
+                            <div class="chart-body tall"><canvas id="chartDisciplinas"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-pie"></i> Distribuição</h3>
+                                <div class="chart-toggle" id="doughnutModeToggle">
+                                    <button data-mode="acertos" class="active">Acertos/Erros</button>
+                                    <button data-mode="disciplina">Disciplinas</button>
+                                    <button data-mode="banca">Bancas</button>
+                                    <button data-mode="dificuldade">Dificuldade</button>
+                                </div>
+                            </div>
+                            <div class="chart-body"><canvas id="chartDistribuicao"></canvas></div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-bullseye"></i> Radar de disciplinas</h3>
+                                <span class="chart-sub">Top 8 disciplinas</span>
+                            </div>
+                            <div class="chart-body"><canvas id="chartRadar"></canvas></div>
+                        </div>
+                        <div class="chart-card full-width">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-bar"></i> Assuntos com menor desempenho</h3>
+                                <span class="chart-sub">Top 10 assuntos que precisam de atenção</span>
+                            </div>
+                            <div class="chart-body tall"><canvas id="chartAssuntos"></canvas></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="section-block">
                     <div class="section-header">
                         <h2><i class="fas fa-chart-simple"></i> Seu desempenho por disciplina</h2>
@@ -653,21 +843,56 @@ button{font-family:inherit;cursor:pointer}
                     <h1><i class="fas fa-database"></i> Banco de Questões</h1>
                     <span class="subtitle" id="bancoSubtitulo">—</span>
                 </div>
+
                 <div class="busca-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="buscaInput" placeholder="Pesquisar questão, assunto, banca, tag..." />
+                    <input type="text" id="buscaInput" placeholder="Faça uma busca por palavra-chave" />
                     <button class="busca-clear" id="buscaClear" style="display:none;"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="filtros-panel">
-                    <div class="filtros-grid" id="filtrosGrid"></div>
-                    <div class="filtros-actions">
-                        <button class="btn btn-outline" id="btnLimparFiltros"><i class="fas fa-eraser"></i> Limpar filtros</button>
-                        <button class="btn btn-primary" id="btnIniciarSimuladoFiltros"><i class="fas fa-play"></i> Começar simulado</button>
+
+                <div class="banco-layout">
+                    <aside class="filter-sidebar" id="filterSidebar">
+                        <div class="filter-sidebar-header">
+                            <h3><i class="fas fa-filter"></i> Filtros</h3>
+                            <button class="btn-limpar" id="btnLimparFiltros"><i class="fas fa-eraser"></i> Limpar</button>
+                        </div>
+
+                        <div class="status-chips" id="statusChips">
+                            <button class="status-chip active" data-status="todas"><i class="fas fa-list"></i> Todas</button>
+                            <button class="status-chip" data-status="nao_resolvidas"><i class="fas fa-circle-dot"></i> Não resolvidas</button>
+                            <button class="status-chip" data-status="resolvidas"><i class="fas fa-check-double"></i> Resolvidas</button>
+                            <button class="status-chip" data-status="acertei"><i class="fas fa-check"></i> Acertei</button>
+                            <button class="status-chip" data-status="errei"><i class="fas fa-times"></i> Errei</button>
+                        </div>
+
+                        <div class="applied-panel" id="appliedPanel">
+                            <h4><i class="fas fa-tags"></i> Filtros aplicados</h4>
+                            <div id="appliedList"><div class="applied-empty">Nenhum filtro aplicado.</div></div>
+                        </div>
+
+                        <div id="filtrosBlocks"></div>
+
+                        <div class="btn-buscar-wrap">
+                            <button class="btn btn-primary" id="btnBuscarQuestoes">
+                                <i class="fas fa-search"></i> Buscar questões
+                            </button>
+                        </div>
+                    </aside>
+
+                    <div class="filter-results">
+                        <div class="resultados-header">
+                            <div class="resultados-count" id="resultadosCount">Carregando…</div>
+                            <div class="resultados-acoes">
+                                <button class="btn btn-sm btn-primary" id="btnIniciarSimuladoFiltros">
+                                    <i class="fas fa-play"></i> Simulado com filtros
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chips-ativos" id="chipsAtivos"></div>
+                        <div class="questoes-lista" id="questoesLista"></div>
+                        <div class="paginacao" id="paginacao"></div>
                     </div>
                 </div>
-                <div class="resultado-info" id="resultadoInfo"></div>
-                <div class="questoes-lista" id="questoesLista"></div>
-                <div class="paginacao" id="paginacao"></div>
             </section>
 
             <!-- SIMULADO -->
@@ -764,6 +989,13 @@ button{font-family:inherit;cursor:pointer}
             <!-- DESEMPENHO -->
             <section class="page" id="page-desempenho">
                 <div class="page-header"><h1><i class="fas fa-chart-line"></i> Meu Desempenho</h1></div>
+                <div class="flex-between mb-16">
+                    <span class="text-muted" style="font-size:.82rem;">Análise completa do seu progresso</span>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="btn btn-sm btn-outline" id="btnExportJson"><i class="fas fa-file-code"></i> Exportar JSON</button>
+                        <button class="btn btn-sm btn-outline" id="btnExportCsv"><i class="fas fa-file-csv"></i> Exportar CSV</button>
+                    </div>
+                </div>
                 <div class="metrics-grid" id="desempenhoMetrics"></div>
                 <div class="section-block">
                     <div class="section-header"><h2><i class="fas fa-book"></i> Por Disciplina</h2></div>
@@ -779,15 +1011,24 @@ button{font-family:inherit;cursor:pointer}
                 </div>
             </section>
 
-            <!-- ADMIN -->
+            <!-- CONSULTAR QUESTÕES (ADMIN — SOMENTE LEITURA) -->
             <section class="page" id="page-admin">
                 <div class="page-header">
-                    <h1><i class="fas fa-sliders"></i> Gerenciar Questões</h1>
-                    <button class="btn btn-primary" id="btnNovaQuestao"><i class="fas fa-plus"></i> Nova questão</button>
+                    <h1><i class="fas fa-magnifying-glass-chart"></i> Consultar Questões</h1>
+                    <span class="subtitle">Somente leitura · dados da planilha</span>
                 </div>
+
+                <div class="readonly-banner">
+                    <i class="fas fa-lock"></i>
+                    <div>
+                        <strong>Modo somente leitura</strong>
+                        Esta área permite apenas <em>consultar</em> as questões vindas da planilha. Nenhuma alteração é enviada à API, planilha ou banco de dados.
+                    </div>
+                </div>
+
                 <div class="admin-stats" id="adminStats"></div>
                 <div class="admin-filtros">
-                    <input type="text" id="adminBusca" placeholder="Buscar por ID ou enunciado..." />
+                    <input type="text" id="adminBusca" placeholder="Buscar por ID, enunciado ou UID..." />
                     <select id="adminStatusFiltro">
                         <option value="">Todos os status</option>
                         <option value="Ativa">Ativa</option>
@@ -798,9 +1039,86 @@ button{font-family:inherit;cursor:pointer}
                 </div>
                 <div class="table-responsive">
                     <table class="table" id="adminTable">
-                        <thead><tr><th>ID</th><th>Disciplina</th><th>Assunto</th><th>Banca</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+                        <thead><tr><th>ID</th><th>Disciplina</th><th>Assunto</th><th>Banca</th><th>Tipo</th><th>Status</th><th>Ver</th></tr></thead>
                         <tbody id="adminTableBody"></tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- MEUS DADOS (limpeza de cache local + backup) -->
+            <section class="page" id="page-dados">
+                <div class="page-header">
+                    <h1><i class="fas fa-database"></i> Meus Dados</h1>
+                    <span class="subtitle">Armazenamento local do navegador</span>
+                </div>
+
+                <div class="readonly-banner">
+                    <i class="fas fa-shield-halved"></i>
+                    <div>
+                        <strong>Seus dados ficam apenas neste navegador</strong>
+                        Favoritos, histórico de respostas, revisões agendadas e preferências são salvos <em>localmente</em> (localStorage). A planilha da API é usada apenas para <em>consultar</em> questões — nada do que você faz aqui altera a planilha.
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-header"><h2><i class="fas fa-download"></i> Backup dos seus dados</h2></div>
+                    <p class="text-muted" style="font-size:.85rem;margin-bottom:14px;">Exporte favoritos, histórico, revisões e preferências em um arquivo JSON. Guarde o arquivo em local seguro.</p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn btn-primary" id="btnBackupExport"><i class="fas fa-download"></i> Exportar backup</button>
+                        <button class="btn btn-outline" id="btnBackupImport"><i class="fas fa-upload"></i> Restaurar backup</button>
+                        <input type="file" id="backupFileInput" accept=".json" hidden>
+                    </div>
+                </div>
+
+                <div class="section-block" style="border-left:4px solid var(--danger);">
+                    <div class="section-header"><h2 style="color:var(--danger);"><i class="fas fa-broom"></i> Limpar cache local</h2></div>
+                    <p class="text-muted" style="font-size:.85rem;margin-bottom:14px;">Selecione quais dados deseja apagar <strong>apenas deste navegador</strong>. Esta ação não afeta a planilha nem outros usuários. Não é possível desfazer.</p>
+                    <div class="cache-options">
+                        <label class="cache-option">
+                            <input type="checkbox" data-clear="historico" checked>
+                            <div class="cache-info">
+                                <strong>Histórico de respostas</strong>
+                                <span>Todas as questões respondidas e seus resultados</span>
+                            </div>
+                            <span class="cache-size" id="cacheSizeHistorico">—</span>
+                        </label>
+                        <label class="cache-option">
+                            <input type="checkbox" data-clear="favoritos" checked>
+                            <div class="cache-info">
+                                <strong>Favoritos</strong>
+                                <span>Questões que você marcou como favoritas</span>
+                            </div>
+                            <span class="cache-size" id="cacheSizeFavoritos">—</span>
+                        </label>
+                        <label class="cache-option">
+                            <input type="checkbox" data-clear="revisao" checked>
+                            <div class="cache-info">
+                                <strong>Revisões agendadas</strong>
+                                <span>Questões marcadas para revisar</span>
+                            </div>
+                            <span class="cache-size" id="cacheSizeRevisao">—</span>
+                        </label>
+                        <label class="cache-option">
+                            <input type="checkbox" data-clear="comentarios" checked>
+                            <div class="cache-info">
+                                <strong>Meus comentários locais</strong>
+                                <span>Anotações que você fez nas questões</span>
+                            </div>
+                            <span class="cache-size" id="cacheSizeComentarios">—</span>
+                        </label>
+                        <label class="cache-option">
+                            <input type="checkbox" data-clear="preferencias">
+                            <div class="cache-info">
+                                <strong>Preferências do app</strong>
+                                <span>Tema claro/escuro e filtros salvos</span>
+                            </div>
+                            <span class="cache-size" id="cacheSizePreferencias">—</span>
+                        </label>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px;">
+                        <button class="btn btn-outline" id="btnCancelarLimpeza">Cancelar</button>
+                        <button class="btn btn-danger" id="btnConfirmarLimpeza"><i class="fas fa-trash"></i> Apagar selecionados</button>
+                    </div>
                 </div>
             </section>
 
@@ -846,14 +1164,19 @@ button{font-family:inherit;cursor:pointer}
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- FAB -->
-<button class="fab" id="fabNovaQuestao" title="Nova questão"><i class="fas fa-plus"></i></button>
-
 <script>
 /* ============================================================
-   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.4
-   v1.4: (1) Correção de vinculação questão↔gabarito via _uid único por linha
-         (2) Função Tesoura para riscar alternativas em múltipla escolha
+   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.7
+   v1.7 — CORREÇÃO CRÍTICA:
+     · API é 100% SOMENTE LEITURA — nenhum usuário pode
+       criar, atualizar ou excluir registros na planilha.
+     · Removidos: api.criarQuestao / api.atualizarQuestao / api.excluirQuestao
+     · Removidos: botão "Nova questão", FAB de nova questão,
+       modal de edição, exclusão de questão.
+     · "Limpeza de dados" agora limpa APENAS o cache local
+       (localStorage) — nunca a planilha ou a API.
+     · Backup/restauração limitados a dados do usuário
+       (favoritos, histórico, revisões, preferências).
    ============================================================ */
 (function(){
 'use strict';
@@ -885,15 +1208,9 @@ const Auth = {
     login(login, senha) {
         const l = String(login || '').trim();
         const s = String(senha || '');
-        if (!l || !s) {
-            return { ok: false, msg: 'Preencha login e senha para continuar.' };
-        }
-        if (!l.startsWith('aluno')) {
-            return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
-        }
-        if (!s.startsWith('VULP')) {
-            return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
-        }
+        if (!l || !s) return { ok: false, msg: 'Preencha login e senha para continuar.' };
+        if (!l.startsWith('aluno')) return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
+        if (!s.startsWith('VULP')) return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
         try {
             localStorage.setItem(this.SESSION_KEY, 'true');
             localStorage.setItem(this.USER_KEY, l);
@@ -909,34 +1226,28 @@ const Auth = {
 };
 
 /* ============================================================
-   CAMADA DE API — DIAGNÓSTICO COMPLETO
+   CAMADA DE API — SOMENTE LEITURA
+   ------------------------------------------------------------
+   IMPORTANTE: A API do Google Sheets é usada EXCLUSIVAMENTE
+   para consulta. Nenhum usuário tem permissão para criar,
+   atualizar ou excluir registros na planilha. Toda persistência
+   do usuário (histórico, favoritos, revisões) é feita
+   localmente via localStorage.
    ============================================================ */
 const api = {
     async _fetch(url, options = {}) {
-        console.group('%c[API] Requisição', 'color:#7c3aed;font-weight:bold');
-        console.log('[API] URL:', url);
-        console.log('[API] Método:', options.method || 'GET');
-        const t0 = performance.now();
-
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT_MS);
-
         let response;
         try {
             response = await fetch(url, {
-                method: options.method || 'GET',
-                headers: options.headers || (options.body ? { 'Content-Type': 'application/json' } : {}),
-                body: options.body || null,
+                method: 'GET', // SEMPRE GET — somente leitura
+                headers: options.headers || {},
                 redirect: 'follow',
                 signal: controller.signal,
             });
         } catch (netErr) {
             clearTimeout(timeoutId);
-            console.error('[API] ❌ ERRO DE CONEXÃO/CORS:', netErr);
-            if (netErr.name === 'AbortError') {
-                console.error('[API] Timeout após', API_CONFIG.TIMEOUT_MS, 'ms');
-            }
-            console.groupEnd();
             const e = new Error(
                 netErr.name === 'AbortError'
                     ? `Timeout de ${API_CONFIG.TIMEOUT_MS / 1000}s na API.`
@@ -949,80 +1260,44 @@ const api = {
             clearTimeout(timeoutId);
         }
 
-        const dt = (performance.now() - t0).toFixed(0);
-        console.log(`[API] ✅ Resposta em ${dt}ms`);
-        console.log('[API] Status HTTP:', response.status, response.statusText);
-        console.log('[API] Content-Type:', response.headers.get('content-type'));
-        console.log('[API] URL final (após redirect):', response.url);
-        console.log('[API] redirected:', response.redirected);
-
         const text = await response.text();
-        console.log('[API] Tamanho da resposta:', text.length, 'caracteres');
-        if (text.length > 0) {
-            console.log('[API] Primeiros 300 chars:', text.substring(0, 300));
-        }
 
         if (!response.ok) {
-            console.error('[API] ❌ ERRO HTTP:', response.status);
-            console.groupEnd();
             const e = new Error(`HTTP ${response.status} ${response.statusText}`);
             e.tipo = 'HTTP';
             e.status = response.status;
             e.body = text.substring(0, 800);
             throw e;
         }
-
         if (!text || !text.trim()) {
-            console.error('[API] ❌ Resposta VAZIA');
-            console.groupEnd();
             const e = new Error('A API retornou uma resposta vazia.');
             e.tipo = 'VAZIA';
             throw e;
         }
-
         const trimmed = text.trim();
         if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!doctype')) {
-            console.error('[API] ❌ API retornou HTML em vez de JSON');
-            console.groupEnd();
             const e = new Error('A API retornou HTML (provável página de login/erro do Google). Verifique se o Web App está publicado como "Qualquer pessoa".');
             e.tipo = 'HTML';
             e.body = trimmed.substring(0, 800);
             throw e;
         }
-
         let json;
-        try {
-            json = JSON.parse(text);
-        } catch (parseErr) {
-            console.error('[API] ❌ JSON inválido:', parseErr);
-            console.groupEnd();
+        try { json = JSON.parse(text); }
+        catch (parseErr) {
             const e = new Error('A API retornou conteúdo que não é JSON válido.');
             e.tipo = 'JSON_INVALIDO';
             e.body = text.substring(0, 800);
             throw e;
         }
-
         if (json && typeof json === 'object' && !Array.isArray(json) && json.erro) {
-            console.error('[API] ❌ API retornou erro explícito:', json.erro);
-            console.groupEnd();
             const e = new Error(`Erro retornado pela API: ${json.erro}`);
             e.tipo = 'API_ERRO';
             e.body = json;
             throw e;
         }
-
-        console.log('[API] ✅ JSON decodificado com sucesso.');
-        console.groupEnd();
         return json;
     },
 
-    /**
-     * Normaliza UMA linha bruta da planilha em UM objeto de questão.
-     * IMPORTANTE: gera um _uid (unique ID) baseado na posição da linha
-     * na resposta original da API. Isso garante que cada linha da planilha
-     * permaneça vinculada ao seu próprio enunciado, alternativas e gabarito,
-     * mesmo que existam IDs duplicados na coluna ID.
-     */
     _normalizarQuestao(raw, rowIndex) {
         if (!raw || typeof raw !== 'object') return null;
         const q = {
@@ -1054,15 +1329,8 @@ const api = {
             status: String(raw['Status'] || raw['status'] || 'Ativa').trim(),
             dataInclusao: String(raw['Data Inclusão'] || raw['dataInclusao'] || '').trim(),
         };
-
-        // ---- UID ÚNICO POR LINHA (chave de integridade questão↔gabarito) ----
-        // Combina o índice da linha na resposta da API com o ID original.
-        // Isso garante unicidade mesmo quando a planilha tem IDs repetidos
-        // (ex.: várias linhas com ID "3.0", "4.0" etc.).
         const idx = (typeof rowIndex === 'number') ? rowIndex : 'x';
         q._uid = `row_${idx}__id_${q.id || 'semid'}`;
-        // ---------------------------------------------------------------------
-
         if (!q.enunciado || !q.gabarito) return null;
         const tipoLower = q.tipo.toLowerCase();
         if (tipoLower.includes('certo') || tipoLower.includes('cespe') || tipoLower === 'ce') {
@@ -1091,36 +1359,12 @@ const api = {
         return [];
     },
 
+    /* ========== ÚNICO MÉTODO PÚBLICO — SOMENTE LEITURA ========== */
     async getQuestoes() {
         const url = API_CONFIG.USAR_ACTION_LIST ? `${API_URL}?action=list` : API_URL;
         const response = await this._fetch(url);
         const arr = this._extrairArray(response);
-
-        console.log(`[API] Registros brutos recebidos: ${arr.length}`);
-
-        // Passa o índice original da linha para gerar _uid único por linha.
-        // Linhas inválidas (sem enunciado/gabarito) são filtradas DEPOIS,
-        // preservando o índice original de cada registro válido.
-        const normalizadas = arr
-            .map((r, i) => this._normalizarQuestao(r, i))
-            .filter(Boolean);
-
-        console.log(`[API] ✅ ${normalizadas.length} questões válidas após normalização.`);
-        // Diagnóstico rápido de unicidade dos _uid
-        const uids = normalizadas.map(q => q._uid);
-        const uniqUids = new Set(uids);
-        if (uniqUids.size !== uids.length) {
-            console.warn('[API] ⚠️ Detectados _uid duplicados — verifique integridade.');
-        } else {
-            console.log(`[API] ✅ Todos os ${uids.length} _uid são únicos.`);
-        }
-
-        if (arr.length > 0 && normalizadas.length === 0) {
-            console.warn('[API] ⚠️ Nenhuma questão passou na validação.');
-            console.warn('[API] Verifique se os nomes das colunas batem. Exemplo do 1º registro:', arr[0]);
-            console.warn('[API] Colunas esperadas: ID, Disciplina, Assunto, Enunciado, Gabarito, etc.');
-        }
-
+        const normalizadas = arr.map((r, i) => this._normalizarQuestao(r, i)).filter(Boolean);
         return normalizadas;
     },
 
@@ -1134,42 +1378,17 @@ const api = {
         return null;
     },
 
-    async criarQuestao(dados) {
-        try {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'create', ...dados }),
-            });
-            return { success: true, _note: 'Enviado (no-cors)' };
-        } catch (e) { console.error('[API] criar:', e); throw e; }
-    },
-
-    async atualizarQuestao(id, dados) {
-        try {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'update', id, ...dados }),
-            });
-            return { success: true, _note: 'Enviado (no-cors)' };
-        } catch (e) { console.error('[API] atualizar:', e); throw e; }
-    },
-
-    async excluirQuestao(id) {
-        try {
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', id }),
-            });
-            return { success: true, _note: 'Enviado (no-cors)' };
-        } catch (e) { console.error('[API] excluir:', e); throw e; }
-    },
+    /* ---------------------------------------------------------
+       ATENÇÃO: Não existem métodos criarQuestao / atualizarQuestao /
+       excluirQuestao neste aplicativo. A API é somente leitura por
+       design. Se no futuro for necessário permitir escrita, isso
+       deve ser feito por processo administrativo separado, fora do
+       escopo deste aplicativo público.
+       --------------------------------------------------------- */
 };
 
 /* ============================================================
-   STORAGE
+   STORAGE — persistência 100% local
    ============================================================ */
 const storage = {
     KEYS: {
@@ -1177,6 +1396,7 @@ const storage = {
         HISTORICO: 'vulp_historico',
         REVISAO: 'vulp_revisao',
         TEMA: 'vulp_tema',
+        MEUS_COMENTARIOS: 'vulp_meus_comentarios',
     },
     _get(key, fallback = null) {
         try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
@@ -1186,6 +1406,22 @@ const storage = {
         try { localStorage.setItem(key, JSON.stringify(value)); return true; }
         catch (e) { console.warn('[Storage]', e); return false; }
     },
+    _remove(key) {
+        try { localStorage.removeItem(key); return true; }
+        catch (e) { console.warn('[Storage]', e); return false; }
+    },
+    _tamanhoBytes(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? new Blob([raw]).size : 0;
+        } catch { return 0; }
+    },
+    _formatarBytes(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+        return (b / (1024 * 1024)).toFixed(2) + ' MB';
+    },
+
     getFavoritos() { return this._get(this.KEYS.FAVORITOS, []); },
     isFavorito(uid) { return this.getFavoritos().includes(String(uid)); },
     toggleFavorito(uid) {
@@ -1204,15 +1440,52 @@ const storage = {
     getHistorico() { return this._get(this.KEYS.HISTORICO, []); },
     salvarHistorico(entry) {
         const h = this.getHistorico();
-        h.unshift({ ...entry, data: entry.data || new Date().toISOString() });
-        if (h.length > 2000) h.length = 2000;
+        const enriched = {
+            ...entry,
+            data: entry.data || new Date().toISOString(),
+            tempoResposta: entry.tempoResposta || null,
+            banca: entry.banca || '',
+            concurso: entry.concurso || '',
+            cargo: entry.cargo || '',
+            ano: entry.ano || '',
+            dificuldade: entry.dificuldade || '',
+            tipo: entry.tipo || '',
+        };
+        h.unshift(enriched);
+        if (h.length > 5000) h.length = 5000;
         this._set(this.KEYS.HISTORICO, h);
+    },
+    getHistoricoFiltrado(filtros = {}) {
+        let h = this.getHistorico();
+        const { dias, disciplina, assunto, banca, concurso, cargo, ano, dificuldade, tipo } = filtros;
+        if (dias && dias > 0) {
+            const limite = Date.now() - (dias * 864e5);
+            h = h.filter(x => new Date(x.data).getTime() >= limite);
+        }
+        if (disciplina) h = h.filter(x => (x.disciplina || '') === disciplina);
+        if (assunto) h = h.filter(x => (x.assunto || '') === assunto);
+        if (banca) h = h.filter(x => (x.banca || '') === banca);
+        if (concurso) h = h.filter(x => (x.concurso || '') === concurso);
+        if (cargo) h = h.filter(x => (x.cargo || '') === cargo);
+        if (ano) h = h.filter(x => String(x.ano || '') === String(ano));
+        if (dificuldade) h = h.filter(x => (x.dificuldade || '') === dificuldade);
+        if (tipo) h = h.filter(x => (x.tipo || '') === tipo);
+        return h;
+    },
+    getEstatisticasFiltradas(filtros = {}) {
+        const h = this.getHistoricoFiltrado(filtros);
+        const total = h.length;
+        const acertos = h.filter(x => x.acertou).length;
+        const erros = total - acertos;
+        return {
+            total, acertos, erros,
+            aproveitamento: total > 0 ? (acertos / total) * 100 : 0
+        };
     },
     getUltimaQuestao() {
         const h = this.getHistorico();
         return h.length > 0 ? h[0] : null;
     },
-    limparHistorico() { this._set(this.KEYS.HISTORICO, []); },
     getEstatisticas() {
         const h = this.getHistorico();
         const total = h.length;
@@ -1274,6 +1547,75 @@ const storage = {
     getTotalRevisao() { return this.getRevisaoPendentes().length; },
     getTema() { return this._get(this.KEYS.TEMA, 'light'); },
     setTema(t) { this._set(this.KEYS.TEMA, t); },
+    getMeusComentarios() { return this._get(this.KEYS.MEUS_COMENTARIOS, {}); },
+    getStreak() {
+        const h = this.getHistorico();
+        if (h.length === 0) return 0;
+        const dias = new Set(h.map(x => new Date(x.data).toDateString()));
+        let streak = 0;
+        const hoje = new Date();
+        for (let i = 0; i < 365; i++) {
+            const d = new Date(hoje);
+            d.setDate(d.getDate() - i);
+            if (dias.has(d.toDateString())) streak++;
+            else if (i > 0) break;
+        }
+        return streak;
+    },
+    getTempoTotalEstudo() {
+        const h = this.getHistorico();
+        return h.reduce((acc, x) => acc + (x.tempoResposta || 0), 0);
+    },
+
+    /* ---------- CACHE LOCAL: tamanhos e limpeza ---------- */
+    getTamanhosCache() {
+        return {
+            historico: this._tamanhoBytes(this.KEYS.HISTORICO),
+            favoritos: this._tamanhoBytes(this.KEYS.FAVORITOS),
+            revisao: this._tamanhoBytes(this.KEYS.REVISAO),
+            comentarios: this._tamanhoBytes(this.KEYS.MEUS_COMENTARIOS),
+            preferencias: this._tamanhoBytes(this.KEYS.TEMA),
+        };
+    },
+    limparCache(quais) {
+        const removidos = [];
+        if (quais.includes('historico')) { this._remove(this.KEYS.HISTORICO); removidos.push('histórico'); }
+        if (quais.includes('favoritos')) { this._remove(this.KEYS.FAVORITOS); removidos.push('favoritos'); }
+        if (quais.includes('revisao')) { this._remove(this.KEYS.REVISAO); removidos.push('revisões'); }
+        if (quais.includes('comentarios')) { this._remove(this.KEYS.MEUS_COMENTARIOS); removidos.push('comentários'); }
+        if (quais.includes('preferencias')) { this._remove(this.KEYS.TEMA); removidos.push('preferências'); }
+        return removidos;
+    },
+
+    /* ---------- Exportação de histórico (JSON/CSV) ---------- */
+    exportarHistorico(formato = 'json') {
+        const h = this.getHistorico();
+        if (formato === 'json') {
+            const blob = new Blob([JSON.stringify(h, null, 2)], { type: 'application/json' });
+            this._download(blob, `vulp-historico-${Date.now()}.json`);
+        } else if (formato === 'csv') {
+            if (h.length === 0) return;
+            const headers = ['Data', 'Disciplina', 'Assunto', 'Banca', 'Tipo', 'Dificuldade', 'Resposta', 'Gabarito', 'Acertou', 'Tempo(s)'];
+            const rows = h.map(x => [
+                x.data, x.disciplina || '', x.assunto || '', x.banca || '',
+                x.tipo || '', x.dificuldade || '', x.resposta || '', x.gabarito || '',
+                x.acertou ? 'Sim' : 'Não', x.tempoResposta || ''
+            ]);
+            const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+            this._download(blob, `vulp-historico-${Date.now()}.csv`);
+        }
+    },
+    _download(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    },
 };
 
 /* ============================================================
@@ -1286,10 +1628,17 @@ const App = {
         carregando: false,
         paginaAtual: 'dashboard',
         erroApi: null,
-        filtros: { disciplina:'', assunto:'', subassunto:'', banca:'', orgao:'', concurso:'', cargo:'', ano:'', nivel:'', tipo:'', dificuldade:'', status:'' },
+        filtros: {
+            disciplina: [], assunto: [], subassunto: [], banca: [], orgao: [],
+            concurso: [], cargo: [], ano: [], nivel: [], tipo: [], dificuldade: []
+        },
+        statusRapido: 'todas',
+        excluir: { desatualizadas:false, anuladas:false, ineditas:false, meusSimulados:false, meusCadernos:false },
+        conteudo: { gabaritoComentado:false, comentarios:false, meusComentarios:false },
         busca: '',
         pagina: 1,
         porPagina: 10,
+        sessao: { inicio:null, pausado:false, timer:null, segundos:0 },
     },
 
     async init() {
@@ -1308,7 +1657,11 @@ const App = {
         await this.carregarQuestoes();
         this.hideSplash();
         this.showApp();
+        this.iniciarSessao();
         this.navegarPara('dashboard');
+        setTimeout(() => {
+            if (typeof Chart !== 'undefined') Charts.init();
+        }, 250);
     },
 
     showLogin() {
@@ -1336,6 +1689,10 @@ const App = {
         this.showApp();
         this.navegarPara('dashboard');
         await this.carregarQuestoes();
+        this.iniciarSessao();
+        setTimeout(() => {
+            if (typeof Chart !== 'undefined') Charts.init();
+        }, 250);
         if (!this.state.erroApi) {
             this.navegarPara(this.state.paginaAtual);
         }
@@ -1343,6 +1700,7 @@ const App = {
 
     logout() {
         Auth.logout();
+        this.encerrarSessao();
         this.state.questoes = [];
         this.state.questoesFiltradas = [];
         this.state.erroApi = null;
@@ -1359,17 +1717,14 @@ const App = {
         const form = document.getElementById('loginForm');
         const errEl = document.getElementById('loginError');
         const btn = document.getElementById('btnLoginSubmit');
-
         form?.addEventListener('submit', async (ev) => {
             ev.preventDefault();
             const userEl = document.getElementById('loginUser');
             const passEl = document.getElementById('loginPass');
             const user = userEl ? userEl.value : '';
             const pass = passEl ? passEl.value : '';
-
             errEl.classList.remove('show');
             errEl.textContent = '';
-
             const result = Auth.login(user, pass);
             if (!result.ok) {
                 errEl.textContent = result.msg;
@@ -1377,23 +1732,18 @@ const App = {
                 passEl?.focus();
                 return;
             }
-
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Entrando...';
             }
-
             await new Promise(r => setTimeout(r, 250));
-
             await this.entrarNoApp();
-
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Entrar no aplicativo';
             }
             if (passEl) passEl.value = '';
         });
-
         ['loginUser','loginPass'].forEach(id => {
             document.getElementById(id)?.addEventListener('input', () => {
                 errEl.classList.remove('show');
@@ -1417,6 +1767,9 @@ const App = {
         document.body.classList.toggle('dark');
         storage.setTema(document.body.classList.contains('dark') ? 'dark' : 'light');
         this.atualizarIconeTema();
+        setTimeout(() => {
+            if (typeof Charts !== 'undefined' && Charts.onThemeChange) Charts.onThemeChange();
+        }, 50);
     },
 
     async carregarQuestoes(forcar = false) {
@@ -1425,27 +1778,16 @@ const App = {
         this.state.carregando = true;
         this.state.erroApi = null;
         this.atualizarStatusApi('loading');
-        console.log('%c[App] Iniciando carregamento do banco de questões...', 'color:#7c3aed;font-weight:bold');
-
         try {
             const q = await api.getQuestoes();
-            if (!Array.isArray(q)) {
-                throw new Error('A API não retornou um array de questões.');
-            }
+            if (!Array.isArray(q)) throw new Error('A API não retornou um array de questões.');
             this.state.questoes = q;
             this.atualizarStatusApi('online');
             this.atualizarBadges();
-            console.log(`[App] ✅ Banco carregado: ${q.length} questões.`);
             document.getElementById('erroApiBox')?.remove();
-            if (q.length === 0) {
-                this.toast('Nenhuma questão disponível no momento.', 'info');
-            }
+            if (q.length === 0) this.toast('Nenhuma questão disponível no momento.', 'info');
         } catch (error) {
-            console.error('%c[App] ❌ ERRO ao carregar questões', 'color:#dc2626;font-weight:bold');
-            console.error('[App] Tipo:', error.tipo || 'desconhecido');
-            console.error('[App] Mensagem:', error.message);
-            if (error.body) console.error('[App] Corpo da resposta:', error.body);
-            if (error.original) console.error('[App] Erro original:', error.original);
+            console.error('[App] ❌ ERRO ao carregar questões', error);
             this.state.erroApi = error;
             this.atualizarStatusApi('offline');
             this.mostrarErroApi(error);
@@ -1457,14 +1799,6 @@ const App = {
     mostrarErroApi(error) {
         const page = document.getElementById('page-dashboard');
         if (!page) return;
-
-        console.group('%c[Diagnóstico interno]', 'color:#dc2626;font-weight:bold');
-        console.log('Tipo do erro:', error.tipo || 'desconhecido');
-        console.log('Mensagem:', error.message);
-        if (error.body) console.log('Corpo:', error.body);
-        console.log('Dica técnica: verifique publicação do Web App, CORS, formato de retorno JSON.');
-        console.groupEnd();
-
         const html = `
             <div class="section-block" style="border-left:4px solid var(--danger);" id="erroApiBox">
                 <div class="section-header">
@@ -1480,14 +1814,12 @@ const App = {
         div.innerHTML = html;
         const box = div.firstElementChild;
         hero?.insertAdjacentElement('afterend', box);
-
         document.getElementById('btnTentarNovamente')?.addEventListener('click', async (e) => {
             e.currentTarget.disabled = true;
             e.currentTarget.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Tentando...';
             await App.carregarQuestoes(true);
-            if (!App.state.erroApi) {
-                App.navegarPara('dashboard');
-            } else {
+            if (!App.state.erroApi) App.navegarPara('dashboard');
+            else {
                 e.currentTarget.disabled = false;
                 e.currentTarget.innerHTML = '<i class="fas fa-rotate"></i> Tentar novamente';
             }
@@ -1501,7 +1833,7 @@ const App = {
         dot.classList.remove('online', 'offline');
         if (status === 'online') {
             dot.classList.add('online');
-            text.textContent = `${this.state.questoes.length} questões disponíveis`;
+            text.textContent = `${this.state.questoes.length} questões · leitura`;
         } else if (status === 'offline') {
             dot.classList.add('offline');
             text.textContent = 'Sem conexão';
@@ -1520,6 +1852,20 @@ const App = {
         set('badgeFavoritos', storage.getTotalFavoritos());
         set('badgeErros', storage.getQuestoesErradas().length);
         set('badgeRevisao', storage.getTotalRevisao());
+        this.atualizarStreakBadge();
+    },
+
+    atualizarStreakBadge() {
+        const badge = document.getElementById('streakBadge');
+        const text = document.getElementById('streakText');
+        if (!badge || !text) return;
+        const streak = storage.getStreak();
+        if (streak > 0) {
+            text.textContent = streak;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
     },
 
     navegarPara(page) {
@@ -1531,18 +1877,16 @@ const App = {
         const target = document.getElementById(`page-${page}`);
         if (target) target.classList.add('active');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
         const titulos = {
             dashboard: 'Dashboard', banco: 'Banco de Questões', simulado: 'Simulados',
             treino: 'Modo Treino', favoritos: 'Favoritos', 'caderno-erros': 'Caderno de Erros',
-            revisao: 'Revisar Hoje', desempenho: 'Meu Desempenho', admin: 'Gerenciar Questões',
+            revisao: 'Revisar Hoje', desempenho: 'Meu Desempenho', admin: 'Consultar Questões',
+            dados: 'Meus Dados'
         };
         const t = document.getElementById('headerTitle');
         if (t) t.textContent = titulos[page] || 'VULP+';
-
         document.getElementById('sidebar')?.classList.remove('open');
         this.state.paginaAtual = page;
-
         switch (page) {
             case 'dashboard': Dashboard.render(); break;
             case 'banco': Questoes.render(); break;
@@ -1553,6 +1897,7 @@ const App = {
             case 'revisao': Questoes.renderRevisao(); break;
             case 'desempenho': Dashboard.renderDesempenho(); break;
             case 'admin': Admin.render(); break;
+            case 'dados': Dados.render(); break;
         }
     },
 
@@ -1582,33 +1927,30 @@ const App = {
             sb.classList.remove('open');
         });
         document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTema());
-
         document.getElementById('btnAtualizarBanco')?.addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             btn.classList.add('loading');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Buscando mais questões...';
+            btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Recarregando...';
             try {
                 await this.carregarQuestoes(true);
                 if (!this.state.erroApi) {
-                    this.toast('Novas questões carregadas!', 'success');
+                    this.toast('Questões recarregadas da planilha!', 'success');
                     this.navegarPara(this.state.paginaAtual);
                 } else {
-                    this.toast('Não foi possível carregar novas questões agora. Tente novamente.', 'error');
+                    this.toast('Não foi possível recarregar agora. Tente novamente.', 'error');
                 }
             } catch {
-                this.toast('Não foi possível carregar novas questões agora. Tente novamente.', 'error');
+                this.toast('Não foi possível recarregar agora. Tente novamente.', 'error');
             } finally {
                 btn.classList.remove('loading');
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-plus-circle"></i> Carregar mais questões';
+                btn.innerHTML = '<i class="fas fa-rotate"></i> Recarregar questões';
             }
         });
-
         document.getElementById('btnLogout')?.addEventListener('click', () => {
             if (confirm('Deseja sair da sua conta?')) this.logout();
         });
-
         document.getElementById('modalClose')?.addEventListener('click', () => this.fecharModal());
         document.getElementById('modalCancel')?.addEventListener('click', () => this.fecharModal());
         document.getElementById('modalOverlay')?.addEventListener('click', (e) => {
@@ -1618,8 +1960,6 @@ const App = {
         document.getElementById('comentarioOverlay')?.addEventListener('click', (e) => {
             if (e.target.id === 'comentarioOverlay') this.fecharComentario();
         });
-        document.getElementById('fabNovaQuestao')?.addEventListener('click', () => Admin.abrirModalNovaQuestao());
-        document.getElementById('btnNovaQuestao')?.addEventListener('click', () => Admin.abrirModalNovaQuestao());
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.fecharModal();
@@ -1679,13 +2019,6 @@ const App = {
         }, 4000);
     },
 
-    esconderSplash() {
-        const s = document.getElementById('splashOverlay');
-        const a = document.getElementById('appContainer');
-        if (s) { s.classList.add('hidden'); setTimeout(() => s.remove(), 400); }
-        if (a) a.style.display = 'flex';
-    },
-
     escapeHtml(str) {
         if (str === null || str === undefined) return '';
         return String(str)
@@ -1717,6 +2050,458 @@ const App = {
         if (pct >= 40) return 'Baixo';
         return 'Muito baixo';
     },
+
+    iniciarSessao() {
+        if (this.state.sessao.inicio) return;
+        this.state.sessao.inicio = Date.now();
+        this.state.sessao.segundos = 0;
+        const timer = document.getElementById('sessionTimer');
+        if (timer) timer.classList.remove('hidden');
+        this.state.sessao.timer = setInterval(() => {
+            if (!this.state.sessao.pausado) {
+                this.state.sessao.segundos++;
+                this.atualizarTimerSessao();
+            }
+        }, 1000);
+    },
+
+    pausarSessao() {
+        this.state.sessao.pausado = true;
+        document.getElementById('sessionTimer')?.classList.add('paused');
+    },
+
+    retomarSessao() {
+        this.state.sessao.pausado = false;
+        document.getElementById('sessionTimer')?.classList.remove('paused');
+    },
+
+    encerrarSessao() {
+        if (this.state.sessao.timer) clearInterval(this.state.sessao.timer);
+        this.state.sessao.timer = null;
+        this.state.sessao.inicio = null;
+        this.state.sessao.segundos = 0;
+        document.getElementById('sessionTimer')?.classList.add('hidden');
+    },
+
+    atualizarTimerSessao() {
+        const el = document.getElementById('sessionTimerText');
+        if (!el) return;
+        const s = this.state.sessao.segundos;
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const sec = s % 60;
+        el.textContent = h > 0
+            ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+            : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    },
+};
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+const Charts = {
+    instances: {},
+    filtros: { dias: 30, disciplina: '', assunto: '', banca: '', concurso: '', cargo: '', ano: '', dificuldade: '', tipo: '' },
+    doughnutMode: 'acertos',
+    linePeriod: 30,
+
+    cores: {
+        accent: '#7c3aed',
+        accentLight: 'rgba(124,58,237,.15)',
+        success: '#059669',
+        danger: '#dc2626',
+        warning: '#d97706',
+        info: '#2563eb',
+        palette: [
+            '#7c3aed', '#6366f1', '#059669', '#10b981', '#dc2626',
+            '#ef4444', '#d97706', '#f59e0b', '#2563eb', '#3b82f6',
+            '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#84cc16'
+        ]
+    },
+
+    isDark() { return document.body.classList.contains('dark'); },
+    gridColor() { return this.isDark() ? 'rgba(148,163,184,.12)' : 'rgba(148,163,184,.18)'; },
+    textColor() { return this.isDark() ? '#cbd5e1' : '#4b5563'; },
+
+    init() {
+        if (typeof Chart === 'undefined') return;
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 11;
+        Chart.defaults.color = this.textColor();
+        this.renderFiltros();
+        this.bindToggles();
+        this.renderAll();
+    },
+
+    renderFiltros() {
+        const c = document.getElementById('chartsFiltersGrid');
+        if (!c) return;
+        const h = storage.getHistorico();
+        const uniq = (campo) => [...new Set(h.map(x => x[campo]).filter(Boolean))].sort();
+        const filtros = [
+            { key:'disciplina', label:'Disciplina', v: uniq('disciplina') },
+            { key:'assunto', label:'Assunto', v: uniq('assunto') },
+            { key:'banca', label:'Banca', v: uniq('banca') },
+            { key:'concurso', label:'Concurso', v: uniq('concurso') },
+            { key:'cargo', label:'Cargo', v: uniq('cargo') },
+            { key:'ano', label:'Ano', v: uniq('ano') },
+            { key:'dificuldade', label:'Dificuldade', v: ['Fácil','Média','Difícil','Muito difícil'] },
+            { key:'tipo', label:'Tipo', v: ['Múltipla escolha','Certo/Errado','Discursiva'] },
+        ];
+        let html = `<div class="charts-filter-group"><label>Período</label>
+            <select data-chart-filter="dias">
+                <option value="7" ${this.filtros.dias===7?'selected':''}>Últimos 7 dias</option>
+                <option value="30" ${this.filtros.dias===30?'selected':''}>Últimos 30 dias</option>
+                <option value="90" ${this.filtros.dias===90?'selected':''}>Últimos 90 dias</option>
+                <option value="0" ${this.filtros.dias===0?'selected':''}>Todo o período</option>
+            </select></div>`;
+        html += filtros.map(f => {
+            if (f.v.length === 0) return '';
+            const opts = f.v.map(v => `<option value="${App.escapeHtml(v)}" ${this.filtros[f.key] === v ? 'selected' : ''}>${App.escapeHtml(v)}</option>`).join('');
+            return `<div class="charts-filter-group"><label>${f.label}</label>
+                <select data-chart-filter="${f.key}"><option value="">Todos</option>${opts}</select></div>`;
+        }).join('');
+        c.innerHTML = html;
+        c.querySelectorAll('select[data-chart-filter]').forEach(sel => {
+            sel.onchange = (e) => {
+                const key = e.target.dataset.chartFilter;
+                if (key === 'dias') {
+                    this.filtros.dias = parseInt(e.target.value) || 0;
+                    this.linePeriod = this.filtros.dias;
+                    document.querySelectorAll('#linePeriodToggle button').forEach(b => {
+                        b.classList.toggle('active', parseInt(b.dataset.days) === this.filtros.dias);
+                    });
+                } else {
+                    this.filtros[key] = e.target.value;
+                }
+                this.renderAll();
+            };
+        });
+    },
+
+    bindToggles() {
+        document.querySelectorAll('#linePeriodToggle button').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('#linePeriodToggle button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.linePeriod = parseInt(btn.dataset.days) || 0;
+                this.filtros.dias = this.linePeriod;
+                const selPeriodo = document.querySelector('[data-chart-filter="dias"]');
+                if (selPeriodo) selPeriodo.value = String(this.linePeriod);
+                this.renderLine();
+                this.updatePeriodoLabel();
+            };
+        });
+        document.querySelectorAll('#doughnutModeToggle button').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('#doughnutModeToggle button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.doughnutMode = btn.dataset.mode;
+                this.renderDoughnut();
+            };
+        });
+    },
+
+    updatePeriodoLabel() {
+        const el = document.getElementById('chartsPeriodoLabel');
+        if (!el) return;
+        const labels = { 7: 'Últimos 7 dias', 30: 'Últimos 30 dias', 90: 'Últimos 90 dias', 0: 'Todo o período' };
+        el.textContent = labels[this.filtros.dias] || 'Todo o período';
+    },
+
+    renderAll() {
+        this.renderLine();
+        this.renderDisciplinas();
+        this.renderDoughnut();
+        this.renderRadar();
+        this.renderAssuntos();
+        this.updatePeriodoLabel();
+        this.renderMetrics();
+    },
+
+    renderMetrics() {
+        const c = document.getElementById('metricsGrid');
+        if (!c) return;
+        const stats = storage.getEstatisticasFiltradas(this.filtros);
+        const statsAll = storage.getEstatisticas();
+        const total = App.state.questoes.length;
+        const favCount = storage.getTotalFavoritos();
+        const revCount = storage.getTotalRevisao();
+        const errCount = storage.getQuestoesErradas().length;
+        const streak = storage.getStreak();
+        const h7 = storage.getHistoricoFiltrado({ ...this.filtros, dias: 7 });
+        const h14 = storage.getHistoricoFiltrado({ ...this.filtros, dias: 14 });
+        const h7ant = h14.filter(x => new Date(x.data).getTime() < Date.now() - 7 * 864e5);
+        const pct7 = h7.length > 0 ? (h7.filter(x => x.acertou).length / h7.length) * 100 : 0;
+        const pct7ant = h7ant.length > 0 ? (h7ant.filter(x => x.acertou).length / h7ant.length) * 100 : 0;
+        const diff = pct7 - pct7ant;
+        const trendClass = diff > 2 ? 'up' : diff < -2 ? 'down' : 'neutral';
+        const trendIcon = diff > 2 ? 'fa-arrow-up' : diff < -2 ? 'fa-arrow-down' : 'fa-minus';
+        const trendText = h7ant.length === 0 ? 'Novo' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}%`;
+        const aprovClass = stats.aproveitamento >= 80 ? 'success' : stats.aproveitamento >= 60 ? 'info' : stats.aproveitamento >= 40 ? 'warning' : 'danger';
+        const cards = [
+            { label:'Questões disponíveis', icon:'fa-database', value: total, sub:'somente leitura da planilha', classe:'accent' },
+            { label:'Respondidas (filtro)', icon:'fa-check-double', value: stats.total, sub:`${stats.acertos} acertos · ${stats.erros} erros`, classe:'info' },
+            { label:'Aproveitamento', icon:'fa-percent', value: stats.total > 0 ? stats.aproveitamento.toFixed(1)+'%' : '—', sub: stats.total > 0 ? App.classificarLabel(stats.aproveitamento) : 'Sem dados', classe: aprovClass, trend: { class: trendClass, icon: trendIcon, text: trendText } },
+            { label:'Sequência', icon:'fa-fire', value: streak + 'd', sub: streak > 0 ? 'dias consecutivos' : 'comece hoje!', classe:'warning' },
+            { label:'Favoritas', icon:'fa-star', value: favCount, sub:'salvas neste navegador', classe:'warning' },
+            { label:'Para revisar', icon:'fa-clock-rotate-left', value: revCount, sub:'revisões pendentes', classe:'accent' },
+            { label:'Caderno de erros', icon:'fa-book-skull', value: errCount, sub:'questões para refazer', classe:'danger' },
+            { label:'Total geral', icon:'fa-chart-simple', value: statsAll.total, sub:`${statsAll.aproveitamento.toFixed(0)}% aproveitamento`, classe:'info' },
+        ];
+        c.innerHTML = cards.map(x => `
+            <div class="metric-card ${x.classe}">
+                <div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div>
+                <div class="metric-value">${x.value}</div>
+                <div class="metric-sub">${x.sub}</div>
+                ${x.trend ? `<span class="metric-trend ${x.trend.class}"><i class="fas ${x.trend.icon}"></i> ${x.trend.text}</span>` : ''}
+            </div>
+        `).join('');
+    },
+
+    _agruparPorDia(historico) {
+        const map = {};
+        historico.forEach(x => {
+            const d = new Date(x.data);
+            const key = d.toISOString().slice(0, 10);
+            if (!map[key]) map[key] = { total: 0, acertos: 0, erros: 0, data: key };
+            map[key].total++;
+            if (x.acertou) map[key].acertos++;
+            else map[key].erros++;
+        });
+        return Object.values(map).sort((a, b) => a.data.localeCompare(b.data));
+    },
+
+    _destroy(chave) {
+        if (this.instances[chave]) {
+            this.instances[chave].destroy();
+            delete this.instances[chave];
+        }
+    },
+
+    _empty(canvasId, msg = 'Sem dados suficientes') {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const parent = canvas.parentElement;
+        this._destroy(canvasId);
+        canvas.style.display = 'none';
+        let empty = parent.querySelector('.chart-empty');
+        if (!empty) {
+            empty = document.createElement('div');
+            empty.className = 'chart-empty';
+            parent.appendChild(empty);
+        }
+        empty.innerHTML = `<i class="fas fa-chart-simple"></i><span>${msg}</span>`;
+        empty.style.display = 'flex';
+    },
+
+    _show(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        canvas.style.display = 'block';
+        const empty = canvas.parentElement.querySelector('.chart-empty');
+        if (empty) empty.style.display = 'none';
+    },
+
+    renderLine() {
+        const canvasId = 'chartEvolucao';
+        const h = storage.getHistoricoFiltrado(this.filtros);
+        if (h.length === 0) { this._empty(canvasId, 'Responda questões para ver sua evolução'); return; }
+        this._show(canvasId);
+        const dados = this._agruparPorDia(h);
+        const labels = dados.map(d => { const [y, m, day] = d.data.split('-'); return `${day}/${m}`; });
+        const totais = dados.map(d => d.total);
+        const acertos = dados.map(d => d.acertos);
+        const erros = dados.map(d => d.erros);
+        const pct = dados.map(d => d.total > 0 ? (d.acertos / d.total) * 100 : 0);
+        this._destroy(canvasId);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        this.instances[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Aproveitamento %', data: pct, borderColor: this.cores.accent, backgroundColor: this.cores.accentLight, borderWidth: 3, tension: 0.35, fill: true, pointRadius: 3, pointHoverRadius: 6, pointBackgroundColor: this.cores.accent, yAxisID: 'y1' },
+                    { label: 'Respondidas', data: totais, borderColor: this.cores.info, backgroundColor: 'transparent', borderWidth: 2, tension: 0.35, pointRadius: 2, pointHoverRadius: 5, borderDash: [5, 4], yAxisID: 'y' },
+                    { label: 'Acertos', data: acertos, borderColor: this.cores.success, backgroundColor: 'transparent', borderWidth: 2, tension: 0.35, pointRadius: 2, pointHoverRadius: 5, yAxisID: 'y' },
+                    { label: 'Erros', data: erros, borderColor: this.cores.danger, backgroundColor: 'transparent', borderWidth: 2, tension: 0.35, pointRadius: 2, pointHoverRadius: 5, yAxisID: 'y' }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 10, padding: 12, usePointStyle: true } },
+                    tooltip: { backgroundColor: this.isDark() ? '#1e293b' : '#111827', padding: 12, titleFont: { size: 12, weight: '700' }, bodyFont: { size: 11 }, callbacks: { label: (ctx) => ctx.dataset.label === 'Aproveitamento %' ? ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` : ` ${ctx.dataset.label}: ${ctx.parsed.y}` } }
+                },
+                scales: {
+                    x: { grid: { color: this.gridColor() }, ticks: { color: this.textColor(), maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+                    y: { beginAtZero: true, position: 'left', grid: { color: this.gridColor() }, ticks: { color: this.textColor(), precision: 0 }, title: { display: true, text: 'Questões', color: this.textColor() } },
+                    y1: { beginAtZero: true, max: 100, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: this.textColor(), callback: v => v + '%' }, title: { display: true, text: '%', color: this.textColor() } }
+                }
+            }
+        });
+    },
+
+    renderDisciplinas() {
+        const canvasId = 'chartDisciplinas';
+        const h = storage.getHistoricoFiltrado(this.filtros);
+        if (h.length === 0) { this._empty(canvasId, 'Sem dados por disciplina'); return; }
+        this._show(canvasId);
+        const map = {};
+        h.forEach(x => {
+            const d = x.disciplina || 'Sem disciplina';
+            if (!map[d]) map[d] = { total: 0, acertos: 0 };
+            map[d].total++;
+            if (x.acertou) map[d].acertos++;
+        });
+        const entries = Object.entries(map).sort((a, b) => b[1].total - a[1].total).slice(0, 12);
+        const labels = entries.map(([k]) => k.length > 18 ? k.slice(0, 16) + '…' : k);
+        const pcts = entries.map(([, v]) => v.total > 0 ? (v.acertos / v.total) * 100 : 0);
+        const totais = entries.map(([, v]) => v.total);
+        const cores = pcts.map(p => p >= 80 ? this.cores.success : p >= 60 ? this.cores.accent : p >= 40 ? this.cores.warning : this.cores.danger);
+        this._destroy(canvasId);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        this.instances[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { label: 'Aproveitamento %', data: pcts, backgroundColor: cores, borderRadius: 6, borderSkipped: false, yAxisID: 'y1' },
+                    { label: 'Questões respondidas', data: totais, backgroundColor: 'rgba(99,102,241,.25)', borderColor: this.cores.info, borderWidth: 1, borderRadius: 4, yAxisID: 'y', type: 'line', tension: 0.35, pointRadius: 3, pointBackgroundColor: this.cores.info }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 10, padding: 12, usePointStyle: true } },
+                    tooltip: { backgroundColor: this.isDark() ? '#1e293b' : '#111827', callbacks: { label: (ctx) => ctx.dataset.label === 'Aproveitamento %' ? ` Aproveitamento: ${ctx.parsed.y.toFixed(1)}%` : ` Respondidas: ${ctx.parsed.y}` } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: this.textColor(), maxRotation: 45, minRotation: 0, autoSkip: false, font: { size: 10 } } },
+                    y: { beginAtZero: true, position: 'left', grid: { color: this.gridColor() }, ticks: { color: this.textColor(), precision: 0 }, title: { display: true, text: 'Questões', color: this.textColor() } },
+                    y1: { beginAtZero: true, max: 100, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: this.textColor(), callback: v => v + '%' } }
+                }
+            }
+        });
+    },
+
+    renderDoughnut() {
+        const canvasId = 'chartDistribuicao';
+        const h = storage.getHistoricoFiltrado(this.filtros);
+        if (h.length === 0) { this._empty(canvasId, 'Sem dados para distribuição'); return; }
+        this._show(canvasId);
+        let labels = [], values = [], cores = [];
+        if (this.doughnutMode === 'acertos') {
+            const acertos = h.filter(x => x.acertou).length;
+            const erros = h.length - acertos;
+            labels = ['Acertos', 'Erros'];
+            values = [acertos, erros];
+            cores = [this.cores.success, this.cores.danger];
+        } else {
+            const campo = this.doughnutMode === 'disciplina' ? 'disciplina' : this.doughnutMode === 'banca' ? 'banca' : 'dificuldade';
+            const map = {};
+            h.forEach(x => { const k = x[campo] || 'Não informado'; map[k] = (map[k] || 0) + 1; });
+            const entries = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            labels = entries.map(([k]) => k.length > 20 ? k.slice(0, 18) + '…' : k);
+            values = entries.map(([, v]) => v);
+            cores = this.cores.palette.slice(0, labels.length);
+        }
+        this._destroy(canvasId);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        this.instances[canvasId] = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: values, backgroundColor: cores, borderColor: this.isDark() ? '#131b2e' : '#fff', borderWidth: 2, hoverOffset: 8 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '62%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, usePointStyle: true, font: { size: 10 } } },
+                    tooltip: { backgroundColor: this.isDark() ? '#1e293b' : '#111827', callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0; return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`; } } }
+                }
+            }
+        });
+    },
+
+    renderRadar() {
+        const canvasId = 'chartRadar';
+        const h = storage.getHistoricoFiltrado(this.filtros);
+        if (h.length === 0) { this._empty(canvasId, 'Sem dados para o radar'); return; }
+        this._show(canvasId);
+        const map = {};
+        h.forEach(x => {
+            const d = x.disciplina || 'Sem disciplina';
+            if (!map[d]) map[d] = { total: 0, acertos: 0 };
+            map[d].total++;
+            if (x.acertou) map[d].acertos++;
+        });
+        const entries = Object.entries(map).sort((a, b) => b[1].total - a[1].total).slice(0, 8);
+        const labels = entries.map(([k]) => k.length > 18 ? k.slice(0, 16) + '…' : k);
+        const pcts = entries.map(([, v]) => v.total > 0 ? (v.acertos / v.total) * 100 : 0);
+        this._destroy(canvasId);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        this.instances[canvasId] = new Chart(ctx, {
+            type: 'radar',
+            data: { labels, datasets: [{ label: 'Aproveitamento %', data: pcts, borderColor: this.cores.accent, backgroundColor: this.cores.accentLight, borderWidth: 2, pointBackgroundColor: this.cores.accent, pointBorderColor: '#fff', pointRadius: 4, pointHoverRadius: 6, fill: true }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: this.isDark() ? '#1e293b' : '#111827', callbacks: { label: (ctx) => ` ${ctx.parsed.r.toFixed(1)}%` } }
+                },
+                scales: {
+                    r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: this.textColor(), backdropColor: 'transparent', font: { size: 9 } }, grid: { color: this.gridColor() }, angleLines: { color: this.gridColor() }, pointLabels: { color: this.textColor(), font: { size: 10, weight: '600' } } }
+                }
+            }
+        });
+    },
+
+    renderAssuntos() {
+        const canvasId = 'chartAssuntos';
+        const h = storage.getHistoricoFiltrado(this.filtros);
+        if (h.length === 0) { this._empty(canvasId, 'Sem dados por assunto'); return; }
+        this._show(canvasId);
+        const map = {};
+        h.forEach(x => {
+            const key = `${x.disciplina || 'Geral'} › ${x.assunto || 'Sem assunto'}`;
+            if (!map[key]) map[key] = { total: 0, acertos: 0 };
+            map[key].total++;
+            if (x.acertou) map[key].acertos++;
+        });
+        const entries = Object.entries(map)
+            .filter(([, v]) => v.total >= 2)
+            .map(([k, v]) => [k, v, v.total > 0 ? (v.acertos / v.total) * 100 : 0])
+            .sort((a, b) => a[2] - b[2])
+            .slice(0, 10);
+        if (entries.length === 0) { this._empty(canvasId, 'Sem assuntos com 2+ questões'); return; }
+        const labels = entries.map(([k]) => k.length > 32 ? k.slice(0, 30) + '…' : k);
+        const pcts = entries.map(([, , p]) => p);
+        const totais = entries.map(([, v]) => v.total);
+        const cores = pcts.map(p => p >= 80 ? this.cores.success : p >= 60 ? this.cores.accent : p >= 40 ? this.cores.warning : this.cores.danger);
+        this._destroy(canvasId);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        this.instances[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{ label: 'Aproveitamento %', data: pcts, backgroundColor: cores, borderRadius: 6, borderSkipped: false }] },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: this.isDark() ? '#1e293b' : '#111827', callbacks: { label: (ctx) => { const i = ctx.dataIndex; return [` Aproveitamento: ${ctx.parsed.x.toFixed(1)}%`, ` Questões: ${totais[i]}`]; } } }
+                },
+                scales: {
+                    x: { beginAtZero: true, max: 100, grid: { color: this.gridColor() }, ticks: { color: this.textColor(), callback: v => v + '%' } },
+                    y: { grid: { display: false }, ticks: { color: this.textColor(), font: { size: 10 } } }
+                }
+            }
+        });
+    },
+
+    onThemeChange() {
+        Chart.defaults.color = this.textColor();
+        Object.keys(this.instances).forEach(k => this._destroy(k));
+        this.renderAll();
+    }
 };
 
 /* ============================================================
@@ -1724,17 +2509,17 @@ const App = {
    ============================================================ */
 const Dashboard = {
     render() {
-        this.renderMetrics();
+        if (typeof Chart !== 'undefined' && Charts.instances) {
+            Charts.renderFiltros();
+            Charts.renderAll();
+        } else {
+            this.renderMetrics();
+        }
         this.renderDesempenhoDisciplinas();
         this.renderContinuarEstudo();
         this.renderInsights();
         this.atualizarHeader();
-    },
-
-    atualizarHeader() {
-        const stats = storage.getEstatisticas();
-        const el = document.getElementById('headerProgress');
-        if (el) el.textContent = stats.total > 0 ? `${stats.aproveitamento.toFixed(0)}% aproveitamento` : '0% aproveitamento';
+        App.atualizarStreakBadge();
     },
 
     renderMetrics() {
@@ -1746,16 +2531,14 @@ const Dashboard = {
         const revCount = storage.getTotalRevisao();
         const errCount = storage.getQuestoesErradas().length;
         const aprovClass = stats.aproveitamento >= 80 ? 'success' : stats.aproveitamento >= 60 ? 'info' : stats.aproveitamento >= 40 ? 'warning' : 'danger';
-
         const cards = [
-            { label:'Questões disponíveis', icon:'fa-database', value: total, sub:'no banco de dados', classe:'accent' },
+            { label:'Questões disponíveis', icon:'fa-database', value: total, sub:'somente leitura da planilha', classe:'accent' },
             { label:'Respondidas', icon:'fa-check-double', value: stats.total, sub:`${stats.acertos} acertos · ${stats.erros} erros`, classe:'info' },
             { label:'Aproveitamento', icon:'fa-percent', value: stats.total > 0 ? stats.aproveitamento.toFixed(1)+'%' : '—', sub: stats.total > 0 ? App.classificarLabel(stats.aproveitamento) : 'Sem dados', classe: aprovClass },
-            { label:'Favoritas', icon:'fa-star', value: favCount, sub:'questões salvas', classe:'warning' },
+            { label:'Favoritas', icon:'fa-star', value: favCount, sub:'salvas localmente', classe:'warning' },
             { label:'Para revisar', icon:'fa-clock-rotate-left', value: revCount, sub:'revisões pendentes', classe:'accent' },
             { label:'Caderno de erros', icon:'fa-book-skull', value: errCount, sub:'questões para refazer', classe:'danger' },
         ];
-
         c.innerHTML = cards.map(x => `
             <div class="metric-card ${x.classe}">
                 <div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div>
@@ -1763,6 +2546,12 @@ const Dashboard = {
                 <div class="metric-sub">${x.sub}</div>
             </div>
         `).join('');
+    },
+
+    atualizarHeader() {
+        const stats = storage.getEstatisticas();
+        const el = document.getElementById('headerProgress');
+        if (el) el.textContent = stats.total > 0 ? `${stats.aproveitamento.toFixed(0)}% aproveitamento` : '0% aproveitamento';
     },
 
     renderDesempenhoDisciplinas() {
@@ -1790,24 +2579,12 @@ const Dashboard = {
         if (!c) return;
         const ultima = storage.getUltimaQuestao();
         if (!ultima) {
-            c.innerHTML = `
-                <div class="continuar-card">
-                    <div class="info"><strong>Nenhum estudo recente</strong><span>Comece a responder questões para acompanhar seu progresso.</span></div>
-                    <button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-play"></i> Começar agora</button>
-                </div>`;
+            c.innerHTML = `<div class="continuar-card"><div class="info"><strong>Nenhum estudo recente</strong><span>Comece a responder questões para acompanhar seu progresso.</span></div><button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-play"></i> Começar agora</button></div>`;
             return;
         }
         const q = App.state.questoes.find(x => String(x._uid) === String(ultima.questaoId));
         const enun = q ? q.enunciado.substring(0, 100) + '...' : 'Questão ' + ultima.questaoId;
-        c.innerHTML = `
-            <div class="continuar-card">
-                <div class="info">
-                    <strong>${App.escapeHtml(ultima.disciplina || 'Disciplina')}</strong>
-                    <span>${App.escapeHtml(enun)}</span>
-                    <span style="font-size:.72rem;margin-top:4px;display:block;"><i class="fas fa-clock"></i> ${App.formatarData(ultima.data)}</span>
-                </div>
-                <button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-arrow-right"></i> Continuar</button>
-            </div>`;
+        c.innerHTML = `<div class="continuar-card"><div class="info"><strong>${App.escapeHtml(ultima.disciplina || 'Disciplina')}</strong><span>${App.escapeHtml(enun)}</span><span style="font-size:.72rem;margin-top:4px;display:block;"><i class="fas fa-clock"></i> ${App.formatarData(ultima.data)}</span></div><button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-arrow-right"></i> Continuar</button></div>`;
     },
 
     renderInsights() {
@@ -1817,7 +2594,6 @@ const Dashboard = {
         const stats = storage.getEstatisticas();
         const pd = storage.getEstatisticasPorDisciplina();
         const pa = storage.getEstatisticasPorAssunto();
-
         if (stats.total === 0) {
             insights.push({ tipo:'info', icone:'fa-info-circle', texto:'Responda pelo menos uma questão para receber análises personalizadas.' });
         } else {
@@ -1826,23 +2602,15 @@ const Dashboard = {
                 entries.sort((a,b) => b[1].aproveitamento - a[1].aproveitamento);
                 const melhor = entries[0];
                 const pior = entries[entries.length - 1];
-                if (melhor[1].aproveitamento >= 80) {
-                    insights.push({ tipo:'success', icone:'fa-trophy', texto:`<strong>Ponto forte:</strong> melhor desempenho em <strong>${App.escapeHtml(melhor[0])}</strong> com ${melhor[1].aproveitamento.toFixed(1)}%.` });
-                }
-                if (pior[1].aproveitamento < 60 && pior[0] !== melhor[0]) {
-                    insights.push({ tipo:'danger', icone:'fa-exclamation-triangle', texto:`<strong>Atenção:</strong> <strong>${App.escapeHtml(pior[0])}</strong> está com ${pior[1].aproveitamento.toFixed(1)}%. Revise a teoria.` });
-                }
+                if (melhor[1].aproveitamento >= 80) insights.push({ tipo:'success', icone:'fa-trophy', texto:`<strong>Ponto forte:</strong> melhor desempenho em <strong>${App.escapeHtml(melhor[0])}</strong> com ${melhor[1].aproveitamento.toFixed(1)}%.` });
+                if (pior[1].aproveitamento < 60 && pior[0] !== melhor[0]) insights.push({ tipo:'danger', icone:'fa-exclamation-triangle', texto:`<strong>Atenção:</strong> <strong>${App.escapeHtml(pior[0])}</strong> está com ${pior[1].aproveitamento.toFixed(1)}%. Revise a teoria.` });
             }
             const assuntos = Object.entries(pa).filter(([_,v]) => v.total >= 3).sort((a,b) => a[1].aproveitamento - b[1].aproveitamento).slice(0, 2);
             assuntos.forEach(([k, v]) => {
-                if (v.aproveitamento < 50) {
-                    insights.push({ tipo:'warning', icone:'fa-book', texto:`<strong>${App.escapeHtml(v.assunto || k)}</strong>: ${v.aproveitamento.toFixed(1)}% de acerto em ${v.total} questões.` });
-                }
+                if (v.aproveitamento < 50) insights.push({ tipo:'warning', icone:'fa-book', texto:`<strong>${App.escapeHtml(v.assunto || k)}</strong>: ${v.aproveitamento.toFixed(1)}% de acerto em ${v.total} questões.` });
             });
             const errCount = storage.getQuestoesErradas().length;
-            if (errCount >= 10) {
-                insights.push({ tipo:'info', icone:'fa-book-skull', texto:`<strong>${errCount} questões</strong> no caderno de erros. Que tal refazê-las?` });
-            }
+            if (errCount >= 10) insights.push({ tipo:'info', icone:'fa-book-skull', texto:`<strong>${errCount} questões</strong> no caderno de erros. Que tal refazê-las?` });
             const h = storage.getHistorico();
             const u7 = h.filter(x => (Date.now() - new Date(x.data).getTime()) / 864e5 <= 7);
             const dias = new Set(u7.map(x => new Date(x.data).toDateString())).size;
@@ -1850,13 +2618,7 @@ const Dashboard = {
             else if (dias > 0) insights.push({ tipo:'warning', icone:'fa-calendar', texto:`Você estudou em ${dias} dos últimos 7 dias. Tente manter constância.` });
             else insights.push({ tipo:'danger', icone:'fa-calendar-times', texto:'Nenhum estudo nos últimos 7 dias. Retome o ritmo!' });
         }
-
-        c.innerHTML = insights.map(i => `
-            <div class="insight-card ${i.tipo}">
-                <i class="fas ${i.icone}"></i>
-                <div class="insight-text">${i.texto}</div>
-            </div>
-        `).join('');
+        c.innerHTML = insights.map(i => `<div class="insight-card ${i.tipo}"><i class="fas ${i.icone}"></i><div class="insight-text">${i.texto}</div></div>`).join('');
     },
 
     renderDesempenho() {
@@ -1864,6 +2626,14 @@ const Dashboard = {
         this.renderDesempenhoPorDisciplina();
         this.renderDesempenhoPorAssunto();
         this.renderHistoricoRecente();
+        document.getElementById('btnExportJson')?.addEventListener('click', () => {
+            storage.exportarHistorico('json');
+            App.toast('Histórico exportado em JSON!', 'success');
+        });
+        document.getElementById('btnExportCsv')?.addEventListener('click', () => {
+            storage.exportarHistorico('csv');
+            App.toast('Histórico exportado em CSV!', 'success');
+        });
     },
 
     renderDesempenhoMetrics() {
@@ -1876,12 +2646,7 @@ const Dashboard = {
             { label:'Erros', icon:'fa-times-circle', value:s.erros, classe:'danger' },
             { label:'Aproveitamento', icon:'fa-percent', value: s.total > 0 ? s.aproveitamento.toFixed(1)+'%' : '—', classe:'info' },
         ];
-        c.innerHTML = cards.map(x => `
-            <div class="metric-card ${x.classe}">
-                <div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div>
-                <div class="metric-value">${x.value}</div>
-            </div>
-        `).join('');
+        c.innerHTML = cards.map(x => `<div class="metric-card ${x.classe}"><div class="metric-label"><i class="fas ${x.icon}"></i><span>${x.label}</span></div><div class="metric-value">${x.value}</div></div>`).join('');
     },
 
     renderDesempenhoPorDisciplina() {
@@ -1928,7 +2693,7 @@ const Dashboard = {
                 <div class="status ${x.acertou ? 'success' : 'danger'}"><i class="fas ${x.acertou ? 'fa-check' : 'fa-times'}"></i></div>
                 <div class="info">
                     <strong>${App.escapeHtml(x.disciplina || 'Disciplina')}</strong>
-                    <span>${App.escapeHtml(x.assunto || 'Assunto')} · ${x.acertou ? 'Acertou' : 'Errou'}</span>
+                    <span>${App.escapeHtml(x.assunto || 'Assunto')} · ${x.acertou ? 'Acertou' : 'Errou'}${x.tempoResposta ? ` · ${x.tempoResposta}s` : ''}</span>
                 </div>
                 <div class="data">${App.formatarData(x.data)}</div>
             </div>
@@ -1937,7 +2702,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   QUESTÕES
+   QUESTÕES — sistema de filtros profissional
    ============================================================ */
 const Questoes = {
     render() {
@@ -1946,110 +2711,400 @@ const Questoes = {
     },
 
     renderFiltros() {
-        const c = document.getElementById('filtrosGrid');
-        if (!c) return;
+        const blocks = document.getElementById('filtrosBlocks');
+        if (!blocks) return;
+
         const qs = App.state.questoes;
         const uniq = (campo) => {
-            const s = new Set();
-            qs.forEach(q => { if (q[campo]) s.add(q[campo]); });
-            return Array.from(s).sort((a,b) => {
-                const na = parseFloat(a), nb = parseFloat(b);
-                if (!isNaN(na) && !isNaN(nb)) return na - nb;
-                return String(a).localeCompare(String(b), 'pt-BR');
+            const m = new Map();
+            qs.forEach(q => {
+                const v = q[campo];
+                if (v) m.set(v, (m.get(v) || 0) + 1);
             });
+            return Array.from(m.entries())
+                .sort((a, b) => {
+                    const na = parseFloat(a[0]), nb = parseFloat(b[0]);
+                    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+                    return String(a[0]).localeCompare(String(b[0]), 'pt-BR');
+                });
         };
-        const filtros = [
-            { key:'disciplina', label:'Disciplina', v: uniq('disciplina') },
-            { key:'assunto', label:'Assunto', v: uniq('assunto') },
-            { key:'banca', label:'Banca', v: uniq('banca') },
-            { key:'orgao', label:'Órgão', v: uniq('orgao') },
-            { key:'ano', label:'Ano', v: uniq('ano') },
-            { key:'tipo', label:'Tipo', v: uniq('tipo') },
-            { key:'dificuldade', label:'Dificuldade', v: uniq('dificuldade') },
-            { key:'nivel', label:'Escolaridade', v: uniq('nivel') },
+
+        const grupos = [
+            { key:'disciplina',  label:'Disciplina',    icon:'fa-book',             opts: uniq('disciplina') },
+            { key:'assunto',     label:'Assunto',       icon:'fa-tags',             opts: uniq('assunto') },
+            { key:'banca',       label:'Banca',         icon:'fa-building-columns', opts: uniq('banca') },
+            { key:'ano',         label:'Ano',           icon:'fa-calendar',         opts: uniq('ano') },
+            { key:'orgao',       label:'Instituição',   icon:'fa-landmark',         opts: uniq('orgao') },
+            { key:'cargo',       label:'Cargo',         icon:'fa-user-tie',         opts: uniq('cargo') },
+            { key:'nivel',       label:'Nível',         icon:'fa-graduation-cap',   opts: uniq('nivel') },
+            { key:'tipo',        label:'Modalidade',    icon:'fa-list-check',       opts: uniq('tipo') },
+            { key:'dificuldade', label:'Dificuldade',   icon:'fa-gauge',            opts: uniq('dificuldade') },
         ];
-        c.innerHTML = filtros.map(f => {
-            if (f.v.length === 0) return '';
-            const opts = f.v.map(v => `<option value="${App.escapeHtml(v)}" ${App.state.filtros[f.key] === v ? 'selected' : ''}>${App.escapeHtml(v)}</option>`).join('');
-            return `<div class="filtro-group"><label>${f.label}</label><select data-filtro="${f.key}"><option value="">Todos</option>${opts}</select></div>`;
-        }).join('');
 
-        c.querySelectorAll('select[data-filtro]').forEach(sel => {
-            sel.addEventListener('change', (e) => {
-                App.state.filtros[e.target.dataset.filtro] = e.target.value;
+        const renderGrupo = (g) => {
+            if (!g.opts || g.opts.length === 0) return '';
+            const sel = App.state.filtros[g.key] || [];
+            const countBadge = sel.length > 0 ? `<span class="filter-count">${sel.length}</span>` : '';
+            const optsHtml = g.opts.map(([v, n]) => `
+                <label class="filter-option">
+                    <input type="checkbox" data-fkey="${g.key}" value="${App.escapeHtml(v)}" ${sel.includes(v)?'checked':''}>
+                    <span class="opt-label" title="${App.escapeHtml(v)}">${App.escapeHtml(v)}</span>
+                    <span class="opt-count">${n}</span>
+                </label>`).join('');
+            const searchField = g.opts.length > 8
+                ? `<input type="text" class="filter-options-search" placeholder="Pesquisar…" data-fsearch="${g.key}">`
+                : '';
+            return `
+                <div class="filter-group-block collapsed" data-fblock="${g.key}">
+                    <div class="filter-group-title" data-toggle-block="${g.key}">
+                        <span class="fg-left"><i class="fas ${g.icon}" style="color:var(--accent);font-size:.75rem;"></i> ${g.label} ${countBadge}</span>
+                        <i class="fas fa-chevron-down chevron"></i>
+                    </div>
+                    ${searchField}
+                    <div class="filter-options" data-foptions="${g.key}">${optsHtml}</div>
+                </div>`;
+        };
+
+        let html = `<div class="menu-label" style="padding:4px 2px 8px;">Filtros mais usados</div>`;
+        html += grupos.map(renderGrupo).join('');
+        html += `
+            <div class="filter-group-block collapsed" data-fblock="exclusao">
+                <div class="filter-group-title" data-toggle-block="exclusao">
+                    <span class="fg-left"><i class="fas fa-ban" style="color:var(--danger);font-size:.75rem;"></i> Excluir questões</span>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div class="filter-options">
+                    ${['desatualizadas:Desatualizadas','anuladas:Anuladas','ineditas:Inéditas','meusSimulados:Dos meus simulados','meusCadernos:Dos meus cadernos']
+                        .map(s => {
+                            const [k, lbl] = s.split(':');
+                            const chk = App.state.excluir[k] ? 'checked' : '';
+                            return `<label class="filter-checkline"><input type="checkbox" data-excl="${k}" ${chk}> ${lbl}</label>`;
+                        }).join('')}
+                </div>
+            </div>
+            <div class="filter-group-block collapsed" data-fblock="conteudo">
+                <div class="filter-group-title" data-toggle-block="conteudo">
+                    <span class="fg-left"><i class="fas fa-comment-dots" style="color:var(--info);font-size:.75rem;"></i> Mostrar somente questões com</span>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div class="filter-options">
+                    ${['gabaritoComentado:Gabarito comentado','comentarios:Comentários','meusComentarios:Meus comentários']
+                        .map(s => {
+                            const [k, lbl] = s.split(':');
+                            const chk = App.state.conteudo[k] ? 'checked' : '';
+                            return `<label class="filter-checkline conteudo"><input type="checkbox" data-cont="${k}" ${chk}> ${lbl}</label>`;
+                        }).join('')}
+                </div>
+            </div>`;
+
+        blocks.innerHTML = html;
+
+        blocks.querySelectorAll('[data-toggle-block]').forEach(t => {
+            t.onclick = () => t.closest('.filter-group-block').classList.toggle('collapsed');
+        });
+
+        blocks.querySelectorAll('input[data-fkey]').forEach(chk => {
+            chk.onchange = () => {
+                const key = chk.dataset.fkey;
+                const val = chk.value;
+                const arr = App.state.filtros[key] || [];
+                const idx = arr.indexOf(val);
+                if (chk.checked && idx === -1) arr.push(val);
+                else if (!chk.checked && idx >= 0) arr.splice(idx, 1);
+                App.state.filtros[key] = arr;
+                const block = blocks.querySelector(`[data-fblock="${key}"]`);
+                if (block) {
+                    const title = block.querySelector('.filter-group-title .fg-left');
+                    let badge = block.querySelector('.filter-group-title .filter-count');
+                    if (arr.length > 0) {
+                        if (!badge) title.insertAdjacentHTML('beforeend', ` <span class="filter-count">${arr.length}</span>`);
+                        else badge.textContent = arr.length;
+                    } else if (badge) badge.remove();
+                }
+                this.renderAppliedPanel();
+                this.atualizarChipsAtivos();
+            };
+        });
+
+        blocks.querySelectorAll('[data-fsearch]').forEach(inp => {
+            inp.oninput = () => {
+                const key = inp.dataset.fsearch;
+                const term = inp.value.toLowerCase().trim();
+                blocks.querySelectorAll(`[data-foptions="${key}"] .filter-option`).forEach(opt => {
+                    const txt = opt.querySelector('.opt-label').textContent.toLowerCase();
+                    opt.style.display = term === '' || txt.includes(term) ? '' : 'none';
+                });
+            };
+        });
+
+        blocks.querySelectorAll('input[data-excl]').forEach(chk => {
+            chk.onchange = () => {
+                App.state.excluir[chk.dataset.excl] = chk.checked;
+                this.renderAppliedPanel();
+                this.atualizarChipsAtivos();
+            };
+        });
+
+        blocks.querySelectorAll('input[data-cont]').forEach(chk => {
+            chk.onchange = () => {
+                App.state.conteudo[chk.dataset.cont] = chk.checked;
+                this.renderAppliedPanel();
+                this.atualizarChipsAtivos();
+            };
+        });
+
+        document.querySelectorAll('#statusChips .status-chip').forEach(chip => {
+            chip.onclick = () => {
+                document.querySelectorAll('#statusChips .status-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                App.state.statusRapido = chip.dataset.status;
                 App.state.pagina = 1;
+                this.atualizarChipsAtivos();
                 this.renderLista();
-            });
-        });
-
-        document.getElementById('btnLimparFiltros')?.addEventListener('click', () => {
-            App.state.filtros = { disciplina:'', assunto:'', subassunto:'', banca:'', orgao:'', concurso:'', cargo:'', ano:'', nivel:'', tipo:'', dificuldade:'', status:'' };
-            App.state.busca = '';
-            App.state.pagina = 1;
-            const bi = document.getElementById('buscaInput');
-            if (bi) bi.value = '';
-            document.getElementById('buscaClear').style.display = 'none';
-            this.renderFiltros();
-            this.renderLista();
-            App.toast('Filtros limpos.', 'info');
-        });
-
-        document.getElementById('btnIniciarSimuladoFiltros')?.addEventListener('click', () => {
-            const f = this.aplicarFiltros();
-            if (f.length === 0) { App.toast('Nenhuma questão com os filtros atuais.', 'error'); return; }
-            App.navegarPara('simulado');
+            };
         });
 
         const bi = document.getElementById('buscaInput');
         const bc = document.getElementById('buscaClear');
         if (bi) {
             bi.value = App.state.busca;
-            bi.addEventListener('input', (e) => {
+            bi.oninput = (e) => {
                 App.state.busca = e.target.value;
-                App.state.pagina = 1;
                 if (bc) bc.style.display = e.target.value ? 'flex' : 'none';
-                this.renderLista();
-            });
+                this.atualizarChipsAtivos();
+            };
+            bi.onkeydown = (e) => { if (e.key === 'Enter') this.executarBusca(); };
         }
-        if (bc) {
-            bc.addEventListener('click', () => {
-                if (bi) bi.value = '';
-                App.state.busca = '';
-                bc.style.display = 'none';
-                App.state.pagina = 1;
-                this.renderLista();
-            });
-        }
+        if (bc) bc.onclick = () => {
+            if (bi) bi.value = '';
+            App.state.busca = '';
+            bc.style.display = 'none';
+            this.atualizarChipsAtivos();
+            this.executarBusca();
+        };
+
+        document.getElementById('btnBuscarQuestoes').onclick = () => this.executarBusca();
+
+        document.getElementById('btnLimparFiltros').onclick = () => {
+            App.state.filtros = { disciplina:[], assunto:[], subassunto:[], banca:[], orgao:[], concurso:[], cargo:[], ano:[], nivel:[], tipo:[], dificuldade:[] };
+            App.state.statusRapido = 'todas';
+            App.state.excluir = { desatualizadas:false, anuladas:false, ineditas:false, meusSimulados:false, meusCadernos:false };
+            App.state.conteudo = { gabaritoComentado:false, comentarios:false, meusComentarios:false };
+            App.state.busca = '';
+            App.state.pagina = 1;
+            const bi2 = document.getElementById('buscaInput'); if (bi2) bi2.value = '';
+            const bc2 = document.getElementById('buscaClear'); if (bc2) bc2.style.display = 'none';
+            document.querySelectorAll('#statusChips .status-chip').forEach(c => c.classList.toggle('active', c.dataset.status === 'todas'));
+            this.renderFiltros();
+            this.executarBusca();
+            App.toast('Filtros limpos.', 'info');
+        };
+
+        document.getElementById('btnIniciarSimuladoFiltros').onclick = () => {
+            const f = this.aplicarFiltros();
+            if (f.length === 0) { App.toast('Nenhuma questão com os filtros atuais.', 'error'); return; }
+            Simulado.iniciar(f.slice(0, 20), 'simulado', true);
+        };
+
+        this.renderAppliedPanel();
+        this.atualizarChipsAtivos();
     },
 
     aplicarFiltros() {
-        let l = [...App.state.questoes];
-        Object.entries(App.state.filtros).forEach(([k, v]) => {
-            if (!v) return;
-            l = l.filter(q => String(q[k] || '').toLowerCase() === String(v).toLowerCase());
-        });
+        let lista = [...App.state.questoes];
+        const f = App.state.filtros;
+
+        const passaCategoria = (q, key) => {
+            const sel = f[key];
+            if (!sel || sel.length === 0) return true;
+            return sel.some(v => String(q[key] || '').toLowerCase() === String(v).toLowerCase());
+        };
+
+        ['disciplina','assunto','subassunto','banca','orgao','concurso','cargo','ano','nivel','tipo','dificuldade']
+            .forEach(key => { lista = lista.filter(q => passaCategoria(q, key)); });
+
         if (App.state.busca && App.state.busca.trim()) {
             const t = App.state.busca.trim().toLowerCase();
-            l = l.filter(q => {
-                const campos = [q.enunciado, q.assunto, q.subassunto, q.banca, q.concurso, q.cargo, q.tags, q.disciplina, q.orgao];
+            lista = lista.filter(q => {
+                const campos = [
+                    q.enunciado, q.assunto, q.subassunto, q.banca, q.concurso,
+                    q.cargo, q.tags, q.disciplina, q.orgao, q.comentario,
+                    q.fundamentacao, q.alternativaA, q.alternativaB, q.alternativaC,
+                    q.alternativaD, q.alternativaE
+                ];
                 return campos.some(c => String(c || '').toLowerCase().includes(t));
             });
         }
-        return l;
+
+        const hist = storage.getHistorico();
+        const statusPorQuestao = new Map();
+        hist.forEach(h => {
+            if (!statusPorQuestao.has(h.questaoId)) statusPorQuestao.set(h.questaoId, h.acertou);
+        });
+
+        if (App.state.statusRapido !== 'todas') {
+            lista = lista.filter(q => {
+                const uid = String(q._uid);
+                const respondeu = statusPorQuestao.has(uid);
+                const acertou = statusPorQuestao.get(uid);
+                switch (App.state.statusRapido) {
+                    case 'nao_resolvidas': return !respondeu;
+                    case 'resolvidas':     return respondeu;
+                    case 'acertei':        return respondeu && acertou === true;
+                    case 'errei':          return respondeu && acertou === false;
+                    default: return true;
+                }
+            });
+        }
+
+        if (App.state.excluir.anuladas) {
+            lista = lista.filter(q => (q.status || '').toLowerCase() !== 'anulada');
+        }
+        if (App.state.excluir.desatualizadas) {
+            lista = lista.filter(q => !/desatualiz/i.test(q.observacoes || '') && (q.status || '').toLowerCase() !== 'arquivada');
+        }
+        if (App.state.excluir.ineditas) {
+            const respondidas = new Set(storage.getHistorico().map(h => String(h.questaoId)));
+            lista = lista.filter(q => respondidas.has(String(q._uid)));
+        }
+        if (App.state.excluir.meusSimulados) {
+            const emSim = storage._get('vulp_simulados_set', []);
+            const set = new Set(emSim.map(String));
+            lista = lista.filter(q => !set.has(String(q._uid)));
+        }
+        if (App.state.excluir.meusCadernos) {
+            const emCad = [...storage.getFavoritos(), ...storage.getQuestoesErradas()].map(String);
+            const set = new Set(emCad);
+            lista = lista.filter(q => !set.has(String(q._uid)));
+        }
+
+        if (App.state.conteudo.gabaritoComentado) {
+            lista = lista.filter(q => (q.comentario || '').trim() || (q.fundamentacao || '').trim());
+        }
+        if (App.state.conteudo.comentarios) {
+            lista = lista.filter(q => (q.comentario || '').trim().length > 0);
+        }
+        if (App.state.conteudo.meusComentarios) {
+            const meus = storage.getMeusComentarios();
+            lista = lista.filter(q => meus[String(q._uid)]);
+        }
+
+        return lista;
+    },
+
+    executarBusca() {
+        App.state.pagina = 1;
+        this.renderLista();
+        const total = App.state.questoesFiltradas.length;
+        App.toast(`${total} questão${total !== 1 ? 's' : ''} encontrada${total !== 1 ? 's' : ''}.`, 'info');
+    },
+
+    renderAppliedPanel() {
+        const c = document.getElementById('appliedList');
+        if (!c) return;
+        const grupos = [];
+        const labelsKey = {
+            disciplina:'Disciplina', assunto:'Assunto', subassunto:'Subassunto',
+            banca:'Banca', orgao:'Instituição', concurso:'Concurso', cargo:'Cargo',
+            ano:'Ano', nivel:'Nível', tipo:'Modalidade', dificuldade:'Dificuldade'
+        };
+        Object.entries(App.state.filtros).forEach(([k, arr]) => {
+            if (arr && arr.length > 0) grupos.push({ label: labelsKey[k] || k, key: k, itens: arr });
+        });
+        if (App.state.busca) grupos.push({ label:'Palavra-chave', key:'_busca', itens:[App.state.busca] });
+        if (App.state.statusRapido !== 'todas') {
+            const stLbl = { nao_resolvidas:'Não resolvidas', resolvidas:'Resolvidas', acertei:'Acertei', errei:'Errei' };
+            grupos.push({ label:'Status', key:'_status', itens:[stLbl[App.state.statusRapido]] });
+        }
+        const excl = Object.entries(App.state.excluir).filter(([,v]) => v);
+        if (excl.length) grupos.push({ label:'Excluir', key:'_excluir', itens: excl.map(([k]) => k) });
+        const cont = Object.entries(App.state.conteudo).filter(([,v]) => v);
+        if (cont.length) grupos.push({ label:'Conteúdo', key:'_conteudo', itens: cont.map(([k]) => k) });
+
+        if (grupos.length === 0) {
+            c.innerHTML = `<div class="applied-empty">Nenhum filtro aplicado.</div>`;
+            return;
+        }
+
+        c.innerHTML = grupos.map(g => `
+            <div class="applied-group">
+                <div class="applied-group-label">${g.label}</div>
+                ${g.itens.map(it => `
+                    <div class="applied-item">
+                        <span title="${App.escapeHtml(String(it))}">${App.escapeHtml(String(it))}</span>
+                        <button data-remove="${g.key}" data-value="${App.escapeHtml(String(it))}" title="Remover">×</button>
+                    </div>`).join('')}
+            </div>`).join('');
+
+        c.querySelectorAll('button[data-remove]').forEach(b => {
+            b.onclick = () => {
+                const key = b.dataset.remove;
+                const val = b.dataset.value;
+                if (key === '_busca') {
+                    App.state.busca = '';
+                    const bi = document.getElementById('buscaInput'); if (bi) bi.value = '';
+                    const bc = document.getElementById('buscaClear'); if (bc) bc.style.display = 'none';
+                } else if (key === '_status') {
+                    App.state.statusRapido = 'todas';
+                    document.querySelectorAll('#statusChips .status-chip').forEach(c2 => c2.classList.toggle('active', c2.dataset.status === 'todas'));
+                } else if (key === '_excluir') {
+                    App.state.excluir[val] = false;
+                } else if (key === '_conteudo') {
+                    App.state.conteudo[val] = false;
+                } else {
+                    const arr = App.state.filtros[key] || [];
+                    App.state.filtros[key] = arr.filter(x => x !== val);
+                }
+                this.renderFiltros();
+                this.executarBusca();
+            };
+        });
+    },
+
+    atualizarChipsAtivos() {
+        const c = document.getElementById('chipsAtivos');
+        if (!c) return;
+        const chips = [];
+        Object.entries(App.state.filtros).forEach(([k, arr]) => {
+            (arr || []).forEach(v => chips.push({ label:`${k}: ${v}`, key:k, value:v }));
+        });
+        if (App.state.busca) chips.push({ label:`"${App.state.busca}"`, key:'_busca', value:'' });
+
+        c.innerHTML = chips.map(ch => `
+            <span class="chip-ativo">
+                ${App.escapeHtml(ch.label)}
+                <button data-chip-key="${ch.key}" data-chip-val="${App.escapeHtml(ch.value)}" title="Remover">×</button>
+            </span>`).join('');
+
+        c.querySelectorAll('button[data-chip-key]').forEach(b => {
+            b.onclick = () => {
+                const key = b.dataset.chipKey, val = b.dataset.chipVal;
+                if (key === '_busca') {
+                    App.state.busca = '';
+                    const bi = document.getElementById('buscaInput'); if (bi) bi.value = '';
+                    const bc = document.getElementById('buscaClear'); if (bc) bc.style.display = 'none';
+                } else {
+                    App.state.filtros[key] = (App.state.filtros[key] || []).filter(x => x !== val);
+                }
+                this.renderFiltros();
+                this.executarBusca();
+            };
+        });
     },
 
     renderLista() {
         const c = document.getElementById('questoesLista');
-        const info = document.getElementById('resultadoInfo');
+        const info = document.getElementById('resultadosCount');
         const pag = document.getElementById('paginacao');
         if (!c) return;
         const f = this.aplicarFiltros();
         App.state.questoesFiltradas = f;
         const subtitle = document.getElementById('bancoSubtitulo');
         if (subtitle) subtitle.textContent = `${f.length} questão${f.length !== 1 ? 's' : ''}`;
-        if (info) info.innerHTML = `<i class="fas fa-filter"></i> ${f.length} de ${App.state.questoes.length} questões ${f.length !== App.state.questoes.length ? '(filtros aplicados)' : ''}`;
+        if (info) info.innerHTML = `<strong>${f.length.toLocaleString('pt-BR')}</strong> questão${f.length !== 1 ? 'ões' : ''} encontrada${f.length !== 1 ? 's' : ''}`;
+
         if (f.length === 0) {
-            c.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhuma questão encontrada</h3><p>Tente alterar os filtros ou a busca.</p></div>`;
+            c.innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>Nenhuma questão encontrada</h3><p>Tente ajustar os filtros ou limpar a busca.</p><button class="btn btn-outline" onclick="document.getElementById('btnLimparFiltros').click()"><i class="fas fa-eraser"></i> Limpar filtros</button></div>`;
             if (pag) pag.innerHTML = '';
             return;
         }
@@ -2063,21 +3118,15 @@ const Questoes = {
         this.renderPaginacao(totalPag);
     },
 
-    /**
-     * Renderiza o card de UMA questão específica.
-     * Todos os dados (enunciado, alternativas, gabarito, comentário, _uid)
-     * vêm do MESMO objeto q — garantindo integridade questão↔gabarito.
-     */
     renderCard(q, mostrarResposta) {
         const fav = storage.isFavorito(q._uid);
         const tipo = q.tipo;
         let alternativasHtml = '';
         if (tipo === 'Certo/Errado') {
-            alternativasHtml = `
-                <div class="certo-errado">
-                    <button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button>
-                    <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
-                </div>`;
+            alternativasHtml = `<div class="certo-errado">
+                <button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button>
+                <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
+            </div>`;
         } else if (tipo === 'Discursiva') {
             alternativasHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea></div>`;
         } else {
@@ -2136,24 +3185,18 @@ const Questoes = {
             </div>`;
     },
 
-    /**
-     * Vincula eventos a cada card. A recuperação da questão é feita
-     * SEMPRE pelo _uid (identificador único de linha), garantindo
-     * que o gabarito correto seja usado na correção.
-     */
     bindCards(container) {
         container.querySelectorAll('.questao-card').forEach(card => {
             const uid = card.dataset.uid;
             const q = App.state.questoes.find(x => String(x._uid) === String(uid));
             if (!q) return;
-
             const feedback = card.querySelector('[data-feedback]');
             const comentario = card.querySelector('[data-comentario]');
             const btnResponder = card.querySelector('[data-responder]');
             const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
             const tipo = q.tipo;
+            const inicioQuestao = Date.now();
 
-            // ---- TESOURA: riscar/desriscar alternativas ----
             card.querySelectorAll('[data-tesoura]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -2162,7 +3205,6 @@ const Questoes = {
                     if (!alt) return;
                     const descartada = alt.classList.toggle('descartada');
                     btn.classList.toggle('ativa', descartada);
-                    // Não altera seleção, gabarito, correção ou dados da API.
                 });
             });
 
@@ -2198,9 +3240,7 @@ const Questoes = {
             let respondida = false;
 
             const habilitarBotaoResponder = () => {
-                if (btnResponder && !respondida) {
-                    btnResponder.style.display = 'inline-flex';
-                }
+                if (btnResponder && !respondida) btnResponder.style.display = 'inline-flex';
             };
 
             if (tipo === 'Certo/Errado') {
@@ -2215,13 +3255,11 @@ const Questoes = {
                 });
             } else if (tipo === 'Discursiva') {
                 const txt = card.querySelector('[data-discursiva]');
-                if (txt) {
-                    txt.addEventListener('input', () => {
-                        if (respondida) return;
-                        selecionada = txt.value.trim();
-                        if (selecionada) habilitarBotaoResponder();
-                    });
-                }
+                if (txt) txt.addEventListener('input', () => {
+                    if (respondida) return;
+                    selecionada = txt.value.trim();
+                    if (selecionada) habilitarBotaoResponder();
+                });
             } else {
                 card.querySelectorAll('.alternativa').forEach(a => {
                     a.addEventListener('click', () => {
@@ -2239,11 +3277,9 @@ const Questoes = {
                 respondida = true;
                 card.dataset.estado = 'respondida';
                 btnResponder.style.display = 'none';
-
-                // ---- CORREÇÃO: usa o gabarito da MESMA questão (q) ----
                 const gab = q.gabarito;
                 const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
-
+                const tempoResposta = Math.round((Date.now() - inicioQuestao) / 1000);
                 if (tipo === 'Certo/Errado') {
                     card.querySelectorAll('.btn-certo-errado').forEach(b => {
                         b.classList.add('disabled');
@@ -2256,23 +3292,17 @@ const Questoes = {
                         if (a.dataset.alt === selecionada && !acertou) a.classList.add('incorreta');
                     });
                 }
-
                 feedback.classList.remove('feedback-oculto');
                 feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
-                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
-
+                feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b> · Tempo: ${tempoResposta}s</div>`;
                 btnToggleComentario.style.display = 'inline-flex';
                 btnToggleComentario.textContent = 'Mostrar comentário';
-
                 storage.salvarHistorico({
-                    questaoId: q._uid,          // <-- vínculo íntegro com a linha
-                    questaoIdOriginal: q.id,    // mantido para exibição/legado
-                    resposta: selecionada,
-                    gabarito: gab,
-                    acertou,
-                    disciplina: q.disciplina,
-                    assunto: q.assunto,
-                    tipo: q.tipo,
+                    questaoId: q._uid, questaoIdOriginal: q.id,
+                    resposta: selecionada, gabarito: gab, acertou,
+                    disciplina: q.disciplina, assunto: q.assunto, tipo: q.tipo,
+                    banca: q.banca, concurso: q.concurso, cargo: q.cargo,
+                    ano: q.ano, dificuldade: q.dificuldade, tempoResposta,
                 });
                 App.atualizarBadges();
                 App.toast(acertou ? '✓ Acertou!' : '✗ Errou. Veja o comentário.', acertou ? 'success' : 'error');
@@ -2410,13 +3440,7 @@ const Questoes = {
    SIMULADO
    ============================================================ */
 const Simulado = {
-    state: {
-        questoes: [],
-        indice: 0,
-        respostas: {},      // chave: _uid  → resposta do usuário
-        modo: 'treino',
-        finalizado: false,
-    },
+    state: { questoes: [], indice: 0, respostas: {}, modo: 'treino', finalizado: false },
 
     renderSetup() {
         const c = document.getElementById('simuladoConfigFiltros');
@@ -2431,7 +3455,6 @@ const Simulado = {
         document.getElementById('simuladoSetup').style.display = 'block';
         document.getElementById('simuladoRunner').style.display = 'none';
         document.getElementById('simuladoResultado').style.display = 'none';
-
         document.querySelectorAll('#qtySelector button').forEach(b => {
             b.onclick = () => {
                 document.querySelectorAll('#qtySelector button').forEach(x => x.classList.remove('active'));
@@ -2444,7 +3467,6 @@ const Simulado = {
                 b.classList.add('active');
             };
         });
-
         const btn = document.getElementById('btnIniciarSimulado');
         if (btn) {
             btn.onclick = () => {
@@ -2454,7 +3476,6 @@ const Simulado = {
                 const qty = parseInt(document.querySelector('#qtySelector button.active')?.dataset.qty || '10');
                 const modo = document.querySelector('#modeSelector button.active')?.dataset.mode || 'treino';
                 const aleatorio = document.getElementById('simuladoAleatorio').checked;
-
                 let lista = App.state.questoes;
                 if (disc) lista = lista.filter(q => q.disciplina === disc);
                 if (banca) lista = lista.filter(q => q.banca === banca);
@@ -2469,20 +3490,13 @@ const Simulado = {
 
     iniciar(questoes, modo, aleatorio) {
         if (!questoes || questoes.length === 0) { App.toast('Nenhuma questão para iniciar.', 'error'); return; }
-        // Remove duplicatas pelo _uid, preservando o objeto completo (com gabarito).
         const vistos = new Set();
         const unicas = questoes.filter(q => {
             if (vistos.has(q._uid)) return false;
             vistos.add(q._uid);
             return true;
         });
-        this.state = {
-            questoes: unicas,
-            indice: 0,
-            respostas: {},
-            modo,
-            finalizado: false,
-        };
+        this.state = { questoes: unicas, indice: 0, respostas: {}, modo, finalizado: false };
         document.getElementById('simuladoSetup').style.display = 'none';
         document.getElementById('simuladoResultado').style.display = 'none';
         document.getElementById('simuladoRunner').style.display = 'block';
@@ -2502,9 +3516,7 @@ const Simulado = {
             if (this.state.indice < this.state.questoes.length - 1) {
                 this.state.indice++;
                 this.renderQuestao();
-            } else {
-                this.finalizar();
-            }
+            } else this.finalizar();
         };
         if (btnSair) btnSair.onclick = () => {
             if (confirm('Deseja sair do simulado? O progresso será perdido.')) {
@@ -2514,11 +3526,6 @@ const Simulado = {
         };
     },
 
-    /**
-     * Renderiza a questão atual do simulado. A questão é obtida pelo
-     * índice atual do array, mas TODO o vínculo (enunciado, alternativas,
-     * gabarito, comentário) vem do mesmo objeto q — nunca por busca de ID.
-     */
     renderQuestao() {
         const q = this.state.questoes[this.state.indice];
         if (!q) return;
@@ -2529,37 +3536,27 @@ const Simulado = {
         document.getElementById('btnAnterior').disabled = idx === 0;
         const btnProx = document.getElementById('btnProxima');
         btnProx.innerHTML = idx === total - 1 ? 'Finalizar <i class="fas fa-check"></i>' : 'Próxima <i class="fas fa-chevron-right"></i>';
-
         const container = document.getElementById('questaoRunner');
         const jaRespondida = this.state.respostas[q._uid] !== undefined;
-
+        const inicioQuestao = Date.now();
         let altsHtml = '';
         if (q.tipo === 'Certo/Errado') {
-            altsHtml = `<div class="certo-errado">
-                <button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button>
-                <button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button>
-            </div>`;
+            altsHtml = `<div class="certo-errado"><button class="btn-certo-errado certo" data-op="Certo"><i class="fas fa-check-circle"></i> CERTO</button><button class="btn-certo-errado errado" data-op="Errado"><i class="fas fa-times-circle"></i> ERRADO</button></div>`;
         } else if (q.tipo === 'Discursiva') {
             altsHtml = `<div class="discursiva-box"><textarea placeholder="Digite sua resposta..." data-discursiva></textarea></div>`;
         } else {
             const alts = [
-                { letra:'A', texto:q.alternativaA },
-                { letra:'B', texto:q.alternativaB },
-                { letra:'C', texto:q.alternativaC },
-                { letra:'D', texto:q.alternativaD },
+                { letra:'A', texto:q.alternativaA }, { letra:'B', texto:q.alternativaB },
+                { letra:'C', texto:q.alternativaC }, { letra:'D', texto:q.alternativaD },
                 { letra:'E', texto:q.alternativaE },
             ].filter(a => a.texto);
             altsHtml = `<div class="alternativas">${alts.map(a => `
                 <div class="alternativa" data-alt="${a.letra}">
-                    <button class="btn-tesoura" data-tesoura="${a.letra}" type="button" title="Riscar alternativa (tesoura)" aria-label="Riscar alternativa ${a.letra}">
-                        <i class="fas fa-scissors"></i>
-                    </button>
+                    <button class="btn-tesoura" data-tesoura="${a.letra}" type="button" title="Riscar alternativa (tesoura)" aria-label="Riscar alternativa ${a.letra}"><i class="fas fa-scissors"></i></button>
                     <span class="alternativa-letra">${a.letra}</span>
                     <span class="alternativa-texto">${App.escapeHtml(a.texto)}</span>
-                </div>
-            `).join('')}</div>`;
+                </div>`).join('')}</div>`;
         }
-
         container.innerHTML = `
             <div class="questao-card" data-uid="${App.escapeHtml(q._uid)}" data-id="${App.escapeHtml(q.id)}" data-estado="${jaRespondida ? 'respondida' : 'nao-respondida'}">
                 <div class="questao-header">
@@ -2572,7 +3569,7 @@ const Simulado = {
                 </div>
                 <div class="questao-enunciado">${App.escapeHtml(q.enunciado)}</div>
                 ${altsHtml}
-                <button class="btn btn-primary btn-responder" data-responder style="display:${jaRespondida ? 'none' : 'none'};">Responder</button>
+                <button class="btn btn-primary btn-responder" data-responder style="display:none;">Responder</button>
                 <div class="feedback ${jaRespondida ? '' : 'feedback-oculto'}" data-feedback></div>
                 <button class="btn btn-outline comentario-toggle" data-toggle-comentario style="display:${jaRespondida ? 'inline-flex' : 'none'};">Mostrar comentário</button>
                 <div class="comentario-box" style="display:none;" data-comentario>
@@ -2581,14 +3578,12 @@ const Simulado = {
                     ${q.fonte ? `<div class="fundamentacao"><strong>🔗 Fonte</strong><p>${App.escapeHtml(q.fonte)}</p></div>` : ''}
                 </div>
             </div>`;
-
         const card = container.querySelector('.questao-card');
         const feedback = card.querySelector('[data-feedback]');
         const comentario = card.querySelector('[data-comentario]');
         const btnResponder = card.querySelector('[data-responder]');
         const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
 
-        // ---- TESOURA também no simulado ----
         card.querySelectorAll('[data-tesoura]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -2626,9 +3621,7 @@ const Simulado = {
         }
 
         const habilitarBotaoResponder = () => {
-            if (btnResponder && !respondida) {
-                btnResponder.style.display = 'inline-flex';
-            }
+            if (btnResponder && !respondida) btnResponder.style.display = 'inline-flex';
         };
 
         if (q.tipo === 'Certo/Errado') {
@@ -2643,13 +3636,11 @@ const Simulado = {
             });
         } else if (q.tipo === 'Discursiva') {
             const txt = card.querySelector('[data-discursiva]');
-            if (txt) {
-                txt.addEventListener('input', () => {
-                    if (respondida) return;
-                    selecionada = txt.value.trim();
-                    if (selecionada) habilitarBotaoResponder();
-                });
-            }
+            if (txt) txt.addEventListener('input', () => {
+                if (respondida) return;
+                selecionada = txt.value.trim();
+                if (selecionada) habilitarBotaoResponder();
+            });
         } else {
             card.querySelectorAll('.alternativa').forEach(a => {
                 a.addEventListener('click', () => {
@@ -2667,11 +3658,9 @@ const Simulado = {
             respondida = true;
             card.dataset.estado = 'respondida';
             btnResponder.style.display = 'none';
-
-            // ---- CORREÇÃO: usa o gabarito da MESMA questão q ----
             const gab = q.gabarito;
             const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
-
+            const tempoResposta = Math.round((Date.now() - inicioQuestao) / 1000);
             if (q.tipo === 'Certo/Errado') {
                 card.querySelectorAll('.btn-certo-errado').forEach(b => {
                     b.classList.add('disabled');
@@ -2684,24 +3673,18 @@ const Simulado = {
                     if (a.dataset.alt === selecionada && !acertou) a.classList.add('incorreta');
                 });
             }
-
             feedback.classList.remove('feedback-oculto');
             feedback.className = `feedback ${acertou ? 'success' : 'danger'}`;
-            feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b></div>`;
-
+            feedback.innerHTML = `<i class="fas ${acertou ? 'fa-check-circle' : 'fa-times-circle'}"></i><div><strong>${acertou ? 'Você acertou!' : 'Você errou.'}</strong>Sua resposta: <b>${App.escapeHtml(selecionada)}</b> · Gabarito: <b>${App.escapeHtml(gab)}</b> · Tempo: ${tempoResposta}s</div>`;
             btnToggleComentario.style.display = 'inline-flex';
             btnToggleComentario.textContent = 'Mostrar comentário';
-
             this.state.respostas[q._uid] = selecionada;
             storage.salvarHistorico({
-                questaoId: q._uid,
-                questaoIdOriginal: q.id,
-                resposta: selecionada,
-                gabarito: gab,
-                acertou,
-                disciplina: q.disciplina,
-                assunto: q.assunto,
-                tipo: q.tipo,
+                questaoId: q._uid, questaoIdOriginal: q.id,
+                resposta: selecionada, gabarito: gab, acertou,
+                disciplina: q.disciplina, assunto: q.assunto, tipo: q.tipo,
+                banca: q.banca, concurso: q.concurso, cargo: q.cargo,
+                ano: q.ano, dificuldade: q.dificuldade, tempoResposta,
             });
             App.atualizarBadges();
         });
@@ -2723,11 +3706,9 @@ const Simulado = {
     finalizar() {
         const total = this.state.questoes.length;
         const respondidas = Object.keys(this.state.respostas).length;
-        let acertos = 0;
-        let erros = 0;
+        let acertos = 0, erros = 0;
         const porDisciplina = {};
         const errosLista = [];
-
         this.state.questoes.forEach(q => {
             const resp = this.state.respostas[q._uid];
             if (resp === undefined) return;
@@ -2738,14 +3719,11 @@ const Simulado = {
             if (acertou) { acertos++; porDisciplina[disc].acertos++; }
             else { erros++; errosLista.push({ q, resp }); }
         });
-
         const pct = respondidas > 0 ? (acertos / respondidas) * 100 : 0;
         const pctClass = pct >= 80 ? 'success' : pct >= 60 ? '' : 'danger';
-
         document.getElementById('simuladoRunner').style.display = 'none';
         const c = document.getElementById('simuladoResultado');
         c.style.display = 'block';
-
         c.innerHTML = `
             <div class="resultado-box">
                 <div class="resultado-pct ${pctClass}">${pct.toFixed(0)}%</div>
@@ -2766,13 +3744,7 @@ const Simulado = {
                 <div class="desempenho-list">
                     ${Object.entries(porDisciplina).map(([d, v]) => {
                         const p = (v.acertos / v.total) * 100;
-                        return `<div class="desempenho-item">
-                            <div class="desempenho-header">
-                                <span class="desempenho-nome">${App.escapeHtml(d)}</span>
-                                <span class="desempenho-pct">${p.toFixed(0)}% (${v.acertos}/${v.total})</span>
-                            </div>
-                            <div class="progress-bar"><div class="progress-fill ${App.corDesempenho(p)}" style="width:${p}%"></div></div>
-                        </div>`;
+                        return `<div class="desempenho-item"><div class="desempenho-header"><span class="desempenho-nome">${App.escapeHtml(d)}</span><span class="desempenho-pct">${p.toFixed(0)}% (${v.acertos}/${v.total})</span></div><div class="progress-bar"><div class="progress-fill ${App.corDesempenho(p)}" style="width:${p}%"></div></div></div>`;
                     }).join('')}
                 </div>
             </div>
@@ -2783,13 +3755,8 @@ const Simulado = {
                 </div>
             ` : ''}
         `;
-
-        document.getElementById('btnNovoSimulado')?.addEventListener('click', () => {
-            this.renderSetup();
-        });
-        document.getElementById('btnVoltarDash')?.addEventListener('click', () => {
-            App.navegarPara('dashboard');
-        });
+        document.getElementById('btnNovoSimulado')?.addEventListener('click', () => this.renderSetup());
+        document.getElementById('btnVoltarDash')?.addEventListener('click', () => App.navegarPara('dashboard'));
         document.getElementById('btnRevisarErros')?.addEventListener('click', () => {
             const qs = errosLista.map(e => e.q);
             this.iniciar(qs, 'treino', false);
@@ -2800,7 +3767,7 @@ const Simulado = {
 };
 
 /* ============================================================
-   ADMIN
+   ADMIN — CONSULTA SOMENTE LEITURA
    ============================================================ */
 const Admin = {
     render() {
@@ -2857,161 +3824,151 @@ const Admin = {
                 <td><span class="status-badge ${statusClass}">${App.escapeHtml(q.status || 'Ativa')}</span></td>
                 <td>
                     <button class="btn btn-sm btn-outline" data-admin-ver="${App.escapeHtml(q._uid)}"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-outline" data-admin-edit="${App.escapeHtml(q._uid)}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" data-admin-del="${App.escapeHtml(q._uid)}"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>`;
         }).join('');
-
         tbody.querySelectorAll('[data-admin-ver]').forEach(b => b.onclick = () => {
             const q = App.state.questoes.find(x => String(x._uid) === b.dataset.adminVer);
-            if (q) App.abrirComentario(`<i class="fas fa-eye"></i> Questão ${q.id}`, `<pre style="white-space:pre-wrap;font-family:inherit;">${App.escapeHtml(q.enunciado)}\n\nGabarito: ${q.gabarito}\n\nComentário: ${q.comentario || '—'}</pre>`);
+            if (!q) return;
+            const altsHtml = ['A','B','C','D','E'].map(letra => {
+                const campo = 'alternativa' + letra;
+                return q[campo] ? `<p><strong>${letra})</strong> ${App.escapeHtml(q[campo])}</p>` : '';
+            }).join('');
+            App.abrirComentario(`<i class="fas fa-eye"></i> Questão ${q.id} · somente leitura`, `
+                <p><strong>Disciplina:</strong> ${App.escapeHtml(q.disciplina || '—')}</p>
+                <p><strong>Assunto:</strong> ${App.escapeHtml(q.assunto || '—')}</p>
+                <p><strong>Banca:</strong> ${App.escapeHtml(q.banca || '—')} · <strong>Ano:</strong> ${App.escapeHtml(q.ano || '—')}</p>
+                <p><strong>Enunciado:</strong></p>
+                <p style="white-space:pre-wrap;">${App.escapeHtml(q.enunciado)}</p>
+                ${altsHtml ? `<p style="margin-top:12px;"><strong>Alternativas:</strong></p>${altsHtml}` : ''}
+                <p style="margin-top:12px;"><strong>Gabarito:</strong> ${App.escapeHtml(q.gabarito)}</p>
+                ${q.comentario ? `<p style="margin-top:12px;"><strong>Comentário:</strong></p><p style="white-space:pre-wrap;">${App.escapeHtml(q.comentario)}</p>` : ''}
+                ${q.fundamentacao ? `<p style="margin-top:12px;"><strong>Fundamentação:</strong></p><p style="white-space:pre-wrap;">${App.escapeHtml(q.fundamentacao)}</p>` : ''}
+                ${q.fonte ? `<p style="margin-top:12px;"><strong>Fonte:</strong> ${App.escapeHtml(q.fonte)}</p>` : ''}
+                <p style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light);font-size:.8rem;color:var(--text-muted);"><i class="fas fa-lock"></i> Visualização somente leitura · a planilha não é alterada</p>
+            `);
         });
-        tbody.querySelectorAll('[data-admin-edit]').forEach(b => b.onclick = () => this.abrirModalEditar(b.dataset.adminEdit));
-        tbody.querySelectorAll('[data-admin-del]').forEach(b => b.onclick = () => this.confirmarExcluir(b.dataset.adminDel));
+    },
+};
+
+/* ============================================================
+   DADOS — Backup e Limpeza do cache local
+   ============================================================ */
+const Dados = {
+    render() {
+        this.atualizarTamanhos();
+        document.getElementById('btnBackupExport')?.addEventListener('click', () => this.exportarBackup());
+        document.getElementById('btnBackupImport')?.addEventListener('click', () => document.getElementById('backupFileInput').click());
+        document.getElementById('backupFileInput')?.addEventListener('change', (e) => {
+            if (e.target.files[0]) this.restaurarBackup(e.target.files[0]);
+            e.target.value = '';
+        });
+        document.getElementById('btnCancelarLimpeza')?.addEventListener('click', () => {
+            document.querySelectorAll('[data-clear]').forEach(chk => {
+                chk.checked = chk.dataset.clear !== 'preferencias';
+            });
+            App.toast('Seleção restaurada ao padrão.', 'info');
+        });
+        document.getElementById('btnConfirmarLimpeza')?.addEventListener('click', () => this.confirmarLimpeza());
     },
 
-    abrirModalNovaQuestao() {
-        this.abrirModalForm(null);
+    atualizarTamanhos() {
+        const t = storage.getTamanhosCache();
+        const set = (id, b) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = storage._formatarBytes(b);
+        };
+        set('cacheSizeHistorico', t.historico);
+        set('cacheSizeFavoritos', t.favoritos);
+        set('cacheSizeRevisao', t.revisao);
+        set('cacheSizeComentarios', t.comentarios);
+        set('cacheSizePreferencias', t.preferencias);
     },
 
-    abrirModalEditar(uid) {
-        const q = App.state.questoes.find(x => String(x._uid) === String(uid));
-        if (q) this.abrirModalForm(q);
-    },
-
-    abrirModalForm(q) {
-        const ehEdicao = !!q;
-        q = q || { tipo: 'Múltipla escolha', status: 'Ativa' };
+    confirmarLimpeza() {
+        const selecionados = [...document.querySelectorAll('[data-clear]:checked')].map(c => c.dataset.clear);
+        if (selecionados.length === 0) {
+            App.toast('Selecione pelo menos uma opção para apagar.', 'info');
+            return;
+        }
+        const nomes = { historico:'Histórico', favoritos:'Favoritos', revisao:'Revisões', comentarios:'Comentários', preferencias:'Preferências' };
         const html = `
-            <div class="form-row">
-                <div class="form-group"><label>Disciplina *</label><input type="text" id="fDisciplina" value="${App.escapeHtml(q.disciplina||'')}"></div>
-                <div class="form-group"><label>Assunto</label><input type="text" id="fAssunto" value="${App.escapeHtml(q.assunto||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Subassunto</label><input type="text" id="fSubassunto" value="${App.escapeHtml(q.subassunto||'')}"></div>
-                <div class="form-group"><label>Banca</label><input type="text" id="fBanca" value="${App.escapeHtml(q.banca||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Órgão</label><input type="text" id="fOrgao" value="${App.escapeHtml(q.orgao||'')}"></div>
-                <div class="form-group"><label>Concurso</label><input type="text" id="fConcurso" value="${App.escapeHtml(q.concurso||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Cargo</label><input type="text" id="fCargo" value="${App.escapeHtml(q.cargo||'')}"></div>
-                <div class="form-group"><label>Ano</label><input type="text" id="fAno" value="${App.escapeHtml(q.ano||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Escolaridade</label><input type="text" id="fNivel" value="${App.escapeHtml(q.nivel||'')}"></div>
-                <div class="form-group"><label>Tipo *</label>
-                    <select id="fTipo">
-                        <option value="Múltipla escolha" ${q.tipo==='Múltipla escolha'?'selected':''}>Múltipla escolha</option>
-                        <option value="Certo/Errado" ${q.tipo==='Certo/Errado'?'selected':''}>Certo/Errado</option>
-                        <option value="Discursiva" ${q.tipo==='Discursiva'?'selected':''}>Discursiva</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group"><label>Enunciado *</label><textarea id="fEnunciado" rows="4">${App.escapeHtml(q.enunciado||'')}</textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Alternativa A</label><input type="text" id="fA" value="${App.escapeHtml(q.alternativaA||'')}"></div>
-                <div class="form-group"><label>Alternativa B</label><input type="text" id="fB" value="${App.escapeHtml(q.alternativaB||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Alternativa C</label><input type="text" id="fC" value="${App.escapeHtml(q.alternativaC||'')}"></div>
-                <div class="form-group"><label>Alternativa D</label><input type="text" id="fD" value="${App.escapeHtml(q.alternativaD||'')}"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Alternativa E</label><input type="text" id="fE" value="${App.escapeHtml(q.alternativaE||'')}"></div>
-                <div class="form-group"><label>Gabarito *</label><input type="text" id="fGabarito" value="${App.escapeHtml(q.gabarito||'')}" placeholder="A/B/C/D/E ou Certo/Errado"></div>
-            </div>
-            <div class="form-group"><label>Comentário</label><textarea id="fComentario" rows="3">${App.escapeHtml(q.comentario||'')}</textarea></div>
-            <div class="form-group"><label>Fundamentação</label><textarea id="fFundamentacao" rows="2">${App.escapeHtml(q.fundamentacao||'')}</textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>Fonte</label><input type="text" id="fFonte" value="${App.escapeHtml(q.fonte||'')}"></div>
-                <div class="form-group"><label>Dificuldade</label>
-                    <select id="fDificuldade">
-                        <option value="">—</option>
-                        <option ${q.dificuldade==='Fácil'?'selected':''}>Fácil</option>
-                        <option ${q.dificuldade==='Média'?'selected':''}>Média</option>
-                        <option ${q.dificuldade==='Difícil'?'selected':''}>Difícil</option>
-                        <option ${q.dificuldade==='Muito difícil'?'selected':''}>Muito difícil</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Tags</label><input type="text" id="fTags" value="${App.escapeHtml(q.tags||'')}"></div>
-                <div class="form-group"><label>Status</label>
-                    <select id="fStatus">
-                        <option ${q.status==='Ativa'?'selected':''}>Ativa</option>
-                        <option ${q.status==='Revisar'?'selected':''}>Revisar</option>
-                        <option ${q.status==='Anulada'?'selected':''}>Anulada</option>
-                        <option ${q.status==='Arquivada'?'selected':''}>Arquivada</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group"><label>Observações</label><textarea id="fObservacoes" rows="2">${App.escapeHtml(q.observacoes||'')}</textarea></div>
-            <div class="form-group"><label>Imagem (URL)</label><input type="text" id="fImagem" value="${App.escapeHtml(q.imagemUrl||'')}"></div>
-        `;
-        App.abrirModal(ehEdicao ? 'Editar Questão' : 'Nova Questão', html, async () => {
-            const dados = {
-                disciplina: document.getElementById('fDisciplina').value.trim(),
-                assunto: document.getElementById('fAssunto').value.trim(),
-                subassunto: document.getElementById('fSubassunto').value.trim(),
-                banca: document.getElementById('fBanca').value.trim(),
-                orgao: document.getElementById('fOrgao').value.trim(),
-                concurso: document.getElementById('fConcurso').value.trim(),
-                cargo: document.getElementById('fCargo').value.trim(),
-                ano: document.getElementById('fAno').value.trim(),
-                nivel: document.getElementById('fNivel').value.trim(),
-                tipo: document.getElementById('fTipo').value,
-                enunciado: document.getElementById('fEnunciado').value.trim(),
-                alternativaA: document.getElementById('fA').value.trim(),
-                alternativaB: document.getElementById('fB').value.trim(),
-                alternativaC: document.getElementById('fC').value.trim(),
-                alternativaD: document.getElementById('fD').value.trim(),
-                alternativaE: document.getElementById('fE').value.trim(),
-                gabarito: document.getElementById('fGabarito').value.trim(),
-                comentario: document.getElementById('fComentario').value.trim(),
-                fundamentacao: document.getElementById('fFundamentacao').value.trim(),
-                fonte: document.getElementById('fFonte').value.trim(),
-                dificuldade: document.getElementById('fDificuldade').value,
-                tags: document.getElementById('fTags').value.trim(),
-                status: document.getElementById('fStatus').value,
-                observacoes: document.getElementById('fObservacoes').value.trim(),
-                imagemUrl: document.getElementById('fImagem').value.trim(),
-            };
-            if (!dados.disciplina || !dados.enunciado || !dados.gabarito) {
-                App.toast('Preencha os campos obrigatórios (*).', 'error');
-                return;
-            }
-            try {
-                if (ehEdicao) {
-                    await api.atualizarQuestao(q.id, dados);
-                    App.toast('Requisição de atualização enviada!', 'success');
-                } else {
-                    await api.criarQuestao(dados);
-                    App.toast('Requisição de criação enviada!', 'success');
-                }
-                App.fecharModal();
-                setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
-            } catch (e) {
-                App.toast('Erro ao enviar. Verifique se a API suporta esta operação.', 'error');
-            }
+            <p><strong>Confirmação necessária</strong></p>
+            <p>Você está prestes a apagar <strong>permanentemente</strong> do cache local:</p>
+            <ul style="margin:10px 0 14px 20px;">
+                ${selecionados.map(s => `<li>${nomes[s] || s}</li>`).join('')}
+            </ul>
+            <p style="color:var(--text-muted);font-size:.82rem;">Esta ação afeta apenas este navegador. A planilha da API <strong>não</strong> será tocada. Não é possível desfazer.</p>`;
+        App.abrirModal('Confirmar limpeza', html, null, {
+            botoes: [
+                { texto:'Cancelar', classe:'btn-outline', action: () => App.fecharModal() },
+                { texto:'Exportar backup antes', classe:'btn-outline', action: () => { Dados.exportarBackup(); } },
+                { texto:'Apagar agora', classe:'btn-danger', action: () => {
+                    const removidos = storage.limparCache(selecionados);
+                    App.fecharModal();
+                    App.atualizarBadges();
+                    Dados.atualizarTamanhos();
+                    App.toast(`Cache limpo: ${removidos.join(', ')}.`, 'success');
+                }}
+            ]
         });
     },
 
-    confirmarExcluir(uid) {
-        const q = App.state.questoes.find(x => String(x._uid) === String(uid));
-        const displayId = q ? q.id : uid;
-        App.abrirModal('Excluir Questão', `<p>Tem certeza que deseja excluir a questão <strong>${App.escapeHtml(displayId)}</strong>? Esta ação não pode ser desfeita.</p>`, async () => {
-            try {
-                await api.excluirQuestao(displayId);
-                App.toast('Requisição de exclusão enviada!', 'success');
-                App.fecharModal();
-                setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
-            } catch (e) {
-                App.toast('Erro ao excluir. Verifique se a API suporta esta operação.', 'error');
+    exportarBackup() {
+        const dados = {
+            _meta: {
+                app: 'VULP+ Quest',
+                versao: 'v1.7',
+                data: new Date().toISOString(),
+                tipo: 'backup-usuario-local',
+                observacao: 'Contém apenas dados locais do usuário. As questões NÃO são incluídas — são consultadas sempre na API.'
+            },
+            usuario: Auth.getUser(),
+            favoritos: storage.getFavoritos(),
+            historico: storage.getHistorico(),
+            revisao: storage.getRevisao(),
+            meusComentarios: storage.getMeusComentarios(),
+            tema: storage.getTema(),
+        };
+        const json = JSON.stringify(dados, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        storage._download(blob, `vulp-backup-usuario-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.json`);
+        App.toast('Backup dos seus dados exportado!', 'success');
+    },
+
+    restaurarBackup(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            let dados;
+            try { dados = JSON.parse(e.target.result); }
+            catch { App.toast('Arquivo de backup inválido.', 'error'); return; }
+            if (!dados._meta || (!dados.historico && !dados.favoritos && !dados.revisao)) {
+                App.toast('Estrutura de backup não reconhecida.', 'error'); return;
             }
-        });
+            const html = `
+                <p><strong>ATENÇÃO!</strong></p>
+                <p>A restauração irá <strong>substituir</strong> os dados locais atuais (favoritos, histórico, revisões, comentários, preferências) pelos dados do arquivo.</p>
+                <p>Backup de: <strong>${App.formatarData(dados._meta.data)}</strong></p>
+                <p style="color:var(--text-muted);font-size:.82rem;">A planilha da API não é afetada. Recomendamos exportar um backup atual antes.</p>`;
+            App.abrirModal('Restaurar backup de usuário', html, null, {
+                botoes: [
+                    { texto:'Cancelar', classe:'btn-outline', action: () => App.fecharModal() },
+                    { texto:'Exportar atual antes', classe:'btn-outline', action: () => Dados.exportarBackup() },
+                    { texto:'Confirmar restauração', classe:'btn-primary', action: () => {
+                        storage._set(storage.KEYS.FAVORITOS, dados.favoritos || []);
+                        storage._set(storage.KEYS.HISTORICO, dados.historico || []);
+                        storage._set(storage.KEYS.REVISAO, dados.revisao || {});
+                        if (dados.meusComentarios) storage._set(storage.KEYS.MEUS_COMENTARIOS, dados.meusComentarios);
+                        if (dados.tema) storage._set(storage.KEYS.TEMA, dados.tema);
+                        App.atualizarBadges();
+                        Dados.atualizarTamanhos();
+                        App.fecharModal();
+                        App.toast('Backup restaurado com sucesso!', 'success');
+                    }}
+                ]
+            });
+        };
+        reader.readAsText(file);
     },
 };
 
@@ -3024,8 +3981,10 @@ window.Questoes = Questoes;
 window.Dashboard = Dashboard;
 window.Simulado = Simulado;
 window.Admin = Admin;
+window.Charts = Charts;
 window.api = api;
 window.storage = storage;
+window.Dados = Dados;
 
 /* ========== BOOT ========== */
 document.addEventListener('DOMContentLoaded', () => {
