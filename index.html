@@ -255,7 +255,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* ========== ALTERNATIVAS ========== */
 .alternativas{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.alternativa{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-md);transition:var(--transition);cursor:pointer;user-select:none;font-size:.88rem;line-height:1.5}
+.alternativa{position:relative;display:flex;align-items:flex-start;gap:12px;padding:12px 52px 12px 16px;background:var(--bg-body);border:1.5px solid var(--border-light);border-radius:var(--radius-md);transition:var(--transition);cursor:pointer;user-select:none;font-size:.88rem;line-height:1.5}
 .alternativa:hover:not(.disabled){border-color:var(--accent);background:var(--accent-lighter);transform:translateX(2px)}
 .alternativa.disabled{cursor:default}
 .alternativa-letra{width:28px;height:28px;border-radius:50%;background:var(--border-light);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;transition:var(--transition)}
@@ -266,6 +266,15 @@ button{font-family:inherit;cursor:pointer}
 .alternativa.correta .alternativa-letra{background:var(--success);color:#fff}
 .alternativa.incorreta{border-color:var(--danger);background:var(--danger-light)}
 .alternativa.incorreta .alternativa-letra{background:var(--danger);color:#fff}
+
+/* ========== TESOURA (RISCAR ALTERNATIVA) ========== */
+.btn-tesoura{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:transparent;border:1.5px solid var(--border-medium);color:var(--text-muted);font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);cursor:pointer;padding:0;z-index:3;line-height:1}
+.btn-tesoura:hover{border-color:var(--warning);color:var(--warning);background:var(--warning-light);transform:translateY(-50%) rotate(-15deg)}
+.btn-tesoura.ativa{border-color:var(--warning);color:#fff;background:var(--warning)}
+.alternativa.descartada{opacity:.55;background:var(--bg-card);border-style:dashed}
+.alternativa.descartada .alternativa-texto{text-decoration:line-through;text-decoration-thickness:2px;color:var(--text-muted)}
+.alternativa.descartada .alternativa-letra{opacity:.5}
+.alternativa.descartada:hover:not(.disabled){transform:none}
 
 /* ========== CERTO/ERRADO ========== */
 .certo-errado{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
@@ -493,7 +502,8 @@ button{font-family:inherit;cursor:pointer}
 .questao-enunciado{font-size:.88rem}
 .form-row{grid-template-columns:1fr}
 .mode-selector{grid-template-columns:1fr}
-.alternativa{padding:10px 12px;font-size:.84rem}
+.alternativa{padding:10px 50px 10px 12px;font-size:.84rem}
+.btn-tesoura{width:26px;height:26px;right:8px;font-size:.65rem}
 .page-header{flex-direction:column;align-items:flex-start}
 .paginacao{gap:6px}
 .paginacao button{padding:7px 12px;font-size:.78rem}
@@ -588,7 +598,7 @@ button{font-family:inherit;cursor:pointer}
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
             <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-plus-circle"></i> Carregar mais questões</button>
             <button class="btn-logout" id="btnLogout"><i class="fas fa-right-from-bracket"></i> Sair</button>
-            <div class="version-info">VULP+ v1.3</div>
+            <div class="version-info">VULP+ v1.4</div>
         </div>
     </aside>
 
@@ -841,8 +851,9 @@ button{font-family:inherit;cursor:pointer}
 
 <script>
 /* ============================================================
-   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.3
-   Melhorias: autenticação, logo oficial, UX de carregamento.
+   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.4
+   v1.4: (1) Correção de vinculação questão↔gabarito via _uid único por linha
+         (2) Função Tesoura para riscar alternativas em múltipla escolha
    ============================================================ */
 (function(){
 'use strict';
@@ -877,11 +888,9 @@ const Auth = {
         if (!l || !s) {
             return { ok: false, msg: 'Preencha login e senha para continuar.' };
         }
-        // Regra do login: precisa começar com "aluno" (minúsculas)
         if (!l.startsWith('aluno')) {
             return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
         }
-        // Regra da senha: precisa começar com "VULP" (maiúsculas)
         if (!s.startsWith('VULP')) {
             return { ok: false, msg: 'Não foi possível entrar. Verifique suas credenciais ou entre em contato com o administrador.' };
         }
@@ -1007,7 +1016,14 @@ const api = {
         return json;
     },
 
-    _normalizarQuestao(raw) {
+    /**
+     * Normaliza UMA linha bruta da planilha em UM objeto de questão.
+     * IMPORTANTE: gera um _uid (unique ID) baseado na posição da linha
+     * na resposta original da API. Isso garante que cada linha da planilha
+     * permaneça vinculada ao seu próprio enunciado, alternativas e gabarito,
+     * mesmo que existam IDs duplicados na coluna ID.
+     */
+    _normalizarQuestao(raw, rowIndex) {
         if (!raw || typeof raw !== 'object') return null;
         const q = {
             id: String(raw['ID'] || raw['id'] || raw['Id'] || ''),
@@ -1038,6 +1054,15 @@ const api = {
             status: String(raw['Status'] || raw['status'] || 'Ativa').trim(),
             dataInclusao: String(raw['Data Inclusão'] || raw['dataInclusao'] || '').trim(),
         };
+
+        // ---- UID ÚNICO POR LINHA (chave de integridade questão↔gabarito) ----
+        // Combina o índice da linha na resposta da API com o ID original.
+        // Isso garante unicidade mesmo quando a planilha tem IDs repetidos
+        // (ex.: várias linhas com ID "3.0", "4.0" etc.).
+        const idx = (typeof rowIndex === 'number') ? rowIndex : 'x';
+        q._uid = `row_${idx}__id_${q.id || 'semid'}`;
+        // ---------------------------------------------------------------------
+
         if (!q.enunciado || !q.gabarito) return null;
         const tipoLower = q.tipo.toLowerCase();
         if (tipoLower.includes('certo') || tipoLower.includes('cespe') || tipoLower === 'ce') {
@@ -1073,8 +1098,22 @@ const api = {
 
         console.log(`[API] Registros brutos recebidos: ${arr.length}`);
 
-        const normalizadas = arr.map(r => this._normalizarQuestao(r)).filter(Boolean);
+        // Passa o índice original da linha para gerar _uid único por linha.
+        // Linhas inválidas (sem enunciado/gabarito) são filtradas DEPOIS,
+        // preservando o índice original de cada registro válido.
+        const normalizadas = arr
+            .map((r, i) => this._normalizarQuestao(r, i))
+            .filter(Boolean);
+
         console.log(`[API] ✅ ${normalizadas.length} questões válidas após normalização.`);
+        // Diagnóstico rápido de unicidade dos _uid
+        const uids = normalizadas.map(q => q._uid);
+        const uniqUids = new Set(uids);
+        if (uniqUids.size !== uids.length) {
+            console.warn('[API] ⚠️ Detectados _uid duplicados — verifique integridade.');
+        } else {
+            console.log(`[API] ✅ Todos os ${uids.length} _uid são únicos.`);
+        }
 
         if (arr.length > 0 && normalizadas.length === 0) {
             console.warn('[API] ⚠️ Nenhuma questão passou na validação.');
@@ -1089,8 +1128,8 @@ const api = {
         const url = `${API_URL}?id=${encodeURIComponent(id)}`;
         const response = await this._fetch(url);
         if (response && typeof response === 'object') {
-            if (response.id || response.ID) return this._normalizarQuestao(response);
-            if (response.data) return this._normalizarQuestao(response.data);
+            if (response.id || response.ID) return this._normalizarQuestao(response, 0);
+            if (response.data) return this._normalizarQuestao(response.data, 0);
         }
         return null;
     },
@@ -1148,9 +1187,9 @@ const storage = {
         catch (e) { console.warn('[Storage]', e); return false; }
     },
     getFavoritos() { return this._get(this.KEYS.FAVORITOS, []); },
-    isFavorito(id) { return this.getFavoritos().includes(String(id)); },
-    toggleFavorito(id) {
-        const idStr = String(id);
+    isFavorito(uid) { return this.getFavoritos().includes(String(uid)); },
+    toggleFavorito(uid) {
+        const idStr = String(uid);
         let favs = this.getFavoritos();
         if (favs.includes(idStr)) {
             favs = favs.filter(f => f !== idStr);
@@ -1216,10 +1255,10 @@ const storage = {
         return Array.from(ids);
     },
     getRevisao() { return this._get(this.KEYS.REVISAO, {}); },
-    getStatusRevisao(id) { const r = this.getRevisao(); return r[String(id)] || null; },
-    setStatusRevisao(id, status) {
+    getStatusRevisao(uid) { const r = this.getRevisao(); return r[String(uid)] || null; },
+    setStatusRevisao(uid, status) {
         const r = this.getRevisao();
-        const idStr = String(id);
+        const idStr = String(uid);
         if (status === null) delete r[idStr];
         else r[idStr] = { status, data: new Date().toISOString() };
         this._set(this.KEYS.REVISAO, r);
@@ -1259,16 +1298,13 @@ const App = {
         this.bindLogin();
 
         if (Auth.isLoggedIn()) {
-            // Sessão existente: fluxo normal (splash → app)
             await this.bootstrapApp();
         } else {
-            // Sem sessão: mostrar login
             this.showLogin();
         }
     },
 
     async bootstrapApp() {
-        // Splash já está visível no HTML
         await this.carregarQuestoes();
         this.hideSplash();
         this.showApp();
@@ -1295,13 +1331,10 @@ const App = {
     },
 
     async entrarNoApp() {
-        // Esconder login
         const login = document.getElementById('loginOverlay');
         if (login) login.classList.add('hidden');
-        // Mostrar app imediatamente
         this.showApp();
         this.navegarPara('dashboard');
-        // Carregar questões em segundo plano
         await this.carregarQuestoes();
         if (!this.state.erroApi) {
             this.navegarPara(this.state.paginaAtual);
@@ -1313,7 +1346,6 @@ const App = {
         this.state.questoes = [];
         this.state.questoesFiltradas = [];
         this.state.erroApi = null;
-        // Reset formulário de login
         const u = document.getElementById('loginUser');
         const p = document.getElementById('loginPass');
         const e = document.getElementById('loginError');
@@ -1351,12 +1383,10 @@ const App = {
                 btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Entrando...';
             }
 
-            // Pequena pausa para dar sensação de carregamento
             await new Promise(r => setTimeout(r, 250));
 
             await this.entrarNoApp();
 
-            // Restaurar botão (caso volte ao login futuramente)
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Entrar no aplicativo';
@@ -1364,7 +1394,6 @@ const App = {
             if (passEl) passEl.value = '';
         });
 
-        // Limpar erro ao digitar
         ['loginUser','loginPass'].forEach(id => {
             document.getElementById(id)?.addEventListener('input', () => {
                 errEl.classList.remove('show');
@@ -1429,7 +1458,6 @@ const App = {
         const page = document.getElementById('page-dashboard');
         if (!page) return;
 
-        // Log técnico detalhado apenas no console (não visível ao usuário)
         console.group('%c[Diagnóstico interno]', 'color:#dc2626;font-weight:bold');
         console.log('Tipo do erro:', error.tipo || 'desconhecido');
         console.log('Mensagem:', error.message);
@@ -1437,7 +1465,6 @@ const App = {
         console.log('Dica técnica: verifique publicação do Web App, CORS, formato de retorno JSON.');
         console.groupEnd();
 
-        // Mensagem amigável ao usuário (sem termos técnicos)
         const html = `
             <div class="section-block" style="border-left:4px solid var(--danger);" id="erroApiBox">
                 <div class="section-header">
@@ -1556,7 +1583,6 @@ const App = {
         });
         document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTema());
 
-        // ---- CARREGAR MAIS QUESTÕES ----
         document.getElementById('btnAtualizarBanco')?.addEventListener('click', async (e) => {
             const btn = e.currentTarget;
             btn.classList.add('loading');
@@ -1579,7 +1605,6 @@ const App = {
             }
         });
 
-        // ---- LOGOUT ----
         document.getElementById('btnLogout')?.addEventListener('click', () => {
             if (confirm('Deseja sair da sua conta?')) this.logout();
         });
@@ -1772,7 +1797,7 @@ const Dashboard = {
                 </div>`;
             return;
         }
-        const q = App.state.questoes.find(x => String(x.id) === String(ultima.questaoId));
+        const q = App.state.questoes.find(x => String(x._uid) === String(ultima.questaoId));
         const enun = q ? q.enunciado.substring(0, 100) + '...' : 'Questão ' + ultima.questaoId;
         c.innerHTML = `
             <div class="continuar-card">
@@ -2038,8 +2063,13 @@ const Questoes = {
         this.renderPaginacao(totalPag);
     },
 
+    /**
+     * Renderiza o card de UMA questão específica.
+     * Todos os dados (enunciado, alternativas, gabarito, comentário, _uid)
+     * vêm do MESMO objeto q — garantindo integridade questão↔gabarito.
+     */
     renderCard(q, mostrarResposta) {
-        const fav = storage.isFavorito(q.id);
+        const fav = storage.isFavorito(q._uid);
         const tipo = q.tipo;
         let alternativasHtml = '';
         if (tipo === 'Certo/Errado') {
@@ -2060,17 +2090,20 @@ const Questoes = {
             ].filter(a => a.texto);
             alternativasHtml = `<div class="alternativas">${alts.map(a => `
                 <div class="alternativa" data-alt="${a.letra}">
+                    <button class="btn-tesoura" data-tesoura="${a.letra}" type="button" title="Riscar alternativa (tesoura)" aria-label="Riscar alternativa ${a.letra}">
+                        <i class="fas fa-scissors"></i>
+                    </button>
                     <span class="alternativa-letra">${a.letra}</span>
                     <span class="alternativa-texto">${App.escapeHtml(a.texto)}</span>
                 </div>
             `).join('')}</div>`;
         }
 
-        const rev = storage.getStatusRevisao(q.id);
+        const rev = storage.getStatusRevisao(q._uid);
         const revBadge = rev ? `<span class="badge ${rev.status === 'pendente' ? 'badge-warning' : 'badge-success'}"><i class="fas fa-clock-rotate-left"></i> ${rev.status === 'pendente' ? 'Revisar' : 'Revisada'}</span>` : '';
 
         return `
-            <div class="questao-card" data-id="${App.escapeHtml(q.id)}" data-estado="nao-respondida">
+            <div class="questao-card" data-uid="${App.escapeHtml(q._uid)}" data-id="${App.escapeHtml(q.id)}" data-estado="nao-respondida">
                 <div class="questao-header">
                     <div class="questao-badges">
                         <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
@@ -2080,7 +2113,7 @@ const Questoes = {
                         ${q.dificuldade ? `<span class="badge badge-warning">${App.escapeHtml(q.dificuldade)}</span>` : ''}
                         ${revBadge}
                     </div>
-                    <button class="btn-fav ${fav ? 'active' : ''}" data-fav="${App.escapeHtml(q.id)}" title="Favoritar">
+                    <button class="btn-fav ${fav ? 'active' : ''}" data-fav="${App.escapeHtml(q._uid)}" title="Favoritar">
                         <i class="fas fa-star"></i>
                     </button>
                 </div>
@@ -2096,17 +2129,22 @@ const Questoes = {
                 </div>
                 <div class="mt-16 flex-between">
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                        <button class="btn btn-sm btn-outline" data-revisar="${App.escapeHtml(q.id)}"><i class="fas fa-clock-rotate-left"></i> ${rev ? (rev.status === 'pendente' ? 'Revisada' : 'Revisar') : 'Revisar depois'}</button>
-                        <button class="btn btn-sm btn-outline" data-expandir="${App.escapeHtml(q.id)}"><i class="fas fa-expand-alt"></i> Expandir</button>
+                        <button class="btn btn-sm btn-outline" data-revisar="${App.escapeHtml(q._uid)}"><i class="fas fa-clock-rotate-left"></i> ${rev ? (rev.status === 'pendente' ? 'Revisada' : 'Revisar') : 'Revisar depois'}</button>
+                        <button class="btn btn-sm btn-outline" data-expandir="${App.escapeHtml(q._uid)}"><i class="fas fa-expand-alt"></i> Expandir</button>
                     </div>
                 </div>
             </div>`;
     },
 
+    /**
+     * Vincula eventos a cada card. A recuperação da questão é feita
+     * SEMPRE pelo _uid (identificador único de linha), garantindo
+     * que o gabarito correto seja usado na correção.
+     */
     bindCards(container) {
         container.querySelectorAll('.questao-card').forEach(card => {
-            const id = card.dataset.id;
-            const q = App.state.questoes.find(x => String(x.id) === String(id));
+            const uid = card.dataset.uid;
+            const q = App.state.questoes.find(x => String(x._uid) === String(uid));
             if (!q) return;
 
             const feedback = card.querySelector('[data-feedback]');
@@ -2115,21 +2153,34 @@ const Questoes = {
             const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
             const tipo = q.tipo;
 
+            // ---- TESOURA: riscar/desriscar alternativas ----
+            card.querySelectorAll('[data-tesoura]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const alt = btn.closest('.alternativa');
+                    if (!alt) return;
+                    const descartada = alt.classList.toggle('descartada');
+                    btn.classList.toggle('ativa', descartada);
+                    // Não altera seleção, gabarito, correção ou dados da API.
+                });
+            });
+
             card.querySelector('[data-fav]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const ativo = storage.toggleFavorito(id);
+                const ativo = storage.toggleFavorito(uid);
                 e.currentTarget.classList.toggle('active', ativo);
                 App.atualizarBadges();
                 App.toast(ativo ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'info');
             });
 
             card.querySelector('[data-revisar]')?.addEventListener('click', () => {
-                const atual = storage.getStatusRevisao(id);
+                const atual = storage.getStatusRevisao(uid);
                 let novo;
                 if (!atual) novo = 'pendente';
                 else if (atual.status === 'pendente') novo = 'revisada';
                 else novo = null;
-                storage.setStatusRevisao(id, novo);
+                storage.setStatusRevisao(uid, novo);
                 App.atualizarBadges();
                 App.toast(novo === 'pendente' ? 'Marcada para revisão.' : novo === 'revisada' ? 'Marcada como revisada.' : 'Removida da revisão.', 'info');
                 this.renderLista();
@@ -2189,6 +2240,7 @@ const Questoes = {
                 card.dataset.estado = 'respondida';
                 btnResponder.style.display = 'none';
 
+                // ---- CORREÇÃO: usa o gabarito da MESMA questão (q) ----
                 const gab = q.gabarito;
                 const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
 
@@ -2213,7 +2265,8 @@ const Questoes = {
                 btnToggleComentario.textContent = 'Mostrar comentário';
 
                 storage.salvarHistorico({
-                    questaoId: q.id,
+                    questaoId: q._uid,          // <-- vínculo íntegro com a linha
+                    questaoIdOriginal: q.id,    // mantido para exibição/legado
                     resposta: selecionada,
                     gabarito: gab,
                     acertou,
@@ -2262,7 +2315,7 @@ const Questoes = {
         const sub = document.getElementById('favoritosSubtitulo');
         if (!c) return;
         const favIds = storage.getFavoritos();
-        const favs = App.state.questoes.filter(q => favIds.includes(String(q.id)));
+        const favs = App.state.questoes.filter(q => favIds.includes(String(q._uid)));
         if (sub) sub.textContent = `${favs.length} questão${favs.length !== 1 ? 's' : ''}`;
         if (favs.length === 0) {
             c.innerHTML = `<div class="empty-state"><i class="fas fa-star"></i><h3>Nenhum favorito ainda</h3><p>Favorite questões do banco para acessá-las rapidamente aqui.</p><button class="btn btn-primary" onclick="App.navegarPara('banco')"><i class="fas fa-database"></i> Ir ao banco</button></div>`;
@@ -2276,7 +2329,7 @@ const Questoes = {
         const c = document.getElementById('cadernoErrosConteudo');
         if (!c) return;
         const errIds = storage.getQuestoesErradas();
-        const errs = App.state.questoes.filter(q => errIds.includes(String(q.id)));
+        const errs = App.state.questoes.filter(q => errIds.includes(String(q._uid)));
         if (errs.length === 0) {
             c.innerHTML = `<div class="empty-state"><i class="fas fa-book-skull"></i><h3>Nenhum erro registrado</h3><p>As questões que você errar aparecerão aqui para revisão.</p></div>`;
             return;
@@ -2312,7 +2365,7 @@ const Questoes = {
         if (!c) return;
         const tabAtiva = document.querySelector('.revisao-tabs .tab-btn.active')?.dataset.tab || 'pendente';
         const ids = tabAtiva === 'pendente' ? storage.getRevisaoPendentes() : storage.getRevisaoRevisadas();
-        const lista = App.state.questoes.filter(q => ids.includes(String(q.id)));
+        const lista = App.state.questoes.filter(q => ids.includes(String(q._uid)));
         if (sub) sub.textContent = `${lista.length} questão${lista.length !== 1 ? 's' : ''}`;
         if (lista.length === 0) {
             c.innerHTML = `<div class="empty-state"><i class="fas fa-clock-rotate-left"></i><h3>Nenhuma questão ${tabAtiva === 'pendente' ? 'pendente' : 'revisada'}</h3><p>Use o botão "Revisar depois" nas questões para agendá-las.</p></div>`;
@@ -2360,7 +2413,7 @@ const Simulado = {
     state: {
         questoes: [],
         indice: 0,
-        respostas: {},
+        respostas: {},      // chave: _uid  → resposta do usuário
         modo: 'treino',
         finalizado: false,
     },
@@ -2416,10 +2469,11 @@ const Simulado = {
 
     iniciar(questoes, modo, aleatorio) {
         if (!questoes || questoes.length === 0) { App.toast('Nenhuma questão para iniciar.', 'error'); return; }
+        // Remove duplicatas pelo _uid, preservando o objeto completo (com gabarito).
         const vistos = new Set();
         const unicas = questoes.filter(q => {
-            if (vistos.has(q.id)) return false;
-            vistos.add(q.id);
+            if (vistos.has(q._uid)) return false;
+            vistos.add(q._uid);
             return true;
         });
         this.state = {
@@ -2460,6 +2514,11 @@ const Simulado = {
         };
     },
 
+    /**
+     * Renderiza a questão atual do simulado. A questão é obtida pelo
+     * índice atual do array, mas TODO o vínculo (enunciado, alternativas,
+     * gabarito, comentário) vem do mesmo objeto q — nunca por busca de ID.
+     */
     renderQuestao() {
         const q = this.state.questoes[this.state.indice];
         if (!q) return;
@@ -2472,7 +2531,7 @@ const Simulado = {
         btnProx.innerHTML = idx === total - 1 ? 'Finalizar <i class="fas fa-check"></i>' : 'Próxima <i class="fas fa-chevron-right"></i>';
 
         const container = document.getElementById('questaoRunner');
-        const jaRespondida = this.state.respostas[q.id] !== undefined;
+        const jaRespondida = this.state.respostas[q._uid] !== undefined;
 
         let altsHtml = '';
         if (q.tipo === 'Certo/Errado') {
@@ -2492,6 +2551,9 @@ const Simulado = {
             ].filter(a => a.texto);
             altsHtml = `<div class="alternativas">${alts.map(a => `
                 <div class="alternativa" data-alt="${a.letra}">
+                    <button class="btn-tesoura" data-tesoura="${a.letra}" type="button" title="Riscar alternativa (tesoura)" aria-label="Riscar alternativa ${a.letra}">
+                        <i class="fas fa-scissors"></i>
+                    </button>
                     <span class="alternativa-letra">${a.letra}</span>
                     <span class="alternativa-texto">${App.escapeHtml(a.texto)}</span>
                 </div>
@@ -2499,7 +2561,7 @@ const Simulado = {
         }
 
         container.innerHTML = `
-            <div class="questao-card" data-id="${App.escapeHtml(q.id)}" data-estado="${jaRespondida ? 'respondida' : 'nao-respondida'}">
+            <div class="questao-card" data-uid="${App.escapeHtml(q._uid)}" data-id="${App.escapeHtml(q.id)}" data-estado="${jaRespondida ? 'respondida' : 'nao-respondida'}">
                 <div class="questao-header">
                     <div class="questao-badges">
                         <span class="badge badge-accent">${App.escapeHtml(q.disciplina || 'Geral')}</span>
@@ -2526,11 +2588,23 @@ const Simulado = {
         const btnResponder = card.querySelector('[data-responder]');
         const btnToggleComentario = card.querySelector('[data-toggle-comentario]');
 
+        // ---- TESOURA também no simulado ----
+        card.querySelectorAll('[data-tesoura]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const alt = btn.closest('.alternativa');
+                if (!alt) return;
+                const descartada = alt.classList.toggle('descartada');
+                btn.classList.toggle('ativa', descartada);
+            });
+        });
+
         let selecionada = null;
         let respondida = jaRespondida;
 
         if (jaRespondida) {
-            const resp = this.state.respostas[q.id];
+            const resp = this.state.respostas[q._uid];
             selecionada = resp;
             const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
             if (q.tipo === 'Certo/Errado') {
@@ -2594,6 +2668,7 @@ const Simulado = {
             card.dataset.estado = 'respondida';
             btnResponder.style.display = 'none';
 
+            // ---- CORREÇÃO: usa o gabarito da MESMA questão q ----
             const gab = q.gabarito;
             const acertou = String(selecionada).toLowerCase() === String(gab).toLowerCase();
 
@@ -2617,9 +2692,10 @@ const Simulado = {
             btnToggleComentario.style.display = 'inline-flex';
             btnToggleComentario.textContent = 'Mostrar comentário';
 
-            this.state.respostas[q.id] = selecionada;
+            this.state.respostas[q._uid] = selecionada;
             storage.salvarHistorico({
-                questaoId: q.id,
+                questaoId: q._uid,
+                questaoIdOriginal: q.id,
                 resposta: selecionada,
                 gabarito: gab,
                 acertou,
@@ -2653,7 +2729,7 @@ const Simulado = {
         const errosLista = [];
 
         this.state.questoes.forEach(q => {
-            const resp = this.state.respostas[q.id];
+            const resp = this.state.respostas[q._uid];
             if (resp === undefined) return;
             const acertou = String(resp).toLowerCase() === String(q.gabarito).toLowerCase();
             const disc = q.disciplina || 'Geral';
@@ -2760,7 +2836,11 @@ const Admin = {
         const busca = (document.getElementById('adminBusca')?.value || '').toLowerCase();
         const statusFiltro = document.getElementById('adminStatusFiltro')?.value || '';
         let lista = App.state.questoes;
-        if (busca) lista = lista.filter(q => String(q.id).toLowerCase().includes(busca) || (q.enunciado || '').toLowerCase().includes(busca));
+        if (busca) lista = lista.filter(q =>
+            String(q.id).toLowerCase().includes(busca) ||
+            String(q._uid).toLowerCase().includes(busca) ||
+            (q.enunciado || '').toLowerCase().includes(busca)
+        );
         if (statusFiltro) lista = lista.filter(q => (q.status || '').toLowerCase() === statusFiltro.toLowerCase());
         if (lista.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">Nenhuma questão encontrada.</td></tr>`;
@@ -2776,15 +2856,15 @@ const Admin = {
                 <td>${App.escapeHtml(q.tipo || '—')}</td>
                 <td><span class="status-badge ${statusClass}">${App.escapeHtml(q.status || 'Ativa')}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-outline" data-admin-ver="${App.escapeHtml(q.id)}"><i class="fas fa-eye"></i></button>
-                    <button class="btn btn-sm btn-outline" data-admin-edit="${App.escapeHtml(q.id)}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" data-admin-del="${App.escapeHtml(q.id)}"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-sm btn-outline" data-admin-ver="${App.escapeHtml(q._uid)}"><i class="fas fa-eye"></i></button>
+                    <button class="btn btn-sm btn-outline" data-admin-edit="${App.escapeHtml(q._uid)}"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" data-admin-del="${App.escapeHtml(q._uid)}"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>`;
         }).join('');
 
         tbody.querySelectorAll('[data-admin-ver]').forEach(b => b.onclick = () => {
-            const q = App.state.questoes.find(x => String(x.id) === b.dataset.adminVer);
+            const q = App.state.questoes.find(x => String(x._uid) === b.dataset.adminVer);
             if (q) App.abrirComentario(`<i class="fas fa-eye"></i> Questão ${q.id}`, `<pre style="white-space:pre-wrap;font-family:inherit;">${App.escapeHtml(q.enunciado)}\n\nGabarito: ${q.gabarito}\n\nComentário: ${q.comentario || '—'}</pre>`);
         });
         tbody.querySelectorAll('[data-admin-edit]').forEach(b => b.onclick = () => this.abrirModalEditar(b.dataset.adminEdit));
@@ -2795,8 +2875,8 @@ const Admin = {
         this.abrirModalForm(null);
     },
 
-    abrirModalEditar(id) {
-        const q = App.state.questoes.find(x => String(x.id) === String(id));
+    abrirModalEditar(uid) {
+        const q = App.state.questoes.find(x => String(x._uid) === String(uid));
         if (q) this.abrirModalForm(q);
     },
 
@@ -2919,10 +2999,12 @@ const Admin = {
         });
     },
 
-    confirmarExcluir(id) {
-        App.abrirModal('Excluir Questão', `<p>Tem certeza que deseja excluir a questão <strong>${App.escapeHtml(id)}</strong>? Esta ação não pode ser desfeita.</p>`, async () => {
+    confirmarExcluir(uid) {
+        const q = App.state.questoes.find(x => String(x._uid) === String(uid));
+        const displayId = q ? q.id : uid;
+        App.abrirModal('Excluir Questão', `<p>Tem certeza que deseja excluir a questão <strong>${App.escapeHtml(displayId)}</strong>? Esta ação não pode ser desfeita.</p>`, async () => {
             try {
-                await api.excluirQuestao(id);
+                await api.excluirQuestao(displayId);
                 App.toast('Requisição de exclusão enviada!', 'success');
                 App.fecharModal();
                 setTimeout(() => App.carregarQuestoes(true).then(() => App.navegarPara('admin')), 2000);
