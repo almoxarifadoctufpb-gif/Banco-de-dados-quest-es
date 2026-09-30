@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#5b7cfa" />
 <meta name="description" content="VULP+ Quest — Treino inteligente para concursos públicos. Resolva questões, monte simulados e acompanhe seu desempenho." />
 <title>VULP+ Quest · Seu treino inteligente para concursos públicos</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
@@ -60,8 +61,6 @@ button{font-family:inherit;cursor:pointer}
 .landing{display:none;min-height:100vh;background:var(--bg-body)}
 .landing.visible{display:block}
 body.landing-active .app-container{display:none!important}
-/* Regra antiga removida: body.landing-active .login-overlay{display:none}
-   O controle de visibilidade do login é feito pela classe .hidden + App.mostrarLogin() */
 body.landing-active .bottom-nav{display:none!important}
 
 /* --- Header landing --- */
@@ -902,6 +901,15 @@ body.landing-active .bottom-nav{display:none!important}
 .btn-responder{margin-top:16px;width:100%;padding:14px;font-size:.95rem;font-weight:700;letter-spacing:.3px}
 .comentario-toggle{margin-top:12px}
 .feedback-oculto{display:none}
+
+/* ========== SKELETON LOADING ========== */
+.skeleton-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:22px;margin-bottom:16px}
+.skeleton-line{height:14px;border-radius:6px;margin-bottom:10px}
+.skeleton-line.w60{width:60%}
+.skeleton-line.w80{width:80%}
+.skeleton-line.w40{width:40%}
+.skeleton-line.w90{width:90%}
+.skeleton-line.w70{width:70%}
 </style>
 </head>
 <body class="landing-active">
@@ -1291,7 +1299,7 @@ body.landing-active .bottom-nav{display:none!important}
         <div class="footer-inner">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790352883/ChatGPT_Image_25_de_set._de_2026_13_12_59_rszn02.png" alt="VULP+ Quest" />
+                    <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" />
                     <p>Questões para quem leva concursos a sério. Treine, acompanhe e evolua.</p>
                 </div>
                 <div class="footer-col">
@@ -1332,7 +1340,7 @@ body.landing-active .bottom-nav{display:none!important}
 <div class="login-overlay hidden" id="loginOverlay">
     <div class="login-card">
         <div class="login-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790352883/ChatGPT_Image_25_de_set._de_2026_13_12_59_rszn02.png" alt="VULP+ Quest" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" />
         </div>
         <h1 class="login-title" id="loginTitle">Bem-vindo ao VULP+ Quest</h1>
         <p class="login-subtitle" id="loginSubtitle">Pronto para continuar sua jornada de estudos?</p>
@@ -1361,7 +1369,7 @@ body.landing-active .bottom-nav{display:none!important}
 <div class="splash-overlay" id="splashOverlay">
     <div class="splash-content">
         <div class="splash-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790352883/ChatGPT_Image_25_de_set._de_2026_13_12_59_rszn02.png" alt="VULP+ Quest" class="splash-logo-img" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" class="splash-logo-img" />
         </div>
         <div class="splash-spinner"></div>
         <p class="splash-message" id="splashMessage">Preparando suas questões...</p>
@@ -1373,7 +1381,7 @@ body.landing-active .bottom-nav{display:none!important}
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790352883/ChatGPT_Image_25_de_set._de_2026_13_12_59_rszn02.png" alt="VULP+ Quest" class="sidebar-logo-img" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" class="sidebar-logo-img" />
         </div>
         <nav class="sidebar-nav">
             <div class="menu-label">Principal</div>
@@ -1394,7 +1402,7 @@ body.landing-active .bottom-nav{display:none!important}
             <div class="status-indicator"><span class="status-dot" id="apiStatusDot"></span><span id="apiStatusText">Conectando...</span></div>
             <button class="btn-sync" id="btnAtualizarBanco"><i class="fas fa-rotate"></i> Recarregar questões</button>
             <button class="btn-logout" id="btnLogout"><i class="fas fa-right-from-bracket"></i> Sair</button>
-            <div class="version-info">VULP+ v1.7 · Leitura</div>
+            <div class="version-info">VULP+ v2.0 · Premium</div>
         </div>
     </aside>
 
@@ -1825,17 +1833,66 @@ body.landing-active .bottom-nav{display:none!important}
 
 <script>
 /* ============================================================
-   VULP+ QUESTÕES — APLICATIVO COMPLETO v1.7 + LANDING
+   VULP+ QUESTÕES — APLICATIVO COMPLETO v2.0 PREMIUM
    ============================================================ */
 (function(){
 'use strict';
 
-const LOGO_URL = "https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790352883/ChatGPT_Image_25_de_set._de_2026_13_12_59_rszn02.png";
+const LOGO_URL = "https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png";
 const API_URL = "https://script.google.com/macros/s/AKfycbwvzs9IgvokXqwU0MYlL9wFsMwz7gMEbbJUjmX34YKeNTEfSxgxC8jHgEDjeym208EzOA/exec";
 const API_CONFIG = {
     USAR_ACTION_LIST: false,
     TIMEOUT_MS: 20000,
+    CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutos de cache
 };
+
+/* ============================================================
+   CACHE MANAGER — Performance
+   ============================================================ */
+const CacheManager = {
+    _cache: {},
+    _timestamps: {},
+    
+    get(key) {
+        const ts = this._timestamps[key];
+        if (!ts) return null;
+        if (Date.now() - ts > API_CONFIG.CACHE_TTL_MS) {
+            this.invalidate(key);
+            return null;
+        }
+        return this._cache[key] || null;
+    },
+    
+    set(key, value) {
+        this._cache[key] = value;
+        this._timestamps[key] = Date.now();
+    },
+    
+    invalidate(key) {
+        delete this._cache[key];
+        delete this._timestamps[key];
+    },
+    
+    invalidateAll() {
+        this._cache = {};
+        this._timestamps = {};
+    },
+    
+    has(key) {
+        return this.get(key) !== null;
+    }
+};
+
+/* ============================================================
+   DEBOUNCE UTILITY
+   ============================================================ */
+function debounce(fn, delay = 300) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
 
 /* ============================================================
    AUTENTICAÇÃO — preservada integralmente
@@ -1872,7 +1929,7 @@ const Auth = {
 };
 
 /* ============================================================
-   CAMADA DE API — SOMENTE LEITURA (preservada)
+   CAMADA DE API — SOMENTE LEITURA (preservada + cache)
    ============================================================ */
 const api = {
     async _fetch(url, options = {}) {
@@ -1999,11 +2056,19 @@ const api = {
         return [];
     },
 
-    async getQuestoes() {
+    async getQuestoes(forceReload = false) {
+        const cacheKey = 'questoes';
+        if (!forceReload) {
+            const cached = CacheManager.get(cacheKey);
+            if (cached) return cached;
+        }
+        
         const url = API_CONFIG.USAR_ACTION_LIST ? `${API_URL}?action=list` : API_URL;
         const response = await this._fetch(url);
         const arr = this._extrairArray(response);
         const normalizadas = arr.map((r, i) => this._normalizarQuestao(r, i)).filter(Boolean);
+        
+        CacheManager.set(cacheKey, normalizadas);
         return normalizadas;
     },
 
@@ -2258,7 +2323,6 @@ const Landing = {
         const y = document.getElementById('landingYear');
         if (y) y.textContent = new Date().getFullYear();
 
-        // Menu mobile
         const btn = document.getElementById('landingMenuBtn');
         const menu = document.getElementById('landingMobileMenu');
         btn?.addEventListener('click', () => menu?.classList.toggle('open'));
@@ -2266,7 +2330,6 @@ const Landing = {
             a.addEventListener('click', () => menu?.classList.remove('open'));
         });
 
-        // Botões "Entrar" / "Criar conta" da landing
         document.querySelectorAll('[data-landing-login]').forEach(el => {
             el.addEventListener('click', (e) => { e.preventDefault(); this.abrirLogin('login'); });
         });
@@ -2274,12 +2337,10 @@ const Landing = {
             el.addEventListener('click', (e) => { e.preventDefault(); this.abrirLogin('signup'); });
         });
 
-        // Voltar para landing no login
         document.getElementById('btnVoltarLanding')?.addEventListener('click', () => {
             App.mostrarLanding();
         });
 
-        // Previne navegação default nos links com href="#"
         document.querySelectorAll('a[data-landing-login], a[data-landing-signup]').forEach(a => {
             a.addEventListener('click', (e) => e.preventDefault());
         });
@@ -2384,6 +2445,12 @@ const App = {
         pagina: 1,
         porPagina: 10,
         sessao: { inicio:null, pausado:false, timer:null, segundos:0 },
+        // Índice hierárquico para filtros
+        indiceHierarquico: {
+            disciplinas: [],
+            assuntosPorDisciplina: {},
+            questoesPorDisciplinaAssunto: {}
+        }
     },
 
     async init() {
@@ -2392,7 +2459,6 @@ const App = {
         this.bindLogin();
         Landing.init();
 
-        // Fluxo: logado → app direto. Não logado → landing page.
         if (Auth.isLoggedIn()) {
             await this.bootstrapApp();
         } else {
@@ -2433,30 +2499,19 @@ const App = {
 
     mostrarLanding() { this.showLanding(); },
 
-    /* ============================================================
-       CORREÇÃO APLICADA AQUI:
-       Agora o método desativa explicitamente a landing (remove .visible
-       e a classe body.landing-active) antes de exibir o overlay de login.
-       Isso evita que o conteúdo da landing apareça atrás do card de login.
-       ============================================================ */
     mostrarLogin() {
-        // 1) Esconde completamente a landing
         const landing = document.getElementById('landingPage');
         if (landing) landing.classList.remove('visible');
         document.body.classList.remove('landing-active');
 
-        // 2) Garante que o app também está oculto
         const app = document.getElementById('appContainer');
         if (app) app.style.display = 'none';
 
-        // 3) Mostra o overlay de login
         const login = document.getElementById('loginOverlay');
         if (login) login.classList.remove('hidden');
 
-        // 4) Fecha o menu mobile, se estiver aberto
         document.getElementById('landingMobileMenu')?.classList.remove('open');
 
-        // 5) Foca no campo de login
         setTimeout(() => document.getElementById('loginUser')?.focus(), 80);
     },
 
@@ -2493,6 +2548,7 @@ const App = {
         this.state.questoes = [];
         this.state.questoesFiltradas = [];
         this.state.erroApi = null;
+        CacheManager.invalidateAll();
         const u = document.getElementById('loginUser');
         const p = document.getElementById('loginPass');
         const e = document.getElementById('loginError');
@@ -2568,10 +2624,14 @@ const App = {
         this.state.carregando = true;
         this.state.erroApi = null;
         this.atualizarStatusApi('loading');
+        
+        this.mostrarSkeletonLista();
+        
         try {
-            const q = await api.getQuestoes();
+            const q = await api.getQuestoes(forcar);
             if (!Array.isArray(q)) throw new Error('A API não retornou um array de questões.');
             this.state.questoes = q;
+            this.construirIndiceHierarquico(q);
             this.atualizarStatusApi('online');
             this.atualizarBadges();
             document.getElementById('erroApiBox')?.remove();
@@ -2584,6 +2644,69 @@ const App = {
         } finally {
             this.state.carregando = false;
         }
+    },
+
+    mostrarSkeletonLista() {
+        const c = document.getElementById('questoesLista');
+        if (!c) return;
+        c.innerHTML = Array(3).fill(0).map(() => `
+            <div class="skeleton-card">
+                <div class="skeleton-line w40 skeleton"></div>
+                <div class="skeleton-line w90 skeleton" style="height:18px;margin:12px 0;"></div>
+                <div class="skeleton-line w80 skeleton"></div>
+                <div class="skeleton-line w70 skeleton"></div>
+                <div class="skeleton-line w60 skeleton"></div>
+            </div>
+        `).join('');
+    },
+
+    construirIndiceHierarquico(questoes) {
+        const disciplinas = new Set();
+        const assuntosPorDisciplina = {};
+        const questoesPorDisciplinaAssunto = {};
+
+        questoes.forEach(q => {
+            const d = q.disciplina || 'Sem disciplina';
+            disciplinas.add(d);
+            
+            if (!assuntosPorDisciplina[d]) assuntosPorDisciplina[d] = new Set();
+            if (q.assunto) assuntosPorDisciplina[d].add(q.assunto);
+            
+            const chave = `${d}::${q.assunto || ''}`;
+            if (!questoesPorDisciplinaAssunto[chave]) questoesPorDisciplinaAssunto[chave] = [];
+            questoesPorDisciplinaAssunto[chave].push(q);
+        });
+
+        this.state.indiceHierarquico = {
+            disciplinas: Array.from(disciplinas).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+            assuntosPorDisciplina: Object.fromEntries(
+                Object.entries(assuntosPorDisciplina).map(([d, assuntos]) => [
+                    d,
+                    Array.from(assuntos).sort((a, b) => a.localeCompare(b, 'pt-BR'))
+                ])
+            ),
+            questoesPorDisciplinaAssunto
+        };
+    },
+
+    getAssuntosDaDisciplina(disciplina) {
+        if (!disciplina) {
+            const todos = new Set();
+            Object.values(this.state.indiceHierarquico.assuntosPorDisciplina || {}).forEach(arr => {
+                arr.forEach(a => todos.add(a));
+            });
+            return Array.from(todos).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        }
+        return this.state.indiceHierarquico.assuntosPorDisciplina[disciplina] || [];
+    },
+
+    getDisciplinas() {
+        return this.state.indiceHierarquico.disciplinas || [];
+    },
+
+    getQuestoesPorDisciplinaAssunto(disciplina, assunto) {
+        const chave = `${disciplina || 'Sem disciplina'}::${assunto || ''}`;
+        return this.state.indiceHierarquico.questoesPorDisciplinaAssunto[chave] || [];
     },
 
     mostrarErroApi(error) {
@@ -2723,6 +2846,7 @@ const App = {
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-rotate fa-spin"></i> Recarregando...';
             try {
+                CacheManager.invalidate('questoes');
                 await this.carregarQuestoes(true);
                 if (!this.state.erroApi) {
                     this.toast('Questões recarregadas da planilha!', 'success');
@@ -3494,7 +3618,7 @@ const Dashboard = {
 };
 
 /* ============================================================
-   QUESTÕES (preservado)
+   QUESTÕES (preservado + filtros hierárquicos)
    ============================================================ */
 const Questoes = {
     render() {
@@ -3506,12 +3630,41 @@ const Questoes = {
         const blocks = document.getElementById('filtrosBlocks');
         if (!blocks) return;
 
-        const qs = App.state.questoes;
-        const uniq = (campo) => {
+        const disciplinas = App.getDisciplinas();
+        const disciplinasSelecionadas = App.state.filtros.disciplina || [];
+        
+        const contagemPorDisciplina = {};
+        App.state.questoes.forEach(q => {
+            const d = q.disciplina || 'Sem disciplina';
+            contagemPorDisciplina[d] = (contagemPorDisciplina[d] || 0) + 1;
+        });
+
+        let assuntos = App.getAssuntosDaDisciplina(
+            disciplinasSelecionadas.length === 1 ? disciplinasSelecionadas[0] : null
+        );
+
+        if (disciplinasSelecionadas.length > 1) {
+            const todosAssuntos = new Set();
+            disciplinasSelecionadas.forEach(d => {
+                App.getAssuntosDaDisciplina(d).forEach(a => todosAssuntos.add(a));
+            });
+            assuntos = Array.from(todosAssuntos).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        }
+
+        const contagemPorAssunto = {};
+        App.state.questoes.forEach(q => {
+            if (!q.assunto) return;
+            if (disciplinasSelecionadas.length > 0 && !disciplinasSelecionadas.includes(q.disciplina)) return;
+            contagemPorAssunto[q.assunto] = (contagemPorAssunto[q.assunto] || 0) + 1;
+        });
+
+        const uniq = (campo, filtroFn) => {
             const m = new Map();
-            qs.forEach(q => {
+            App.state.questoes.forEach(q => {
                 const v = q[campo];
-                if (v) m.set(v, (m.get(v) || 0) + 1);
+                if (!v) return;
+                if (filtroFn && !filtroFn(q)) return;
+                m.set(v, (m.get(v) || 0) + 1);
             });
             return Array.from(m.entries())
                 .sort((a, b) => {
@@ -3521,16 +3674,63 @@ const Questoes = {
                 });
         };
 
+        const passaDisciplina = (q) => disciplinasSelecionadas.length === 0 || disciplinasSelecionadas.includes(q.disciplina);
+
         const grupos = [
-            { key:'disciplina',  label:'Disciplina',    icon:'fa-book',             opts: uniq('disciplina') },
-            { key:'assunto',     label:'Assunto',       icon:'fa-tags',             opts: uniq('assunto') },
-            { key:'banca',       label:'Banca',         icon:'fa-building-columns', opts: uniq('banca') },
-            { key:'ano',         label:'Ano',           icon:'fa-calendar',         opts: uniq('ano') },
-            { key:'orgao',       label:'Instituição',   icon:'fa-landmark',         opts: uniq('orgao') },
-            { key:'cargo',       label:'Cargo',         icon:'fa-user-tie',         opts: uniq('cargo') },
-            { key:'nivel',       label:'Nível',         icon:'fa-graduation-cap',   opts: uniq('nivel') },
-            { key:'tipo',        label:'Modalidade',    icon:'fa-list-check',       opts: uniq('tipo') },
-            { key:'dificuldade', label:'Dificuldade',   icon:'fa-gauge',            opts: uniq('dificuldade') },
+            { 
+                key:'disciplina', 
+                label:'Disciplina', 
+                icon:'fa-book', 
+                opts: uniq('disciplina') 
+            },
+            { 
+                key:'assunto', 
+                label:'Assunto', 
+                icon:'fa-tags', 
+                opts: assuntos.map(a => [a, contagemPorAssunto[a] || 0]).filter(([_, n]) => n > 0) 
+            },
+            { 
+                key:'banca', 
+                label:'Banca', 
+                icon:'fa-building-columns', 
+                opts: uniq('banca', passaDisciplina) 
+            },
+            { 
+                key:'ano', 
+                label:'Ano', 
+                icon:'fa-calendar', 
+                opts: uniq('ano', passaDisciplina) 
+            },
+            { 
+                key:'orgao', 
+                label:'Instituição', 
+                icon:'fa-landmark', 
+                opts: uniq('orgao', passaDisciplina) 
+            },
+            { 
+                key:'cargo', 
+                label:'Cargo', 
+                icon:'fa-user-tie', 
+                opts: uniq('cargo', passaDisciplina) 
+            },
+            { 
+                key:'nivel', 
+                label:'Nível', 
+                icon:'fa-graduation-cap', 
+                opts: uniq('nivel', passaDisciplina) 
+            },
+            { 
+                key:'tipo', 
+                label:'Modalidade', 
+                icon:'fa-list-check', 
+                opts: uniq('tipo', passaDisciplina) 
+            },
+            { 
+                key:'dificuldade', 
+                label:'Dificuldade', 
+                icon:'fa-gauge', 
+                opts: uniq('dificuldade', passaDisciplina) 
+            },
         ];
 
         const renderGrupo = (g) => {
@@ -3604,6 +3804,41 @@ const Questoes = {
                 if (chk.checked && idx === -1) arr.push(val);
                 else if (!chk.checked && idx >= 0) arr.splice(idx, 1);
                 App.state.filtros[key] = arr;
+
+                if (key === 'disciplina') {
+                    const disciplinasAtivas = App.state.filtros.disciplina || [];
+                    if (disciplinasAtivas.length > 0) {
+                        const assuntosValidos = new Set();
+                        disciplinasAtivas.forEach(d => {
+                            App.getAssuntosDaDisciplina(d).forEach(a => assuntosValidos.add(a));
+                        });
+                        App.state.filtros.assunto = (App.state.filtros.assunto || []).filter(a => assuntosValidos.has(a));
+                    }
+                    this.renderFiltros();
+                    this.renderAppliedPanel();
+                    this.atualizarChipsAtivos();
+                    return;
+                }
+
+                if (key === 'assunto') {
+                    const assuntosAtivos = App.state.filtros.assunto || [];
+                    if (assuntosAtivos.length > 0) {
+                        const disciplinasComAssunto = new Set();
+                        App.state.questoes.forEach(q => {
+                            if (assuntosAtivos.includes(q.assunto)) {
+                                disciplinasComAssunto.add(q.disciplina || 'Sem disciplina');
+                            }
+                        });
+                        const atuais = App.state.filtros.disciplina || [];
+                        if (atuais.length > 0) {
+                            const novas = atuais.filter(d => disciplinasComAssunto.has(d));
+                            if (novas.length !== atuais.length) {
+                                App.state.filtros.disciplina = novas;
+                            }
+                        }
+                    }
+                }
+
                 const block = blocks.querySelector(`[data-fblock="${key}"]`);
                 if (block) {
                     const title = block.querySelector('.filter-group-title .fg-left');
@@ -3619,14 +3854,14 @@ const Questoes = {
         });
 
         blocks.querySelectorAll('[data-fsearch]').forEach(inp => {
-            inp.oninput = () => {
+            inp.oninput = debounce(() => {
                 const key = inp.dataset.fsearch;
                 const term = inp.value.toLowerCase().trim();
                 blocks.querySelectorAll(`[data-foptions="${key}"] .filter-option`).forEach(opt => {
                     const txt = opt.querySelector('.opt-label').textContent.toLowerCase();
                     opt.style.display = term === '' || txt.includes(term) ? '' : 'none';
                 });
-            };
+            }, 250);
         });
 
         blocks.querySelectorAll('input[data-excl]').forEach(chk => {
@@ -3660,19 +3895,20 @@ const Questoes = {
         const bc = document.getElementById('buscaClear');
         if (bi) {
             bi.value = App.state.busca;
-            bi.oninput = (e) => {
+            bi.oninput = debounce((e) => {
                 App.state.busca = e.target.value;
                 if (bc) bc.style.display = e.target.value ? 'flex' : 'none';
                 this.atualizarChipsAtivos();
-            };
-            bi.onkeydown = (e) => { if (e.key === 'Enter') this.executarBusca(); };
+                App.state.pagina = 1;
+                this.renderLista();
+            }, 400);
         }
         if (bc) bc.onclick = () => {
             if (bi) bi.value = '';
             App.state.busca = '';
             bc.style.display = 'none';
             this.atualizarChipsAtivos();
-            this.executarBusca();
+            this.renderLista();
         };
 
         document.getElementById('btnBuscarQuestoes').onclick = () => this.executarBusca();
@@ -3846,6 +4082,17 @@ const Questoes = {
                 } else {
                     const arr = App.state.filtros[key] || [];
                     App.state.filtros[key] = arr.filter(x => x !== val);
+                    
+                    if (key === 'disciplina') {
+                        const disciplinasAtivas = App.state.filtros.disciplina || [];
+                        if (disciplinasAtivas.length > 0) {
+                            const assuntosValidos = new Set();
+                            disciplinasAtivas.forEach(d => {
+                                App.getAssuntosDaDisciplina(d).forEach(a => assuntosValidos.add(a));
+                            });
+                            App.state.filtros.assunto = (App.state.filtros.assunto || []).filter(a => assuntosValidos.has(a));
+                        }
+                    }
                 }
                 this.renderFiltros();
                 this.executarBusca();
@@ -3877,6 +4124,16 @@ const Questoes = {
                     const bc = document.getElementById('buscaClear'); if (bc) bc.style.display = 'none';
                 } else {
                     App.state.filtros[key] = (App.state.filtros[key] || []).filter(x => x !== val);
+                    if (key === 'disciplina') {
+                        const disciplinasAtivas = App.state.filtros.disciplina || [];
+                        if (disciplinasAtivas.length > 0) {
+                            const assuntosValidos = new Set();
+                            disciplinasAtivas.forEach(d => {
+                                App.getAssuntosDaDisciplina(d).forEach(a => assuntosValidos.add(a));
+                            });
+                            App.state.filtros.assunto = (App.state.filtros.assunto || []).filter(a => assuntosValidos.has(a));
+                        }
+                    }
                 }
                 this.renderFiltros();
                 this.executarBusca();
@@ -4207,7 +4464,7 @@ const Questoes = {
     renderTreinoConfig() {
         const c = document.getElementById('treinoConfigFiltros');
         if (!c) return;
-        const disciplinas = [...new Set(App.state.questoes.map(q => q.disciplina).filter(Boolean))].sort();
+        const disciplinas = App.getDisciplinas();
         c.innerHTML = `
             <div class="filtro-group"><label>Disciplina</label><select id="treinoDisciplina"><option value="">Todas</option>${disciplinas.map(d => `<option value="${App.escapeHtml(d)}">${App.escapeHtml(d)}</option>`).join('')}</select></div>
             <div class="filtro-group"><label>Dificuldade</label><select id="treinoDificuldade"><option value="">Todas</option><option>Fácil</option><option>Média</option><option>Difícil</option><option>Muito difícil</option></select></div>
@@ -4237,7 +4494,7 @@ const Simulado = {
     renderSetup() {
         const c = document.getElementById('simuladoConfigFiltros');
         if (!c) return;
-        const disciplinas = [...new Set(App.state.questoes.map(q => q.disciplina).filter(Boolean))].sort();
+        const disciplinas = App.getDisciplinas();
         const bancas = [...new Set(App.state.questoes.map(q => q.banca).filter(Boolean))].sort();
         c.innerHTML = `
             <div class="filtro-group"><label>Disciplina</label><select id="simDisciplina"><option value="">Todas</option>${disciplinas.map(d => `<option value="${App.escapeHtml(d)}">${App.escapeHtml(d)}</option>`).join('')}</select></div>
@@ -4565,7 +4822,7 @@ const Admin = {
     render() {
         this.renderStats();
         this.renderTable();
-        document.getElementById('adminBusca')?.addEventListener('input', () => this.renderTable());
+        document.getElementById('adminBusca')?.addEventListener('input', debounce(() => this.renderTable(), 300));
         document.getElementById('adminStatusFiltro')?.addEventListener('change', () => this.renderTable());
     },
 
@@ -4710,7 +4967,7 @@ const Dados = {
         const dados = {
             _meta: {
                 app: 'VULP+ Quest',
-                versao: 'v1.7',
+                versao: 'v2.0',
                 data: new Date().toISOString(),
                 tipo: 'backup-usuario-local',
                 observacao: 'Contém apenas dados locais do usuário. As questões NÃO são incluídas — são consultadas sempre na API.'
@@ -4778,6 +5035,7 @@ window.api = api;
 window.storage = storage;
 window.Dados = Dados;
 window.Landing = Landing;
+window.CacheManager = CacheManager;
 
 /* ========== BOOT ========== */
 document.addEventListener('DOMContentLoaded', () => {
