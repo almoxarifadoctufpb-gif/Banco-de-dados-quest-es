@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#5b7cfa" />
 <meta name="description" content="VULP+ Quest — Treino inteligente para concursos públicos. Resolva questões, monte simulados e acompanhe seu desempenho." />
 <title>VULP+ Quest · Seu treino inteligente para concursos públicos</title>
-<link rel="icon" type="image/png" href="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" />
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
@@ -305,7 +305,7 @@ body.landing-active .bottom-nav{display:none!important}
 .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
 @keyframes loginCardIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 .login-logo{display:flex;justify-content:center;margin-bottom:32px}
-.login-logo img{max-width:220px;width:100%;height:auto;object-fit:contain;display:block}
+.login-logo img{max-width:180px;max-height:70px;width:100%;height:auto;object-fit:contain;display:block}
 .login-title{font-size:1.45rem;font-weight:800;letter-spacing:-.5px;line-height:1.25;margin-bottom:10px;color:var(--text-primary)}
 .login-subtitle{font-size:.92rem;color:var(--text-secondary);margin-bottom:36px;line-height:1.55;max-width:340px;margin-left:auto;margin-right:auto}
 .login-field{text-align:left;margin-bottom:18px}
@@ -324,7 +324,7 @@ body.landing-active .bottom-nav{display:none!important}
 .login-card{padding:40px 26px 32px;border-radius:16px}
 .login-title{font-size:1.2rem}
 .login-subtitle{font-size:.85rem;margin-bottom:28px}
-.login-logo img{max-width:180px}
+.login-logo img{max-width:150px;max-height:60px;}
 .login-logo{margin-bottom:24px}
 }
 
@@ -338,6 +338,22 @@ body.dark .splash-overlay{background:#0f1117}
 .splash-spinner{width:28px;height:28px;border:2.5px solid var(--border-light);border-top-color:var(--text-muted);border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
 .splash-message{font-size:.85rem;color:var(--text-muted);letter-spacing:.2px}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ========== WELCOME MODAL ========== */
+.welcome-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
+.welcome-overlay.hidden{display:none!important}
+.welcome-card{background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-lg);max-width:420px;width:100%;padding:32px 28px;box-shadow:var(--shadow-xl);text-align:center;position:relative;overflow:hidden;animation:modalIn .4s cubic-bezier(.4,0,.2,1)}
+.welcome-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent)}
+.welcome-char{max-height:140px;width:auto;margin:0 auto 20px;display:block;animation:floatY 3s ease-in-out infinite}
+.welcome-message{font-size:1.05rem;font-weight:600;line-height:1.5;color:var(--text-primary);margin-bottom:8px}
+.welcome-sub{font-size:.88rem;color:var(--text-secondary);line-height:1.5;margin-bottom:24px}
+.welcome-btn{padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);font-size:.9rem;font-weight:700;cursor:pointer;transition:var(--transition);font-family:inherit;box-shadow:0 4px 14px rgba(91,124,250,.25);display:inline-flex;align-items:center;gap:8px}
+.welcome-btn:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(91,124,250,.35)}
+@media (max-width:480px){
+.welcome-card{padding:28px 20px}
+.welcome-char{max-height:110px;}
+.welcome-message{font-size:.95rem}
+}
 
 /* ========== APP ========== */
 .app-container{display:flex;min-height:100vh}
@@ -923,7 +939,7 @@ body.landing-active .bottom-nav{display:none!important}
     <header class="landing-header">
         <div class="landing-header-inner">
             <a class="landing-logo" href="#" onclick="return false;">
-                <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" />
+                <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" alt="VULP+ Quest" />
             </a>
             <nav class="landing-nav">
                 <a href="#inicio">Início</a>
@@ -1299,7 +1315,7 @@ body.landing-active .bottom-nav{display:none!important}
         <div class="footer-inner">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" />
+                    <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" alt="VULP+ Quest" />
                     <p>Questões para quem leva concursos a sério. Treine, acompanhe e evolua.</p>
                 </div>
                 <div class="footer-col">
@@ -1340,7 +1356,7 @@ body.landing-active .bottom-nav{display:none!important}
 <div class="login-overlay hidden" id="loginOverlay">
     <div class="login-card">
         <div class="login-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" alt="VULP+ Quest" />
         </div>
         <h1 class="login-title" id="loginTitle">Bem-vindo ao VULP+ Quest</h1>
         <p class="login-subtitle" id="loginSubtitle">Pronto para continuar sua jornada de estudos?</p>
@@ -1365,11 +1381,21 @@ body.landing-active .bottom-nav{display:none!important}
     </div>
 </div>
 
+<!-- ============ WELCOME MODAL ============ -->
+<div class="welcome-overlay hidden" id="welcomeOverlay">
+    <div class="welcome-card">
+        <img class="welcome-char" id="welcomeChar" src="" alt="Personagem VULP+ dando boas-vindas" />
+        <p class="welcome-message" id="welcomeMessage">Olá! Que bom ter você por aqui! 😊</p>
+        <p class="welcome-sub" id="welcomeSub">Bora estudar? Bons estudos! 🚀</p>
+        <button class="welcome-btn" id="welcomeBtn"><i class="fas fa-rocket"></i> Vamos estudar!</button>
+    </div>
+</div>
+
 <!-- ============ SPLASH ============ -->
 <div class="splash-overlay" id="splashOverlay">
     <div class="splash-content">
         <div class="splash-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" class="splash-logo-img" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" alt="VULP+ Quest" class="splash-logo-img" />
         </div>
         <div class="splash-spinner"></div>
         <p class="splash-message" id="splashMessage">Preparando suas questões...</p>
@@ -1381,7 +1407,7 @@ body.landing-active .bottom-nav{display:none!important}
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png" alt="VULP+ Quest" class="sidebar-logo-img" />
+            <img src="https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png" alt="VULP+ Quest" class="sidebar-logo-img" />
         </div>
         <nav class="sidebar-nav">
             <div class="menu-label">Principal</div>
@@ -1838,13 +1864,19 @@ body.landing-active .bottom-nav{display:none!important}
 (function(){
 'use strict';
 
-const LOGO_URL = "https://res.cloudinary.com/dqmuoc3o0/image/upload/v1790775684/ChatGPT_Image_30_de_set._de_2026_06_06_13_klgtlf.png";
+const LOGO_URL = "https://res.cloudinary.com/dqmuoc3o0/image/upload/v1791378505/Logotipo_Vulpmais_com_c%C3%A9rebro_abstrato_ehjicr.png";
 const API_URL = "https://script.google.com/macros/s/AKfycbwvzs9IgvokXqwU0MYlL9wFsMwz7gMEbbJUjmX34YKeNTEfSxgxC8jHgEDjeym208EzOA/exec";
 const API_CONFIG = {
     USAR_ACTION_LIST: false,
     TIMEOUT_MS: 20000,
     CACHE_TTL_MS: 5 * 60 * 1000, // 5 minutos de cache
 };
+
+/* Personagens para a tela de boas-vindas */
+const WELCOME_CHARACTERS = [
+    "https://res.cloudinary.com/dew6hgzpv/image/upload/v1779316455/Foto_sem_fundo_2_ug0hat.png",
+    "https://res.cloudinary.com/dew6hgzpv/image/upload/v1779316454/Foto_sem_fundo_1_a7vp5g.png"
+];
 
 /* ============================================================
    CACHE MANAGER — Performance
@@ -1895,14 +1927,16 @@ function debounce(fn, delay = 300) {
 }
 
 /* ============================================================
-   AUTENTICAÇÃO — preservada integralmente
+   AUTENTICAÇÃO — SEMPRE EXIGIR LOGIN
    ============================================================ */
 const Auth = {
     SESSION_KEY: 'vulp_session',
     USER_KEY: 'vulp_user',
     isLoggedIn() {
-        try { return localStorage.getItem(this.SESSION_KEY) === 'true'; }
-        catch { return false; }
+        // ALTERAÇÃO: Sempre retorna false para forçar a tela de login.
+        // A sessão é mantida no localStorage para outras finalidades, mas
+        // o bypass automático da tela de login é desativado.
+        return false;
     },
     getUser() {
         try { return localStorage.getItem(this.USER_KEY) || ''; }
@@ -2459,11 +2493,8 @@ const App = {
         this.bindLogin();
         Landing.init();
 
-        if (Auth.isLoggedIn()) {
-            await this.bootstrapApp();
-        } else {
-            this.showLanding();
-        }
+        // ALTERAÇÃO: Sempre mostrar a tela de login ao iniciar.
+        this.showLanding();
     },
 
     async bootstrapApp() {
@@ -2531,6 +2562,10 @@ const App = {
         this.hideLanding();
         this.showApp();
         document.body.classList.remove('landing-active');
+
+        // ALTERAÇÃO: Mostrar a experiência de boas-vindas
+        this.mostrarBoasVindas();
+
         this.navegarPara('dashboard');
         await this.carregarQuestoes();
         this.iniciarSessao();
@@ -2540,6 +2575,30 @@ const App = {
         if (!this.state.erroApi) {
             this.navegarPara(this.state.paginaAtual);
         }
+    },
+
+    mostrarBoasVindas() {
+        const overlay = document.getElementById('welcomeOverlay');
+        const charImg = document.getElementById('welcomeChar');
+        if (!overlay || !charImg) return;
+
+        // Escolhe um personagem aleatório
+        const randomIndex = Math.floor(Math.random() * WELCOME_CHARACTERS.length);
+        charImg.src = WELCOME_CHARACTERS[randomIndex];
+
+        // Mensagem (já está no HTML, mas pode ser ajustada aqui se necessário)
+        // document.getElementById('welcomeMessage').textContent = '...';
+
+        overlay.classList.remove('hidden');
+
+        const closeWelcome = () => {
+            overlay.classList.add('hidden');
+            clearTimeout(autoCloseTimer);
+        };
+
+        const autoCloseTimer = setTimeout(closeWelcome, 3500); // Fecha após 3.5s
+
+        document.getElementById('welcomeBtn').onclick = closeWelcome;
     },
 
     logout() {
