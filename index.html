@@ -298,7 +298,6 @@ body.landing-active .bottom-nav{display:none!important}
 
 .login-shell{display:flex;width:100%;height:100%}
 
-/* --- Painel esquerdo: autenticação (vertical centralizado) --- */
 .login-left{
     width:38%;
     min-width:400px;
@@ -1322,6 +1321,51 @@ body.dark{
   .vulp-loading-ring,
   .vulp-loading-ring svg{ width:72px; height:72px; }
 }
+
+/* ============================================================
+   CONFIGURAÇÕES DE SOM
+   ============================================================ */
+.sound-setting-row{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:14px 0;border-bottom:1px solid var(--border-light);
+}
+.sound-setting-row:last-of-type{border-bottom:none;}
+.sound-setting-row.column{flex-direction:column;align-items:stretch;}
+.sound-setting-info strong{display:block;font-size:.9rem;color:var(--text-primary);margin-bottom:2px;}
+.sound-setting-info span{font-size:.78rem;color:var(--text-muted);}
+
+.sound-switch{position:relative;width:48px;height:26px;flex-shrink:0;cursor:pointer;display:inline-block;}
+.sound-switch input{display:none;}
+.sound-switch-slider{
+    position:absolute;inset:0;background:var(--border-medium);border-radius:999px;
+    transition:background .25s cubic-bezier(.22,.61,.36,1);
+}
+.sound-switch-slider::before{
+    content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;
+    background:#fff;border-radius:50%;transition:transform .25s cubic-bezier(.22,.61,.36,1);
+    box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+.sound-switch input:checked + .sound-switch-slider{background:linear-gradient(135deg,#8c52ff,#6f3ae0);}
+.sound-switch input:checked + .sound-switch-slider::before{transform:translateX(22px);}
+
+.sound-range{
+    width:100%;-webkit-appearance:none;appearance:none;height:6px;
+    background:var(--border-light);border-radius:999px;outline:none;margin-top:10px;cursor:pointer;
+}
+.sound-range::-webkit-slider-thumb{
+    -webkit-appearance:none;width:20px;height:20px;
+    background:linear-gradient(135deg,#8c52ff,#6f3ae0);border-radius:50%;cursor:pointer;
+    box-shadow:0 2px 8px rgba(140,82,255,.4);
+}
+.sound-range::-moz-range-thumb{
+    width:20px;height:20px;background:#8c52ff;border:none;border-radius:50%;cursor:pointer;
+}
+.sound-note{
+    margin-top:16px;padding:10px 12px;background:var(--accent-lighter);
+    border-radius:var(--radius-sm);font-size:.78rem;color:var(--text-muted);
+    display:flex;gap:8px;align-items:flex-start;line-height:1.45;
+}
+.sound-note i{color:var(--accent);margin-top:2px;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -1862,6 +1906,9 @@ body.dark{
                     <i class="fas fa-fire"></i>
                     <span id="streakText">0</span>
                 </div>
+                <button class="icon-btn" id="soundToggle" title="Configurações de som" aria-label="Configurações de som">
+                    <i class="fas fa-volume-high"></i>
+                </button>
                 <button class="icon-btn" id="themeToggle" title="Alternar tema"><i class="fas fa-moon"></i></button>
                 <div class="header-user">
                     <div class="user-avatar">C</div>
@@ -2267,6 +2314,45 @@ body.dark{
     </div>
 </div>
 
+<!-- ============ MODAL CONFIGURAÇÕES DE SOM ============ -->
+<div class="modal-overlay" id="soundOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2><i class="fas fa-volume-high"></i> Configurações de som</h2>
+            <button class="modal-close" id="soundClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="sound-setting-row">
+                <div class="sound-setting-info">
+                    <strong>Efeitos e música</strong>
+                    <span>Ativar todos os sons do aplicativo</span>
+                </div>
+                <label class="sound-switch">
+                    <input type="checkbox" id="soundEnabledToggle" checked>
+                    <span class="sound-switch-slider"></span>
+                </label>
+            </div>
+            <div class="sound-setting-row column">
+                <div class="sound-setting-info" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>Volume geral</strong>
+                        <span>Acerto, erro, introdução e música</span>
+                    </div>
+                    <strong id="soundVolumeLabel" style="color:var(--accent);font-size:.95rem;">70%</strong>
+                </div>
+                <input type="range" id="soundVolumeRange" min="0" max="100" value="70" class="sound-range">
+            </div>
+            <p class="sound-note">
+                <i class="fas fa-info-circle"></i>
+                <span>A música de fundo é pausada automaticamente no <strong>Banco de Questões</strong> e retomada ao sair. Suas preferências são salvas neste navegador.</span>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="soundConfirm"><i class="fas fa-check"></i> Concluir</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- ============ VULP+ ULTRA · LOADING OVERLAY ============ -->
@@ -2297,6 +2383,7 @@ body.dark{
 <script>
 /* ============================================================
    VULP+ QUESTÕES — APLICATIVO COMPLETO v2.0 PREMIUM ULTRA
+   Com sistema completo de áudio (efeitos + intro + música de fundo)
    ============================================================ */
 (function(){
 'use strict';
@@ -2331,6 +2418,252 @@ const CacheManager = {
     has(key) { return this.get(key) !== null; }
 };
 
+/* ============================================================
+   AUDIO MANAGER — GERENCIADOR CENTRAL DE ÁUDIO
+   ============================================================ */
+const AudioManager = {
+    /* ===== URLs (editáveis) ===== */
+    URLs: {
+        acerto: 'https://res.cloudinary.com/dk8ta3dfy/video/upload/v1792587703/som_de_certo_zjltb1.mp3',
+        erro:   'https://res.cloudinary.com/dk8ta3dfy/video/upload/v1792587703/som_de_errado_vtqdsk.mp3',
+        // URL conforme especificação
+        intro:  'https://res.cloudinary.com/d8ta3dfy/video/upload/v1792587703/Introdu%C3%A7%C3%A3o_h1uvk7.mp3',
+        // Música de fundo — inserir URL quando disponível
+        musicaFundo: ''
+    },
+
+    /* ===== Chaves de persistência ===== */
+    KEYS: { ENABLED: 'vulp_som_ativo', VOLUME: 'vulp_som_volume' },
+
+    /* ===== Fatores de volume relativo ===== */
+    FACTORES: { intro: 0.5, musicaFundo: 0.55 },
+
+    /* ===== Estado ===== */
+    _enabled: true,
+    _volume: 0.7,
+    _sounds: {},
+    _bgMusic: null,
+    _introAudio: null,
+    _unlocked: false,
+    _pendingIntro: false,
+    _initialized: false,
+
+    init() {
+        if (this._initialized) return;
+        this._initialized = true;
+        try {
+            const en = localStorage.getItem(this.KEYS.ENABLED);
+            this._enabled = (en === null) ? true : (en === 'true' || en === '1');
+            const v = parseFloat(localStorage.getItem(this.KEYS.VOLUME));
+            this._volume = (isNaN(v) ? 0.7 : Math.max(0, Math.min(1, v)));
+        } catch (e) { console.warn('[Audio] prefs', e); }
+
+        this._preload();
+        this._setupUnlock();
+    },
+
+    _preload() {
+        try {
+            if (this.URLs.acerto) {
+                this._sounds.acerto = new Audio(this.URLs.acerto);
+                this._sounds.acerto.preload = 'auto';
+                this._sounds.acerto.volume = this._volume;
+            }
+            if (this.URLs.erro) {
+                this._sounds.erro = new Audio(this.URLs.erro);
+                this._sounds.erro.preload = 'auto';
+                this._sounds.erro.volume = this._volume;
+            }
+            if (this.URLs.intro) {
+                this._introAudio = new Audio(this.URLs.intro);
+                this._introAudio.preload = 'auto';
+                this._introAudio.loop = false;
+                this._introAudio.volume = this._volume * this.FACTORES.intro;
+            }
+            if (this.URLs.musicaFundo) {
+                this._bgMusic = new Audio(this.URLs.musicaFundo);
+                this._bgMusic.preload = 'auto';
+                this._bgMusic.loop = true;
+                this._bgMusic.volume = this._volume * this.FACTORES.musicaFundo;
+            }
+        } catch (e) { console.warn('[Audio] preload', e); }
+    },
+
+    _setupUnlock() {
+        const unlock = () => {
+            if (this._unlocked) return;
+            this._unlocked = true;
+            document.removeEventListener('click', unlock);
+            document.removeEventListener('touchstart', unlock);
+            document.removeEventListener('keydown', unlock);
+            if (this._pendingIntro && this._enabled) {
+                this._pendingIntro = false;
+                this._safePlay(this._introAudio);
+            }
+        };
+        document.addEventListener('click', unlock);
+        document.addEventListener('touchstart', unlock);
+        document.addEventListener('keydown', unlock);
+    },
+
+    _safePlay(audioEl) {
+        if (!audioEl || !this._enabled) return;
+        try {
+            const p = audioEl.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* silencioso */ }
+    },
+
+    /* ===== Efeitos ===== */
+    playAcerto() {
+        if (!this._enabled) return;
+        const a = this._sounds.acerto;
+        if (!a) return;
+        try {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = this._volume;
+            const p = a.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* silencioso */ }
+    },
+
+    playErro() {
+        if (!this._enabled) return;
+        const a = this._sounds.erro;
+        if (!a) return;
+        try {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = this._volume;
+            const p = a.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* silencioso */ }
+    },
+
+    /* ===== Introdução ===== */
+    playIntro() {
+        if (!this._enabled || !this._introAudio) return;
+        try {
+            this._introAudio.pause();
+            this._introAudio.currentTime = 0;
+            this._introAudio.volume = this._volume * this.FACTORES.intro;
+            const p = this._introAudio.play();
+            if (p && typeof p.catch === 'function') {
+                p.catch(() => { this._pendingIntro = true; });
+            }
+        } catch (e) { this._pendingIntro = true; }
+    },
+
+    stopIntro() {
+        this._pendingIntro = false;
+        if (!this._introAudio) return;
+        try { this._introAudio.pause(); this._introAudio.currentTime = 0; } catch (e) {}
+    },
+
+    /* ===== Música de fundo ===== */
+    _shouldPauseMusic() {
+        return !!(window.App && App.state && App.state.paginaAtual === 'banco');
+    },
+
+    startBackground() {
+        if (!this._bgMusic || !this._enabled) return;
+        if (this._shouldPauseMusic()) return;
+        try {
+            this._bgMusic.volume = this._volume * this.FACTORES.musicaFundo;
+            const p = this._bgMusic.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (e) { /* silencioso */ }
+    },
+
+    pauseBackground() {
+        if (!this._bgMusic) return;
+        try { this._bgMusic.pause(); } catch (e) {}
+    },
+
+    /* ===== Controles globais ===== */
+    setEnabled(enabled) {
+        this._enabled = !!enabled;
+        try { localStorage.setItem(this.KEYS.ENABLED, this._enabled ? 'true' : 'false'); } catch (e) {}
+        if (!this._enabled) {
+            this.stopAll();
+        } else {
+            const landing = document.getElementById('landingPage');
+            const login = document.getElementById('loginOverlay');
+            const app = document.getElementById('appContainer');
+            if (landing && landing.classList.contains('visible')) {
+                this.playIntro();
+            } else if (app && app.style.display !== 'none') {
+                this.startBackground();
+            } else if (login && !login.classList.contains('hidden')) {
+                this.playIntro();
+            }
+        }
+    },
+
+    setVolume(pct) {
+        const v = Math.max(0, Math.min(100, pct)) / 100;
+        this._volume = v;
+        try { localStorage.setItem(this.KEYS.VOLUME, String(v)); } catch (e) {}
+        if (this._sounds.acerto) this._sounds.acerto.volume = v;
+        if (this._sounds.erro) this._sounds.erro.volume = v;
+        if (this._introAudio) this._introAudio.volume = v * this.FACTORES.intro;
+        if (this._bgMusic) this._bgMusic.volume = v * this.FACTORES.musicaFundo;
+    },
+
+    stopAll() {
+        try {
+            if (this._sounds.acerto) { this._sounds.acerto.pause(); this._sounds.acerto.currentTime = 0; }
+            if (this._sounds.erro) { this._sounds.erro.pause(); this._sounds.erro.currentTime = 0; }
+            if (this._introAudio) { this._introAudio.pause(); this._introAudio.currentTime = 0; }
+            if (this._bgMusic) { this._bgMusic.pause(); }
+        } catch (e) {}
+    },
+
+    isEnabled() { return this._enabled; },
+    getVolume() { return Math.round(this._volume * 100); }
+};
+
+/* ============================================================
+   PAINEL DE CONFIGURAÇÕES DE SOM
+   ============================================================ */
+const SoundSettings = {
+    bind() {
+        document.getElementById('soundToggle')?.addEventListener('click', () => this.open());
+        document.getElementById('soundClose')?.addEventListener('click', () => this.close());
+        document.getElementById('soundConfirm')?.addEventListener('click', () => this.close());
+        document.getElementById('soundOverlay')?.addEventListener('click', (e) => {
+            if (e.target.id === 'soundOverlay') this.close();
+        });
+        document.getElementById('soundEnabledToggle')?.addEventListener('change', (e) => {
+            AudioManager.setEnabled(e.target.checked);
+        });
+        document.getElementById('soundVolumeRange')?.addEventListener('input', (e) => {
+            const v = parseInt(e.target.value, 10) || 0;
+            const label = document.getElementById('soundVolumeLabel');
+            if (label) label.textContent = v + '%';
+            AudioManager.setVolume(v);
+        });
+    },
+
+    open() {
+        const overlay = document.getElementById('soundOverlay');
+        if (!overlay) return;
+        const toggle = document.getElementById('soundEnabledToggle');
+        const range = document.getElementById('soundVolumeRange');
+        const label = document.getElementById('soundVolumeLabel');
+        if (toggle) toggle.checked = AudioManager.isEnabled();
+        const vol = AudioManager.getVolume();
+        if (range) range.value = vol;
+        if (label) label.textContent = vol + '%';
+        overlay.classList.add('open');
+    },
+
+    close() {
+        document.getElementById('soundOverlay')?.classList.remove('open');
+    }
+};
+
 function debounce(fn, delay = 300) {
     let timer;
     return function(...args) {
@@ -2341,8 +2674,6 @@ function debounce(fn, delay = 300) {
 
 /* ============================================================
    VULP+ ULTRA — CONTROLADOR DE LOADING (UI only)
-   - Duração mínima de 3s por padrão
-   - Aparece em TODAS as transições de página
    ============================================================ */
 const UltraLoader = {
     _overlay: null,
@@ -2416,9 +2747,7 @@ window.UltraLoader = UltraLoader;
 const Auth = {
     SESSION_KEY: 'vulp_session',
     USER_KEY: 'vulp_user',
-    isLoggedIn() {
-        return false;
-    },
+    isLoggedIn() { return false; },
     getUser() {
         try { return localStorage.getItem(this.USER_KEY) || ''; }
         catch { return ''; }
@@ -2824,6 +3153,7 @@ const Landing = {
     },
 
     abrirLogin(intencao) {
+        AudioManager.stopIntro();
         this.intencao = intencao || 'login';
         const title = document.getElementById('loginTitle');
         const sub = document.getElementById('loginSubtitle');
@@ -2913,16 +3243,18 @@ const App = {
 
     async init() {
         this.aplicarTemaSalvo();
+        AudioManager.init();
+        SoundSettings.bind();
         this.bindEventos();
         this.bindLogin();
         this.instalarHooksUltra();
         Landing.init();
         this.hideSplash();
+        AudioManager.playIntro();
         this.mostrarLogin();
     },
 
     instalarHooksUltra() {
-        // Hook universal: TODA navegação mostra o loading por ≥ 3s
         const originalNav = this.navegarPara.bind(this);
         this.navegarPara = function(page, ...rest) {
             if (!page) return originalNav(page, ...rest);
@@ -2933,20 +3265,17 @@ const App = {
             });
         };
 
-        // Hook em recarregar questões
         const originalCarregar = this.carregarQuestoes.bind(this);
         this.carregarQuestoes = async function(forcar = false) {
             try { return await originalCarregar(forcar); }
             finally { UltraLoader.hide(); }
         };
 
-        // Botão de recarregar
         document.getElementById('btnAtualizarBanco')?.addEventListener('click', () => {
             UltraLoader.show('Sincronizando seu progresso');
             setTimeout(() => UltraLoader.hide(), 20000);
         });
 
-        // Botão de login
         document.getElementById('btnLoginSubmit')?.addEventListener('click', () => {
             const user = document.getElementById('loginUser')?.value || '';
             const pass = document.getElementById('loginPass')?.value || '';
@@ -2956,7 +3285,6 @@ const App = {
             }
         });
 
-        // Micro-feedback nos botões de navegação
         document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(el => {
             el.addEventListener('click', () => {
                 if (el.animate) {
@@ -2979,6 +3307,7 @@ const App = {
         const app = document.getElementById('appContainer');
         if (app) app.style.display = 'none';
         setTimeout(() => Landing.atualizarTema(), 60);
+        AudioManager.playIntro();
     },
 
     hideLanding() {
@@ -3012,6 +3341,7 @@ const App = {
     },
 
     async entrarNoApp() {
+        AudioManager.stopIntro();
         const login = document.getElementById('loginOverlay');
         if (login) login.classList.add('hidden');
         this.hideLanding();
@@ -3021,6 +3351,7 @@ const App = {
         this.navegarPara('dashboard');
         await this.carregarQuestoes();
         this.iniciarSessao();
+        AudioManager.startBackground();
         setTimeout(() => { if (typeof Chart !== 'undefined') Charts.init(); }, 250);
         if (!this.state.erroApi) this.navegarPara(this.state.paginaAtual);
     },
@@ -3038,6 +3369,8 @@ const App = {
     },
 
     logout() {
+        AudioManager.stopAll();
+        AudioManager.stopIntro();
         Auth.logout();
         this.encerrarSessao();
         this.state.questoes = [];
@@ -3303,6 +3636,12 @@ const App = {
         if (t) t.textContent = titulos[page] || 'VULP+';
         document.getElementById('sidebar')?.classList.remove('open');
         this.state.paginaAtual = page;
+        /* Controle central de música de fundo */
+        if (page === 'banco') {
+            AudioManager.pauseBackground();
+        } else {
+            AudioManager.startBackground();
+        }
         switch (page) {
             case 'dashboard': Dashboard.render(); break;
             case 'banco': Questoes.render(); break;
@@ -3380,6 +3719,7 @@ const App = {
                 this.fecharModal(); this.fecharComentario();
                 document.getElementById('sidebar')?.classList.remove('open');
                 document.getElementById('landingMobileMenu')?.classList.remove('open');
+                document.getElementById('soundOverlay')?.classList.remove('open');
             }
         });
     },
@@ -4672,6 +5012,8 @@ const Questoes = {
                     ano: q.ano, dificuldade: q.dificuldade, tempoResposta,
                 });
                 App.atualizarBadges();
+                if (acertou) AudioManager.playAcerto();
+                else AudioManager.playErro();
                 App.toast(acertou ? '✓ Acertou!' : '✗ Errou. Veja o comentário.', acertou ? 'success' : 'error');
             });
             btnToggleComentario?.addEventListener('click', () => {
@@ -5043,6 +5385,8 @@ const Simulado = {
                 ano: q.ano, dificuldade: q.dificuldade, tempoResposta,
             });
             App.atualizarBadges();
+            if (acertou) AudioManager.playAcerto();
+            else AudioManager.playErro();
         });
         btnToggleComentario?.addEventListener('click', () => {
             const visivel = comentario.style.display !== 'none';
@@ -5335,6 +5679,8 @@ window.Dados = Dados;
 window.Landing = Landing;
 window.CacheManager = CacheManager;
 window.UltraLoader = UltraLoader;
+window.AudioManager = AudioManager;
+window.SoundSettings = SoundSettings;
 
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
